@@ -12,33 +12,33 @@ namespace DLS.StarformNET.Data
     // TODO break out abundance into a separate class for star/planet profiles
     public class ChemType
     {
-        public int    num        { get; set; }
-        public string symbol     { get; set; }
+        public int    Num        { get; set; }
+        public string Symbol     { get; set; }
         public string HTMLSymbol { get; set; }
         public string Name       { get; set; }
-        public double weight     { get; set; }
-        public double melt       { get; set; }
-        public double boil       { get; set; }
-        public double density    { get; set; }
-        public double abunde     { get; set; }
-        public double abunds     { get; set; }  // Solar system abundance
-        public double reactivity { get; set; }
-        public double max_ipp     { get; set; } // Max inspired partial pressure im millibars
+        public double Weight     { get; set; }
+        public double Melt       { get; set; }
+        public double Boil       { get; set; }
+        public double Density    { get; set; }
+        public double Abunde     { get; set; }
+        public double Abunds     { get; set; }  // Solar system abundance
+        public double Reactivity { get; set; }
+        public double MaxIpp     { get; set; } // Max inspired partial pressure im millibars
 
         public ChemType(int an, string sym, string htmlsym, string name, double weight, double m, double b, double dens, double ae, double abs, double rea, double mipp)
         {
-            num = an;
-            symbol = sym;
+            Num = an;
+            Symbol = sym;
             HTMLSymbol = htmlsym;
             Name = name;
-            this.weight = weight;
-            melt = m;
-            boil = b;
-            density = dens;
-            abunde = ae;
-            abunds = abs;
-            reactivity = rea;
-            max_ipp = mipp;
+            this.Weight = weight;
+            Melt = m;
+            Boil = b;
+            Density = dens;
+            Abunde = ae;
+            Abunds = abs;
+            Reactivity = rea;
+            MaxIpp = mipp;
         }
 
 		public static ChemType[] Load()

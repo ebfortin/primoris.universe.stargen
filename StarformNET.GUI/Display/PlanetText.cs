@@ -263,7 +263,7 @@ namespace DLS.StarformNET.Display
             {
                 var gas = orderedGases[i];
                 var curGas = gas.GasType;
-                str += String.Format("{0} [{1:0.0000} mb]", curGas.symbol, gas.surf_pressure);
+                str += String.Format("{0} [{1:0.0000} mb]", curGas.Symbol, gas.surf_pressure);
                 if (i < orderedGases.Length - 1)
                 {
                     str += ", ";
@@ -280,12 +280,12 @@ namespace DLS.StarformNET.Display
             {
                 if (orderedGases[i].surf_pressure > 1)
                 {
-                    str += String.Format("{0:0.0000}mb {1}", orderedGases[i].surf_pressure, orderedGases[i].GasType.symbol);
+                    str += String.Format("{0:0.0000}mb {1}", orderedGases[i].surf_pressure, orderedGases[i].GasType.Symbol);
                 }
                 else
                 {
                     var ppm = UnitConversions.MillibarsToPPM(orderedGases[i].surf_pressure);
-                    str += String.Format("{0:0.0000}ppm {1}", ppm, orderedGases[i].GasType.symbol);
+                    str += String.Format("{0:0.0000}ppm {1}", ppm, orderedGases[i].GasType.Symbol);
                 }
                 if (i < orderedGases.Count - 1)
                 {
@@ -317,7 +317,7 @@ namespace DLS.StarformNET.Display
                 var gas = orderedGases[i];
                 var curGas = gas.GasType;
                 var pct = (gas.surf_pressure / planet.Atmosphere.SurfacePressure) * 100;
-                str += String.Format("{0:0.0}% {1}", pct, curGas.symbol);
+                str += String.Format("{0:0.0}% {1}", pct, curGas.Symbol);
                 if (i < orderedGases.Length - 1)
                 {
                     str += ", ";

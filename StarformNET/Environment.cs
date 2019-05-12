@@ -1183,14 +1183,14 @@ namespace DLS.StarformNET
                 var gas = planet.Atmosphere.Composition[index];
 
                 var ipp = InspiredPartialPressure(planet.Atmosphere.SurfacePressure, planet.Atmosphere.Composition[index].surf_pressure);
-                if (ipp > gas.GasType.max_ipp)
+                if (ipp > gas.GasType.MaxIpp)
                 {
                     poisonous = true;
                     planet.Atmosphere.PoisonousGases.Add(gas);
                 }
 
                 // TODO why not just have a min_ipp for every gas, even if it's going to be zero for everything that's not oxygen?
-                if (gas.GasType.num == GlobalConstants.AN_O)
+                if (gas.GasType.Num == GlobalConstants.AN_O)
                 {
                     oxygenOk = ((ipp >= GlobalConstants.MIN_O2_IPP) && (ipp <= GlobalConstants.MAX_O2_IPP));
                 }

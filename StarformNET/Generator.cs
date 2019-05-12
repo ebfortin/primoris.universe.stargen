@@ -320,18 +320,18 @@ namespace DLS.StarformNET
             // Determine the relative abundance of each gas in the planet's atmosphere
             for (var i = 0; i < gasTable.Length; i++)
             {
-                double yp = gasTable[i].boil / (373.0 * ((Math.Log((pressure) + 0.001) / -5050.5) + (1.0 / 373.0)));
+                double yp = gasTable[i].Boil / (373.0 * ((Math.Log((pressure) + 0.001) / -5050.5) + (1.0 / 373.0)));
 
                 // TODO move both of these conditions to separate methods
-                if ((yp >= 0 && yp < planet.NighttimeTempKelvin) && (gasTable[i].weight >= planet.MolecularWeightRetained))
+                if ((yp >= 0 && yp < planet.NighttimeTempKelvin) && (gasTable[i].Weight >= planet.MolecularWeightRetained))
                 {
                     double abund, react;
                     CheckForSpecialRules(out abund, out react, pressure, planet, gasTable[i]);
 
-                    double vrms = Environment.RMSVelocity(gasTable[i].weight, planet.ExosphereTempKelvin);
+                    double vrms = Environment.RMSVelocity(gasTable[i].Weight, planet.ExosphereTempKelvin);
                     double pvrms = Math.Pow(1 / (1 + vrms / planet.EscapeVelocityCMSec), sun.AgeYears / 1e9);
 
-                    double fract = (1 - (planet.MolecularWeightRetained / gasTable[i].weight));
+                    double fract = (1 - (planet.MolecularWeightRetained / gasTable[i].Weight));
 
                     // Note that the amount calculated here is unitless and doesn't really mean
                     // anything except as a relative value
@@ -370,34 +370,34 @@ namespace DLS.StarformNET
         {
             var sun = planet.Star;
             var pres2 = 1.0;
-            abund = gas.abunds;
+            abund = gas.Abunds;
 
-            if (gas.symbol == "Ar")
+            if (gas.Symbol == "Ar")
             {
                 react = .15 * sun.AgeYears / 4e9;
             }
-            else if (gas.symbol == "He")
+            else if (gas.Symbol == "He")
             {
                 abund = abund * (0.001 + (planet.GasMassSM / planet.MassSM));
                 pres2 = (0.75 + pressure);
-                react = Math.Pow(1 / (1 + gas.reactivity), sun.AgeYears / 2e9 * pres2);
+                react = Math.Pow(1 / (1 + gas.Reactivity), sun.AgeYears / 2e9 * pres2);
             }
-            else if ((gas.symbol == "O" || gas.symbol == "O2") && sun.AgeYears > 2e9 && planet.SurfaceTempKelvin > 270 && planet.SurfaceTempKelvin < 400)
+            else if ((gas.Symbol == "O" || gas.Symbol == "O2") && sun.AgeYears > 2e9 && planet.SurfaceTempKelvin > 270 && planet.SurfaceTempKelvin < 400)
             {
                 // pres2 = (0.65 + pressure/2); // Breathable - M: .55-1.4
                 pres2 = (0.89 + pressure / 4);  // Breathable - M: .6 -1.8
-                react = Math.Pow(1 / (1 + gas.reactivity), Math.Pow(sun.AgeYears / 2e9, 0.25) * pres2);
+                react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.AgeYears / 2e9, 0.25) * pres2);
             }
-            else if (gas.symbol == "CO2" && sun.AgeYears > 2e9 && planet.SurfaceTempKelvin > 270 && planet.SurfaceTempKelvin < 400)
+            else if (gas.Symbol == "CO2" && sun.AgeYears > 2e9 && planet.SurfaceTempKelvin > 270 && planet.SurfaceTempKelvin < 400)
             {
                 pres2 = (0.75 + pressure);
-                react = Math.Pow(1 / (1 + gas.reactivity), Math.Pow(sun.AgeYears / 2e9, 0.5) * pres2);
+                react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.AgeYears / 2e9, 0.5) * pres2);
                 react *= 1.5;
             }
             else
             {
                 pres2 = (0.75 + pressure);
-                react = Math.Pow(1 / (1 + gas.reactivity), sun.AgeYears / 2e9 * pres2);
+                react = Math.Pow(1 / (1 + gas.Reactivity), sun.AgeYears / 2e9 * pres2);
             }
         }
 

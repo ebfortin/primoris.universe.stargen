@@ -170,7 +170,7 @@ namespace DLS.StarformNET.UnitTests
 
                 foreach (var gas in planet.Atmosphere.Composition)
                 {
-                    Assert.AreEqual(expected[gas.GasType.symbol], gas.surf_pressure, DELTA);
+                    Assert.AreEqual(expected[gas.GasType.Symbol], gas.surf_pressure, DELTA);
                 }
             }
 
