@@ -22,7 +22,7 @@ namespace DLS.StarformNET
         public static StellarSystem GenerateStellarSystem(string systemName, SystemGenerationOptions genOptions = null, Star sun=null, List<PlanetSeed> seedSystem=null)
         {
             genOptions = genOptions ?? SystemGenerationOptions.DefaultOptions;
-            sun = sun ?? StarGenerator.GetDefaultStar();
+            sun = sun ?? new Star();
             var useRandomTilt = seedSystem == null;
 
             var accrete = new Accrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);

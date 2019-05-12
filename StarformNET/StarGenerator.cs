@@ -1,7 +1,10 @@
+using System;
+
 namespace DLS.StarformNET
 {
     using Data;
 
+	[Obsolete]
     public static class StarGenerator
     {
         public static double MinSunAge = 1.0E9;

@@ -164,7 +164,7 @@ namespace DLS.StarformNET.UnitTests
 
                 var planet = GetTestPlanetAtmosphere();
                 var star = planet.Star;
-                Generator.CalculateGases(planet, ChemType.GetDefaultTable());
+                Generator.CalculateGases(planet, ChemType.Load());
 
                 Assert.AreEqual(expected.Count, planet.Atmosphere.Composition.Count);
 
@@ -180,7 +180,7 @@ namespace DLS.StarformNET.UnitTests
             {
                 var planet = GetTestPlanetNoAtmosphere();
                 var star = planet.Star;
-                Generator.CalculateGases(planet, ChemType.GetDefaultTable());
+                Generator.CalculateGases(planet, ChemType.Load());
 
                 Assert.AreEqual(0, planet.Atmosphere.Composition.Count);
             }
