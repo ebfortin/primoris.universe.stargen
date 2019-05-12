@@ -86,12 +86,17 @@ namespace DLS.StarformNET
             return RocheLimitKM(bodyRadius, bodyDensity, satelliteDensity) / GlobalConstants.KM_PER_AU;
         }
 
+		public static double TemperatureToSpectral(double temp)
+		{
+
+		}
+
 		/// <summary>
 		/// Returns the mass of a star using the Mass-Luminosity relationship.
 		/// </summary>
 		/// <param name="lumRatio">Luminosity ratio of the star</param>
 		/// <returns>Mass ratio</returns>
-		public static double Mass(double lumRatio)
+		public static double LuminosityToMass(double lumRatio)
 		{
 			double a = lumRatio;
 			if (a <= (0.3815 * Math.Pow(0.6224, 2.5185)))
@@ -121,7 +126,7 @@ namespace DLS.StarformNET
         /// </summary>
         /// <param name="massRatio">Mass of the star</param>
         /// <returns>Luminosity ratio</returns>
-        public static double Luminosity(double massRatio)
+        public static double MassToLuminosity(double massRatio)
         {
 			if (massRatio <= 0.6224)
 			{

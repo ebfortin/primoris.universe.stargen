@@ -23,7 +23,7 @@ namespace DLS.StarformNET.Data
 
 			if (sun.Luminosity == 0)
 			{
-				sun.Luminosity = Main.Environment.Luminosity(sun.Mass);
+				sun.Luminosity = Main.Environment.MassToLuminosity(sun.Mass);
 			}
 
 			sun.EcosphereRadiusAU = Main.Environment.StarEcosphereRadiusAU(sun.Luminosity);
