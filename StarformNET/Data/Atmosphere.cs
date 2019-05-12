@@ -1,8 +1,9 @@
+using System.Collections.Generic;
+using System;
+
+
 namespace DLS.StarformNET.Data
 {
-    using System.Collections.Generic;
-    using System;
-
     [Serializable]
     public class Atmosphere
     {

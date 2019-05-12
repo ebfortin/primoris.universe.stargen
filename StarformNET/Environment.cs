@@ -1182,7 +1182,7 @@ namespace DLS.StarformNET
             {
                 var gas = planet.Atmosphere.Composition[index];
 
-                var ipp = InspiredPartialPressure(planet.Atmosphere.SurfacePressure, planet.Atmosphere.Composition[index].surf_pressure);
+                var ipp = InspiredPartialPressure(planet.Atmosphere.SurfacePressure, planet.Atmosphere.Composition[index].SurfacePressure);
                 if (ipp > gas.GasType.MaxIpp)
                 {
                     poisonous = true;

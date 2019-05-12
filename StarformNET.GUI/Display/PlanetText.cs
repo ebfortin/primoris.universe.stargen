@@ -254,7 +254,7 @@ namespace DLS.StarformNET.Display
                 return "None";
             }
             var str = "";
-            var orderedGases = planet.Atmosphere.Composition.OrderByDescending(g => g.surf_pressure).ToArray();
+            var orderedGases = planet.Atmosphere.Composition.OrderByDescending(g => g.SurfacePressure).ToArray();
             if (orderedGases.Length == 0)
             {
                 return "Trace gases only";
@@ -263,7 +263,7 @@ namespace DLS.StarformNET.Display
             {
                 var gas = orderedGases[i];
                 var curGas = gas.GasType;
-                str += String.Format("{0} [{1:0.0000} mb]", curGas.Symbol, gas.surf_pressure);
+                str += String.Format("{0} [{1:0.0000} mb]", curGas.Symbol, gas.SurfacePressure);
                 if (i < orderedGases.Length - 1)
                 {
                     str += ", ";
@@ -275,16 +275,16 @@ namespace DLS.StarformNET.Display
         public static string GetPoisonString(Planet planet)
         {
             var str = "";
-            var orderedGases = planet.Atmosphere.PoisonousGases.OrderByDescending(g => g.surf_pressure).ToList();
+            var orderedGases = planet.Atmosphere.PoisonousGases.OrderByDescending(g => g.SurfacePressure).ToList();
             for (var i = 0; i < orderedGases.Count; i++)
             {
-                if (orderedGases[i].surf_pressure > 1)
+                if (orderedGases[i].SurfacePressure > 1)
                 {
-                    str += String.Format("{0:0.0000}mb {1}", orderedGases[i].surf_pressure, orderedGases[i].GasType.Symbol);
+                    str += String.Format("{0:0.0000}mb {1}", orderedGases[i].SurfacePressure, orderedGases[i].GasType.Symbol);
                 }
                 else
                 {
-                    var ppm = UnitConversions.MillibarsToPPM(orderedGases[i].surf_pressure);
+                    var ppm = UnitConversions.MillibarsToPPM(orderedGases[i].SurfacePressure);
                     str += String.Format("{0:0.0000}ppm {1}", ppm, orderedGases[i].GasType.Symbol);
                 }
                 if (i < orderedGases.Count - 1)
@@ -311,12 +311,12 @@ namespace DLS.StarformNET.Display
             }
 
             var str = "";
-            var orderedGases = planet.Atmosphere.Composition.Where(g => ((g.surf_pressure / planet.Atmosphere.SurfacePressure) * 100) > minFraction).OrderByDescending(g => g.surf_pressure).ToArray();
+            var orderedGases = planet.Atmosphere.Composition.Where(g => ((g.SurfacePressure / planet.Atmosphere.SurfacePressure) * 100) > minFraction).OrderByDescending(g => g.SurfacePressure).ToArray();
             for (var i = 0; i < orderedGases.Length; i++)
             {
                 var gas = orderedGases[i];
                 var curGas = gas.GasType;
-                var pct = (gas.surf_pressure / planet.Atmosphere.SurfacePressure) * 100;
+                var pct = (gas.SurfacePressure / planet.Atmosphere.SurfacePressure) * 100;
                 str += String.Format("{0:0.0}% {1}", pct, curGas.Symbol);
                 if (i < orderedGases.Length - 1)
                 {
@@ -328,7 +328,7 @@ namespace DLS.StarformNET.Display
                 var traceGasSum = 0.0;
                 foreach (var gas in planet.Atmosphere.Composition)
                 {
-                    var frac = (gas.surf_pressure / planet.Atmosphere.SurfacePressure) * 100;
+                    var frac = (gas.SurfacePressure / planet.Atmosphere.SurfacePressure) * 100;
                     if (frac <= minFraction)
                     {
                         traceGasSum += frac;

@@ -14,7 +14,7 @@ namespace DLS.StarformNET.Data
     {
         public int    Num        { get; set; }
         public string Symbol     { get; set; }
-        public string HTMLSymbol { get; set; }
+        public string DisplaySymbol { get; set; }
         public string Name       { get; set; }
         public double Weight     { get; set; }
         public double Melt       { get; set; }
@@ -25,13 +25,13 @@ namespace DLS.StarformNET.Data
         public double Reactivity { get; set; }
         public double MaxIpp     { get; set; } // Max inspired partial pressure im millibars
 
-        public ChemType(int an, string sym, string htmlsym, string name, double weight, double m, double b, double dens, double ae, double abs, double rea, double mipp)
+        public ChemType(int an, string sym, string htmlsym, string name, double w, double m, double b, double dens, double ae, double abs, double rea, double mipp)
         {
             Num = an;
             Symbol = sym;
-            HTMLSymbol = htmlsym;
+            DisplaySymbol = htmlsym;
             Name = name;
-            this.Weight = weight;
+            Weight = w;
             Melt = m;
             Boil = b;
             Density = dens;

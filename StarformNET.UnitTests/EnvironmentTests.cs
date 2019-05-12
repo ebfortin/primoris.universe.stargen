@@ -328,7 +328,7 @@ namespace DLS.StarformNET.UnitTests
                 planet.Atmosphere.Composition = mockAtmoGen().ToList();
                 foreach (var gas in planet.Atmosphere.Composition)
                 {
-                    planet.Atmosphere.SurfacePressure += gas.surf_pressure;
+                    planet.Atmosphere.SurfacePressure += gas.SurfacePressure;
                 }
                 return planet;
             }
