@@ -7,6 +7,11 @@
     [Serializable]
     public class Star
     {
+		public Star()
+		{
+
+		}
+
         public string Name { get; set; }
 
         /// <summary>

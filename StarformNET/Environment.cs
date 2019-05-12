@@ -86,26 +86,64 @@ namespace DLS.StarformNET
             return RocheLimitKM(bodyRadius, bodyDensity, satelliteDensity) / GlobalConstants.KM_PER_AU;
         }
 
+		/// <summary>
+		/// Returns the mass of a star using the Mass-Luminosity relationship.
+		/// </summary>
+		/// <param name="lumRatio">Luminosity ratio of the star</param>
+		/// <returns>Mass ratio</returns>
+		public static double Mass(double lumRatio)
+		{
+			double a = lumRatio;
+			if (a <= (0.3815 * Math.Pow(0.6224, 2.5185)))
+			{
+				return 1.46613 * Math.Pow(a, 0.3970617431010522);
+			}
+			else if (a <= 1)
+			{
+				return Math.Pow(a, 0.2197319270490002);
+			}
+			else if (a <= Math.Pow(3.1623, 4.351))
+			{
+				return Math.Pow(a, 0.2298322224775914);
+			}
+			else if (a <= (2.7563 * Math.Pow(16, 3.4704)))
+			{
+				return 0.746654 * Math.Pow(a, 0.2881512217611803);
+			}
+			else
+			{
+				return 0.221579 * Math.Pow(a, 0.4023659115599726);
+			}
+		}
+
         /// <summary>
         /// Returns the luminosity of a star using the Mass-Luminosity relationship.
         /// </summary>
         /// <param name="massRatio">Mass of the star</param>
-        /// <returns>Luminosity</returns>
+        /// <returns>Luminosity ratio</returns>
         public static double Luminosity(double massRatio)
         {
-            double n;
-
-            if (massRatio < 1.0)
-            {
-                n = 1.75 * (massRatio - 0.1) + 3.325;
-            }
-            else
-            {
-                n = 0.5 * (2.0 - massRatio) + 4.4;
-            }
-
-            return (Math.Pow(massRatio, n));
-        }
+			if (massRatio <= 0.6224)
+			{
+				return 0.3815 * Math.Pow(massRatio, 2.5185);
+			}
+			else if (massRatio <= 1.0)
+			{
+				return Math.Pow(massRatio, 4.551);
+			}
+			else if (massRatio <= 3.1623)
+			{
+				return Math.Pow(massRatio, 4.351);
+			}
+			else if (massRatio <= 16.0)
+			{
+				return 2.7563 * Math.Pow(massRatio, 3.4704);
+			}
+			else
+			{
+				return 42.321 * Math.Pow(massRatio, 2.4853);
+			}
+		}
 
         /// <summary>
         /// Returns true if the planet is tidally locked to its parent body.
