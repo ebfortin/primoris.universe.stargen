@@ -7,7 +7,7 @@ namespace DLS.StarformNET.Data
 {
 	public enum SpectralClass
 	{
-		x, 
+		Undefined,
 		O, 
 		B, 
 		A, 
@@ -17,6 +17,22 @@ namespace DLS.StarformNET.Data
 		M, 
 		L, 
 		T, 
-		Y
+		Y,
+		H,
+		E,
+		I,
+		R,
+		S,
+		N,
+		C,
+		DA,
+		DB,
+		DC,
+		DO,
+		DQ,
+		DZ,
+		WN,
+		WC,
+		WD
 	}
 }

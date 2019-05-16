@@ -1,12 +1,14 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using DLS.StarformNET;
+using DLS.StarformNET.Data;
+using System.Linq;
+using System.Collections.Generic;
+using System;
+
 namespace DLS.StarformNET.UnitTests
 {
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using StarformNET;
-    using Data;
-    using System.Linq;
-    using System.Collections.Generic;
-    using System;
+
 
     class EnvironmentTests
     {

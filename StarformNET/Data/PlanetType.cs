@@ -2,7 +2,7 @@ namespace DLS.StarformNET.Data
 {
     public enum PlanetType
     {
-        Unknown,
+        Undefined,
         Barren,
         Venusian,
         Terrestrial,

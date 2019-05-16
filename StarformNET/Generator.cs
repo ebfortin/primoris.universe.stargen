@@ -255,7 +255,7 @@ namespace DLS.StarformNET
                     }
                     else
                     {
-                        planet.Type = PlanetType.Unknown;
+                        planet.Type = PlanetType.Undefined;
                     }
                 }
             }

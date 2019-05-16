@@ -7,11 +7,15 @@ namespace DLS.StarformNET.Data
 {
 	public enum LuminosityClass
 	{
-		Ia0,
-		Ia, 
-		Ib, 
-		II, 
-		III, 
-		IV
+		Undefined,
+		O,
+		Ia,  // Very luminous supergiants
+		Ib,  // Less luminous supergiants
+		II,  // Luminous giants
+		III, // Giants
+		IV,  // Subgiants
+		V,   // Main sequence stars (dwarf stars)
+		VI,  // Subdwarf
+		VII  // White Dwarf
 	}
 }

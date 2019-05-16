@@ -1,7 +1,8 @@
+using DLS.StarformNET.Data;
+using System.Collections.Generic;
+
 namespace DLS.StarformNET.Display
 {
-    using Data;
-    using System.Collections.Generic;
 
     public class PlanetInfoGroup : InfoGroup
     {

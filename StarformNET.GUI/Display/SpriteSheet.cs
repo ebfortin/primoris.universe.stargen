@@ -17,7 +17,7 @@ namespace DLS.StarformNET.Display
             { PlanetType.SubGasGiant,    6 },
             { PlanetType.SubSubGasGiant, 6 },
             { PlanetType.Terrestrial,    0 },
-            { PlanetType.Unknown,        8 },
+            { PlanetType.Undefined,        8 },
             { PlanetType.Venusian,       4 },
             { PlanetType.Water,          3 }
         };

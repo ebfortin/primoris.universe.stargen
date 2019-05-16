@@ -86,10 +86,6 @@ namespace DLS.StarformNET
             return RocheLimitKM(bodyRadius, bodyDensity, satelliteDensity) / GlobalConstants.KM_PER_AU;
         }
 
-		public static double TemperatureToSpectral(double temp)
-		{
-
-		}
 
 		/// <summary>
 		/// Returns the mass of a star using the Mass-Luminosity relationship.
