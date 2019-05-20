@@ -1,5 +1,7 @@
-# Starform.NET
+# Primoris.Universe.Stargen
 Starform.NET is an effort to port the Accrete/Starform/StarGen solar system generator to C# and .NET. Starform.NET is little more than a naive port of Jim Burrows' StarGen in its current form, but the ultimate goal is to create an accessible and useful tool for game developers, sci-fi writers, and anyone else who might have a need to quickly generate interesting planets and star systems.
+
+This repository is a fork of Starform.NET.
 
 ## Just a Dash of Science
 The original inspiration of the Accrete program (at least as far as I can tell) is the 1970 paper *Formation of Planetary Systems by Aggregation: A Computer Simulation* by Stephen H. Dole (Stephen H. Dole, Icarus, 13 494-509). A variety of authors have implemented the original simulation described by Dole in that paper, and many of the versions available online have expanded on it as well. 
