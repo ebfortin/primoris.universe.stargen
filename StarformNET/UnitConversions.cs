@@ -1,4 +1,4 @@
-﻿namespace DLS.StarformNET
+﻿namespace Primoris.Universe.Stargen
 {
     // TODO should maybe consider doing some sanity checking for negative distances and mass?
     // maybe? I dunno. Nah.

@@ -1,4 +1,4 @@
-namespace DLS.StarformNET.Console
+namespace Primoris.Universe.Stargen.Console
 {
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;

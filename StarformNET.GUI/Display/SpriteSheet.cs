@@ -1,4 +1,4 @@
-namespace DLS.StarformNET.Display
+namespace Primoris.Universe.Stargen.Display
 {
     using System.Drawing;
     using System;

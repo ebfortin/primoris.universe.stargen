@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 
-namespace DLS.StarformNET.Data
+namespace Primoris.Universe.Stargen.Data
 {
 	public class SpectralType
 	{

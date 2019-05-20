@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace DLS.StarformNET.UnitTests
+namespace Primoris.Universe.Stargen.UnitTests
 {
     
     public class PlanetTests

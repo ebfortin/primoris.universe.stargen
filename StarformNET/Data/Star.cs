@@ -1,6 +1,6 @@
-﻿using Main = DLS.StarformNET;
+﻿using Main = Primoris.Universe.Stargen;
 
-namespace DLS.StarformNET.Data
+namespace Primoris.Universe.Stargen.Data
 {
     using System;
 

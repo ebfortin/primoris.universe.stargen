@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System;
 
 
-namespace DLS.StarformNET.Data
+namespace Primoris.Universe.Stargen.Data
 {
     [Serializable]
     public class Atmosphere

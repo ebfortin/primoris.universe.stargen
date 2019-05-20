@@ -1,4 +1,4 @@
-namespace DLS.StarformNET.Data
+namespace Primoris.Universe.Stargen.Data
 {
     public class PlanetSeed
     {

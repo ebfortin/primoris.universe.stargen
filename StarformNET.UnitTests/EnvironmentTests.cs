@@ -1,11 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DLS.StarformNET;
-using DLS.StarformNET.Data;
+using Primoris.Universe.Stargen;
+using Primoris.Universe.Stargen.Data;
 using System.Linq;
 using System.Collections.Generic;
 using System;
 
-namespace DLS.StarformNET.UnitTests
+namespace Primoris.Universe.Stargen.UnitTests
 {
 
     class EnvironmentTests
@@ -64,7 +64,7 @@ namespace DLS.StarformNET.UnitTests
             [TestMethod]
             public void TestReturnNaNZeroTemp()
             {
-                Assert.AreEqual(double.NaN, StarformNET.Environment.GasLife(
+                Assert.AreEqual(double.NaN, Primoris.Universe.Stargen.Environment.GasLife(
                     GlobalConstants.ATOMIC_NITROGEN, 0, 0.5, 2440));
             }
 
@@ -72,7 +72,7 @@ namespace DLS.StarformNET.UnitTests
             [TestMethod]
             public void TestReturnNaNNegativeTemp()
             {
-                Assert.AreEqual(double.NaN, StarformNET.Environment.GasLife(
+                Assert.AreEqual(double.NaN, Primoris.Universe.Stargen.Environment.GasLife(
                     GlobalConstants.ATOMIC_NITROGEN, -100, 0.5, 2440));
             }
 
@@ -83,7 +83,7 @@ namespace DLS.StarformNET.UnitTests
                 {
                     var e = expected[i];
                     var w = weights[i];
-                    Assert.AreEqual(e, StarformNET.Environment.GasLife(
+                    Assert.AreEqual(e, Primoris.Universe.Stargen.Environment.GasLife(
                         w, exo, surfG, radius), 0.000001);
                 }
             }
@@ -99,7 +99,7 @@ namespace DLS.StarformNET.UnitTests
                 const double expectedValue = 1.0;
                 const double sunLuminosity = 1.0;
 
-                Assert.AreEqual(expectedValue, StarformNET.Environment.StarEcosphereRadiusAU(sunLuminosity), 0.0001);
+                Assert.AreEqual(expectedValue, Primoris.Universe.Stargen.Environment.StarEcosphereRadiusAU(sunLuminosity), 0.0001);
             }
         }
 
@@ -114,7 +114,7 @@ namespace DLS.StarformNET.UnitTests
                 var sunLuminosity = 1.0;
                 var earthSemiMajorAxis = 1.0;
 
-                Assert.AreEqual(expectedValue, StarformNET.Environment.MinimumIllumination(earthSemiMajorAxis, sunLuminosity));
+                Assert.AreEqual(expectedValue, Primoris.Universe.Stargen.Environment.MinimumIllumination(earthSemiMajorAxis, sunLuminosity));
             }
         }
 
@@ -146,10 +146,10 @@ namespace DLS.StarformNET.UnitTests
                 var earthSphereKM = 1496498;
                 var earthSphereAU = earthSphereKM / GlobalConstants.KM_PER_AU;
 
-                var hAU = StarformNET.Environment.SimplifiedHillSphereAU(SunMass, EarthMass, EarthSemiMajorAxisAU);
+                var hAU = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereAU(SunMass, EarthMass, EarthSemiMajorAxisAU);
                 Assert.AreEqual(earthSphereAU, hAU, 0.001);
 
-                var hKM = StarformNET.Environment.SimplifiedHillSphereKM(SunMass, EarthMass, EarthSemiMajorAxisAU);
+                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereKM(SunMass, EarthMass, EarthSemiMajorAxisAU);
                 Assert.AreEqual(earthSphereKM, hKM, 0.99);
             }
 
@@ -160,10 +160,10 @@ namespace DLS.StarformNET.UnitTests
                 var mercurySphereKM = 220314;
                 var mercurySphereAU = mercurySphereKM / GlobalConstants.KM_PER_AU;
 
-                var hAU = StarformNET.Environment.SimplifiedHillSphereAU(SunMass, MercuryMass, MercurySemiMajorAxisAU);
+                var hAU = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereAU(SunMass, MercuryMass, MercurySemiMajorAxisAU);
                 Assert.AreEqual(mercurySphereAU, hAU, 0.001);
 
-                var hKM = StarformNET.Environment.SimplifiedHillSphereKM(SunMass, MercuryMass, MercurySemiMajorAxisAU);
+                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereKM(SunMass, MercuryMass, MercurySemiMajorAxisAU);
                 Assert.AreEqual(mercurySphereKM, hKM, 0.99);
             }
 
@@ -174,10 +174,10 @@ namespace DLS.StarformNET.UnitTests
                 var venusSphereKM = 1011028;
                 var venusSphereAU = venusSphereKM / GlobalConstants.KM_PER_AU;
 
-                var hAU = StarformNET.Environment.SimplifiedHillSphereAU(SunMass, VenusMass, VenusSemiMajorAxisAU);
+                var hAU = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereAU(SunMass, VenusMass, VenusSemiMajorAxisAU);
                 Assert.AreEqual(venusSphereAU, hAU, 0.001);
 
-                var hKM = StarformNET.Environment.SimplifiedHillSphereKM(SunMass, VenusMass, VenusSemiMajorAxisAU);
+                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereKM(SunMass, VenusMass, VenusSemiMajorAxisAU);
                 Assert.AreEqual(venusSphereKM, hKM, 0.99);
             }
 
@@ -188,10 +188,10 @@ namespace DLS.StarformNET.UnitTests
                 var jupiterSphereKM = 53129256;
                 var jupiterSphereAU = jupiterSphereKM / GlobalConstants.KM_PER_AU;
 
-                var hAU = StarformNET.Environment.SimplifiedHillSphereAU(SunMass, JupiterMass, JupiterSemiMajorAxisAU);
+                var hAU = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereAU(SunMass, JupiterMass, JupiterSemiMajorAxisAU);
                 Assert.AreEqual(jupiterSphereAU, hAU, 0.001);
 
-                var hKM = StarformNET.Environment.SimplifiedHillSphereKM(SunMass, JupiterMass, JupiterSemiMajorAxisAU);
+                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereKM(SunMass, JupiterMass, JupiterSemiMajorAxisAU);
                 Assert.AreEqual(jupiterSphereKM, hKM, 0.99);
             }
         }
@@ -218,10 +218,10 @@ namespace DLS.StarformNET.UnitTests
                 var earthMoonKM = 9492;
                 var earthMoonAU = earthMoonKM / GlobalConstants.KM_PER_AU;
 
-                var dAU = StarformNET.Environment.RocheLimitAU(EarthRadius, EarthDensity, MoonDensity);
+                var dAU = Primoris.Universe.Stargen.Environment.RocheLimitAU(EarthRadius, EarthDensity, MoonDensity);
                 Assert.AreEqual(earthMoonAU, dAU, 0.99);
 
-                var dKM = StarformNET.Environment.RocheLimitKM(EarthRadius, EarthDensity, MoonDensity);
+                var dKM = Primoris.Universe.Stargen.Environment.RocheLimitKM(EarthRadius, EarthDensity, MoonDensity);
                 Assert.AreEqual(earthMoonKM, dKM, 0.99);
             }
 
@@ -232,10 +232,10 @@ namespace DLS.StarformNET.UnitTests
                 var earthAvgCometKM = 17887;
                 var earthAvgCometAU = earthAvgCometKM / GlobalConstants.KM_PER_AU;
 
-                var dAU = StarformNET.Environment.RocheLimitAU(EarthRadius, EarthDensity, AvgCometDensity);
+                var dAU = Primoris.Universe.Stargen.Environment.RocheLimitAU(EarthRadius, EarthDensity, AvgCometDensity);
                 Assert.AreEqual(earthAvgCometAU, dAU, 0.99);
 
-                var dKM = StarformNET.Environment.RocheLimitKM(EarthRadius, EarthDensity, AvgCometDensity);
+                var dKM = Primoris.Universe.Stargen.Environment.RocheLimitKM(EarthRadius, EarthDensity, AvgCometDensity);
                 Assert.AreEqual(earthAvgCometKM, dKM, 0.99);
             }
 
@@ -246,10 +246,10 @@ namespace DLS.StarformNET.UnitTests
                 var sunEarthKM = 556397;
                 var sunEarthAU = sunEarthKM / GlobalConstants.KM_PER_AU;
 
-                var dAU = StarformNET.Environment.RocheLimitAU(SunRadius, SunDensity, EarthDensity);
+                var dAU = Primoris.Universe.Stargen.Environment.RocheLimitAU(SunRadius, SunDensity, EarthDensity);
                 Assert.AreEqual(sunEarthAU, dAU, 0.99);
 
-                var dKM = StarformNET.Environment.RocheLimitKM(SunRadius, SunDensity, EarthDensity);
+                var dKM = Primoris.Universe.Stargen.Environment.RocheLimitKM(SunRadius, SunDensity, EarthDensity);
                 Assert.AreEqual(sunEarthKM, dKM, 0.99);
             }
 
@@ -260,10 +260,10 @@ namespace DLS.StarformNET.UnitTests
                 var sunMoonKM = 657161;
                 var sunMoonAU = sunMoonKM / GlobalConstants.KM_PER_AU;
 
-                var dAU = StarformNET.Environment.RocheLimitAU(SunRadius, SunDensity, MoonDensity);
+                var dAU = Primoris.Universe.Stargen.Environment.RocheLimitAU(SunRadius, SunDensity, MoonDensity);
                 Assert.AreEqual(sunMoonAU, dAU, 0.99);
 
-                var dKM = StarformNET.Environment.RocheLimitKM(SunRadius, SunDensity, MoonDensity);
+                var dKM = Primoris.Universe.Stargen.Environment.RocheLimitKM(SunRadius, SunDensity, MoonDensity);
                 Assert.AreEqual(sunMoonKM, dKM, 0.99);
             }
 
@@ -274,10 +274,10 @@ namespace DLS.StarformNET.UnitTests
                 var sunJupiterKM = 894677;
                 var sunJupiterAU = sunJupiterKM / GlobalConstants.KM_PER_AU;
 
-                var dAU = StarformNET.Environment.RocheLimitAU(SunRadius, SunDensity, JupiterDensity);
+                var dAU = Primoris.Universe.Stargen.Environment.RocheLimitAU(SunRadius, SunDensity, JupiterDensity);
                 Assert.AreEqual(sunJupiterAU, dAU, 0.99);
 
-                var dKM = StarformNET.Environment.RocheLimitKM(SunRadius, SunDensity, JupiterDensity);
+                var dKM = Primoris.Universe.Stargen.Environment.RocheLimitKM(SunRadius, SunDensity, JupiterDensity);
                 Assert.AreEqual(sunJupiterKM, dKM, 0.99);
             }
         }
@@ -338,7 +338,7 @@ namespace DLS.StarformNET.UnitTests
             [TestMethod]
             public void TestNullPlanet()
             {
-                var breathe = StarformNET.Environment.Breathability(null);
+                var breathe = Primoris.Universe.Stargen.Environment.Breathability(null);
             }
 
             [TestCategory("Breathability")]
@@ -346,7 +346,7 @@ namespace DLS.StarformNET.UnitTests
             public void TestNoAtmoPlanet()
             {
                 var planet = GetMockPlanet(GetMockNoAtmo);
-                var breathe = StarformNET.Environment.Breathability(planet);
+                var breathe = Primoris.Universe.Stargen.Environment.Breathability(planet);
                 Assert.AreEqual(Breathability.None, breathe);
             }
 
@@ -355,7 +355,7 @@ namespace DLS.StarformNET.UnitTests
             public void TestBreathablePlanet()
             {
                 var planet = GetMockPlanet(GetMockBreathableAtmo);
-                var breathe = StarformNET.Environment.Breathability(planet);
+                var breathe = Primoris.Universe.Stargen.Environment.Breathability(planet);
                 Assert.AreEqual(Breathability.Breathable, breathe);
             }
 
@@ -364,7 +364,7 @@ namespace DLS.StarformNET.UnitTests
             public void TestUnbreathablePlanet()
             {
                 var planet = GetMockPlanet(GetMockUnbreathableAtmo);
-                var breathe = StarformNET.Environment.Breathability(planet);
+                var breathe = Primoris.Universe.Stargen.Environment.Breathability(planet);
                 Assert.AreEqual(Breathability.Unbreathable, breathe);
             }
 
@@ -373,7 +373,7 @@ namespace DLS.StarformNET.UnitTests
             public void TestPoisonousPlanet()
             {
                 var planet = GetMockPlanet(GetMockPoisonousAtmo);
-                var breathe = StarformNET.Environment.Breathability(planet);
+                var breathe = Primoris.Universe.Stargen.Environment.Breathability(planet);
                 Assert.AreEqual(Breathability.Poisonous, breathe);
             }
         }

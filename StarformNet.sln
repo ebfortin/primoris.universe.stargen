@@ -1,18 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28902.138
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarformNET", "StarformNet\StarformNET.csproj", "{EDE19080-B97B-418C-86B8-909512579C1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarformNET", "StarformNet\StarformNET.csproj", "{EDE19080-B97B-418C-86B8-909512579C1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarformNET.UnitTests", "StarformNET.UnitTests\StarformNET.UnitTests.csproj", "{007DC822-6B48-4543-B919-6625785C6808}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarformNET.UnitTests", "StarformNET.UnitTests\StarformNET.UnitTests.csproj", "{007DC822-6B48-4543-B919-6625785C6808}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarformNET.Console", "StarformNET.Console\StarformNET.Console.csproj", "{AE8D5137-BB27-4632-8B9C-10F4D2F0F408}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarformNET.Console", "StarformNET.Console\StarformNET.Console.csproj", "{AE8D5137-BB27-4632-8B9C-10F4D2F0F408}"
 	ProjectSection(ProjectDependencies) = postProject
 		{EDE19080-B97B-418C-86B8-909512579C1D} = {EDE19080-B97B-418C-86B8-909512579C1D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarformNET.GUI", "StarformNET.GUI\StarformNET.GUI.csproj", "{C918AB57-ACA6-4CD9-B1E3-C6286AA93CFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarformNET.GUI", "StarformNET.GUI\StarformNET.GUI.csproj", "{C918AB57-ACA6-4CD9-B1E3-C6286AA93CFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

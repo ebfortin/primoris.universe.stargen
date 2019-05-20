@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DLS.StarformNET.GUI
+namespace Primoris.Universe.Stargen.GUI
 {
     static class Program
     {

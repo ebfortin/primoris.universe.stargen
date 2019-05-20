@@ -1,7 +1,7 @@
-using DLS.StarformNET.Data;
+using Primoris.Universe.Stargen.Data;
 using System.Collections.Generic;
 
-namespace DLS.StarformNET.Display
+namespace Primoris.Universe.Stargen.Display
 {
 
     public class PlanetInfoGroup : InfoGroup

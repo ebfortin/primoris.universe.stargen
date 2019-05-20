@@ -1,4 +1,4 @@
-namespace DLS.StarformNET
+namespace Primoris.Universe.Stargen
 {
     partial class MainGenerator
     {
@@ -45,10 +45,10 @@ namespace DLS.StarformNET
             this._seedSelector = new System.Windows.Forms.NumericUpDown();
             this._eccentricityLabel = new System.Windows.Forms.Label();
             this._eccentricitySelector = new System.Windows.Forms.NumericUpDown();
-            this._orbitMap = new DLS.StarformNET.Display.SystemOrbitMap();
-            this._planetInfoGroup = new DLS.StarformNET.Display.PlanetInfoGroup();
-            this._systemInfo = new DLS.StarformNET.Display.SystemInfoGroup();
-            this._systemMap = new DLS.StarformNET.Display.SystemMap();
+            this._orbitMap = new Primoris.Universe.Stargen.Display.SystemOrbitMap();
+            this._planetInfoGroup = new Primoris.Universe.Stargen.Display.PlanetInfoGroup();
+            this._systemInfo = new Primoris.Universe.Stargen.Display.SystemInfoGroup();
+            this._systemMap = new Primoris.Universe.Stargen.Display.SystemMap();
             this._dustDensityLabel = new System.Windows.Forms.Label();
             this._dustDensitySelector = new System.Windows.Forms.NumericUpDown();
             this._gasRatioLabel = new System.Windows.Forms.Label();

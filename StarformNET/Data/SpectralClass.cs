@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DLS.StarformNET.Data
+namespace Primoris.Universe.Stargen.Data
 {
 	public enum SpectralClass
 	{

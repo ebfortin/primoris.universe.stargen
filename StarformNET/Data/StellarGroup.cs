@@ -1,4 +1,4 @@
-﻿namespace DLS.StarformNET.Data
+﻿namespace Primoris.Universe.Stargen.Data
 {
     using System.Collections.Generic;
 

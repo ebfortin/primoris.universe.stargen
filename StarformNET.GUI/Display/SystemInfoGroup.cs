@@ -1,5 +1,5 @@
 
-namespace DLS.StarformNET.Display
+namespace Primoris.Universe.Stargen.Display
 {
     using System.Collections.Generic;
     using Data;

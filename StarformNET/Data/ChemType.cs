@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 
 
-namespace DLS.StarformNET.Data
+namespace Primoris.Universe.Stargen.Data
 {
 
     // TODO abunde isn't used anywhere
@@ -44,7 +44,7 @@ namespace DLS.StarformNET.Data
 		public static ChemType[] Load()
 		{
 			var a = Assembly.GetExecutingAssembly();
-			var s = a.GetManifestResourceStream("DLS.StarformNET.elements.dat");
+			var s = a.GetManifestResourceStream("Primoris.Universe.Stargen.elements.dat");
 
 			using (s)
 			{

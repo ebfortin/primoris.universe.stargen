@@ -1,11 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DLS.StarformNET;
-using DLS.StarformNET.Data;
+using Primoris.Universe.Stargen;
+using Primoris.Universe.Stargen.Data;
 using System.Linq;
 using System.Collections.Generic;
 using System;
 
-namespace DLS.StarformNET.UnitTests
+namespace Primoris.Universe.Stargen.UnitTests
 {
 	class SpectralTypeTests
 	{

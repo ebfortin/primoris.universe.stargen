@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DLS.StarformNET.Data
+namespace Primoris.Universe.Stargen.Data
 {
 
     // TODO break this class up

@@ -1,4 +1,4 @@
-namespace DLS.StarformNET
+namespace Primoris.Universe.Stargen
 {
     using Data;
 

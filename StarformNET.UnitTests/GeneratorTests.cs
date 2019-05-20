@@ -1,14 +1,14 @@
-namespace DLS.StarformNET.UnitTests
+namespace Primoris.Universe.Stargen.UnitTests
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using StarformNET;
+    using Primoris.Universe.Stargen;
     using Data;
     using System.Collections.Generic;
     using System;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
-    using Environment = DLS.StarformNET.Environment;
+    using Environment = Primoris.Universe.Stargen.Environment;
 
     class GeneratorTests
     {
