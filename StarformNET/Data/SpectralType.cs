@@ -80,7 +80,7 @@ namespace DLS.StarformNET.Data
 		}
 		#endregion
 
-		private static Dictionary<SpectralClass, List<double[]>> StarTemperatures { get; }
+		private static Dictionary<SpectralClass, List<double[]>> StarTemperatures { get; } = new Dictionary<SpectralClass, List<double[]>>();
 		public SpectralClass SpectralClass { get; private set; }
 		public int SubType { get; private set; }
 		public LuminosityClass LuminosityClass { get; private set; }
@@ -119,11 +119,12 @@ namespace DLS.StarformNET.Data
 					double csiz = tclass[i - 1] - tclass[i];
 					double cdel = eff_temp - tclass[i];
 					double cfrac = cdel / csiz;
-					double dt = 10.0 - (10.0 * cfrac);
-					if (dt < 0.0)
-					{
-						dt = 0.0;
-					}
+					double dt;
+					if (eff_temp > 52000.0)
+						dt = 10.0 - (10.0 * (1.0 - cfrac));
+					else
+						dt = 10.0 - (10.0 * cfrac);
+
 
 					subType = (int)Math.Floor(dt);
 					aclass = (SpectralClass)Enum.Parse(typeof(SpectralClass), ac);
@@ -244,12 +245,12 @@ namespace DLS.StarformNET.Data
 				var stc = new SpectralType();
 
 				var mt = Regex.Match(st, @"(\D*)(\d*)(\D*)");
-				stc.SpectralClass = (SpectralClass)Enum.Parse(typeof(SpectralClass), mt.Groups[0].Value);
-				stc.LuminosityClass = (LuminosityClass)Enum.Parse(typeof(LuminosityClass), mt.Groups[2].Value);
+				stc.SpectralClass = (SpectralClass)Enum.Parse(typeof(SpectralClass), mt.Groups[1].Value);
+				stc.LuminosityClass = (LuminosityClass)Enum.Parse(typeof(LuminosityClass), mt.Groups[3].Value);
 
 				int lumIndex = GetLuminosityIndex(stc.LuminosityClass);
 				SpectralClass starType = GetStarType(stc.SpectralClass);
-				stc.SubType = Int32.Parse(mt.Groups[1].Value);
+				stc.SubType = Int32.Parse(mt.Groups[2].Value);
 
 				stc.Temperature = StarTemperatures[starType][lumIndex][stc.SubType];
 
