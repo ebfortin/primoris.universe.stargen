@@ -11,8 +11,8 @@ namespace DLS.StarformNET.Console
 
         static void Main(string[] args)
         {
-            Utilities.InitRandomSeed(0);
-            var system = Generator.GenerateStellarSystem(SYSTEM_NAME);
+			Utilities.InitRandomSeed(0);
+			var system = Generator.GenerateStellarSystem(SYSTEM_NAME);
             IFormatter formatter = new BinaryFormatter();
             Stream stream = new FileStream(SYSTEM_FILE, FileMode.Create, FileAccess.Write, FileShare.None);
             formatter.Serialize(stream, system);

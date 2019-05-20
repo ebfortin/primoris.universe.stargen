@@ -8,8 +8,6 @@ using System;
 namespace DLS.StarformNET.UnitTests
 {
 
-
-
     class EnvironmentTests
     {
         [TestClass]

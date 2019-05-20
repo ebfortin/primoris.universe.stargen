@@ -1,8 +1,7 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DLS.StarformNET.UnitTests
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using StarformNET;
     
     public class PlanetTests
     {
