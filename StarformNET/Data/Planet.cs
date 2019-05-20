@@ -1,7 +1,8 @@
+using System;
+using System.Collections.Generic;
+
 namespace DLS.StarformNET.Data
 {
-    using System;
-    using System.Collections.Generic;
 
     // TODO break this class up
     // TODO orbit zone is supposedly no longer used anywhere. Check references and possibly remove.

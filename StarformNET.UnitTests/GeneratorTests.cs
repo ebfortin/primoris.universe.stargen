@@ -164,13 +164,13 @@ namespace DLS.StarformNET.UnitTests
 
                 var planet = GetTestPlanetAtmosphere();
                 var star = planet.Star;
-                Generator.CalculateGases(planet, ChemType.GetDefaultTable());
+                Generator.CalculateGases(planet, ChemType.Load());
 
                 Assert.AreEqual(expected.Count, planet.Atmosphere.Composition.Count);
 
                 foreach (var gas in planet.Atmosphere.Composition)
                 {
-                    Assert.AreEqual(expected[gas.GasType.symbol], gas.surf_pressure, DELTA);
+                    Assert.AreEqual(expected[gas.GasType.Symbol], gas.SurfacePressure, DELTA);
                 }
             }
 
@@ -180,7 +180,7 @@ namespace DLS.StarformNET.UnitTests
             {
                 var planet = GetTestPlanetNoAtmosphere();
                 var star = planet.Star;
-                Generator.CalculateGases(planet, ChemType.GetDefaultTable());
+                Generator.CalculateGases(planet, ChemType.Load());
 
                 Assert.AreEqual(0, planet.Atmosphere.Composition.Count);
             }

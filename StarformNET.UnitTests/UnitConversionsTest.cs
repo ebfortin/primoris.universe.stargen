@@ -1,9 +1,8 @@
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 namespace DLS.StarformNET.UnitTests
 {
-
-    using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using StarformNET;
 
     public class UnitConversionsTest
     {

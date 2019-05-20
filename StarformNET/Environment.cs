@@ -86,12 +86,13 @@ namespace DLS.StarformNET
             return RocheLimitKM(bodyRadius, bodyDensity, satelliteDensity) / GlobalConstants.KM_PER_AU;
         }
 
+
 		/// <summary>
 		/// Returns the mass of a star using the Mass-Luminosity relationship.
 		/// </summary>
 		/// <param name="lumRatio">Luminosity ratio of the star</param>
 		/// <returns>Mass ratio</returns>
-		public static double Mass(double lumRatio)
+		public static double LuminosityToMass(double lumRatio)
 		{
 			double a = lumRatio;
 			if (a <= (0.3815 * Math.Pow(0.6224, 2.5185)))
@@ -121,7 +122,7 @@ namespace DLS.StarformNET
         /// </summary>
         /// <param name="massRatio">Mass of the star</param>
         /// <returns>Luminosity ratio</returns>
-        public static double Luminosity(double massRatio)
+        public static double MassToLuminosity(double massRatio)
         {
 			if (massRatio <= 0.6224)
 			{
@@ -1182,15 +1183,15 @@ namespace DLS.StarformNET
             {
                 var gas = planet.Atmosphere.Composition[index];
 
-                var ipp = InspiredPartialPressure(planet.Atmosphere.SurfacePressure, planet.Atmosphere.Composition[index].surf_pressure);
-                if (ipp > gas.GasType.max_ipp)
+                var ipp = InspiredPartialPressure(planet.Atmosphere.SurfacePressure, planet.Atmosphere.Composition[index].SurfacePressure);
+                if (ipp > gas.GasType.MaxIpp)
                 {
                     poisonous = true;
                     planet.Atmosphere.PoisonousGases.Add(gas);
                 }
 
                 // TODO why not just have a min_ipp for every gas, even if it's going to be zero for everything that's not oxygen?
-                if (gas.GasType.num == GlobalConstants.AN_O)
+                if (gas.GasType.Num == GlobalConstants.AN_O)
                 {
                     oxygenOk = ((ipp >= GlobalConstants.MIN_O2_IPP) && (ipp <= GlobalConstants.MAX_O2_IPP));
                 }

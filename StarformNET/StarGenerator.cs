@@ -1,7 +1,10 @@
+using System;
+
 namespace DLS.StarformNET
 {
     using Data;
 
+	[Obsolete]
     public static class StarGenerator
     {
         public static double MinSunAge = 1.0E9;
@@ -18,7 +21,7 @@ namespace DLS.StarformNET
 
             if (sun.Luminosity == 0)
             {
-                sun.Luminosity = Environment.Luminosity(sun.Mass);
+                sun.Luminosity = Environment.MassToLuminosity(sun.Mass);
             }
 
             sun.EcosphereRadiusAU = Environment.StarEcosphereRadiusAU(sun.Luminosity);
