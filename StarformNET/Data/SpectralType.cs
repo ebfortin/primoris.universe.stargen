@@ -96,6 +96,37 @@ namespace Primoris.Universe.Stargen.Data
 
 		private SpectralType() { }
 
+		/// <summary>
+		/// Give a SpectralType given a star luminosity ratio to Earth's sun.
+		/// </summary>
+		/// <remarks>
+		/// Mostly valid for main sequence stars.
+		/// </remarks>
+		/// <param name="lum">Luminosity ratio to Earth's sun.</param>
+		/// <param name="radius">Radius ratio to Earth's sun.</param>
+		/// <returns></returns>
+		public static SpectralType FromLuminosity(double lum, double radius = 1.0)
+		{
+			double ta = GlobalConstants.EARTH_SUN_TEMPERATURE * Math.Pow(lum / Math.Pow(radius, 2.0), 1.0 / 4.0);
+			return SpectralType.FromTemperature(ta, lum);
+		}
+
+		/// <summary>
+		/// Give the SpectralType given a star mass ratio to Earth's sun.
+		/// </summary>
+		/// <remarks>
+		/// Reference: http://homepage.physics.uiowa.edu/~pkaaret/s09/L12_starsmainseq.pdf
+		/// La/Lb = (Ra^2*Ta^4)/(Rb^2*Tb^4)
+		/// </remarks>
+		/// <param name="mass">Mass ratio to earth's sun.</param>
+		/// <param name="radius">Radius ratio to earth's sun.</param>
+		/// <returns></returns>
+		public static SpectralType FromMass(double mass, double radius = 1.0)
+		{
+			var lum = Environment.MassToLuminosity(mass);
+			return SpectralType.FromLuminosity(lum, radius);
+		}
+
 		public static SpectralType FromTemperature(double eff_temp, double luminosity = 0.0)
 		{
 			string[] classes = { "x", "WN", "O", "B", "A", "F", "G", "K", "M", "L", "T", "Y" };

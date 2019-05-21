@@ -12,8 +12,26 @@ namespace Primoris.Universe.Stargen.UnitTests
 		[TestClass]
 		public class SpectralConversionTests
 		{
+			/// <summary>
+			/// Check with a known star (GAIA DR2 1872046574983507456).
+			/// </summary>
+			[TestCategory("SpectralType Conversions")]
+			[TestMethod]
+			public void TestLuminosityToSpectral()
+			{
+				var st1 = SpectralType.FromLuminosity(0.16378798, 0.72014487);
+				Console.WriteLine(st1.ToString());
+				var st2 = SpectralType.FromString(st1.ToString());
+				Console.WriteLine(st2.Temperature);
+				Console.WriteLine(st2.LuminosityClass);
+				Console.WriteLine(st2.SpectralClass);
+				Assert.IsTrue(Math.Abs(st2.Temperature - 4327.0) <= 300.0);
 
-			[TestCategory("Spectral Type Conversions")]
+				var st3 = SpectralType.FromLuminosity(78.0, 8.6);
+				Console.WriteLine(st3.Temperature);
+			}
+
+			[TestCategory("SpectralType Conversions")]
 			[TestMethod]
 			public void TestTemperatureToSpectral()
 			{

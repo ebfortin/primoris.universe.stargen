@@ -73,19 +73,12 @@ namespace Primoris.Universe.Stargen.UnitTests
 
             private Star GetTestStar()
             {
-                return new Star()
-                {
-                    Luminosity = 1.0,
-                    Mass = 1.0,
-                    AgeYears = 4600000000
-                };
+				return new Star(1.0, 1.0);
             }
 
             private Planet GetTestPlanetAtmosphere()
             {
-                var planet = new Planet();
-                planet.Star = GetTestStar();
-                planet.Star.EcosphereRadiusAU = System.Math.Sqrt(planet.Star.Luminosity);
+                var planet = new Planet(GetTestStar());
                 planet.SemiMajorAxisAU = 0.723332;
                 planet.Eccentricity = 0.0067;
                 planet.AxialTiltDegrees = 2.8;
@@ -114,9 +107,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 
             private Planet GetTestPlanetNoAtmosphere()
             {
-                var star = GetTestStar();
-                var planet = new Planet();
-                planet.Star = star;
+                var planet = new Planet(GetTestStar());
                 planet.Atmosphere.SurfacePressure = 0;
                 return planet;
             }
@@ -125,9 +116,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestEmptyPlanet()
             {
-                var planet = new Planet();
-                var sun = GetTestStar();
-                planet.Star = sun;
+                var planet = new Planet(GetTestStar());
                 Generator.CalculateGases(planet, new ChemType[0]);
                 
                 Assert.AreEqual(0, planet.Atmosphere.Composition.Count);

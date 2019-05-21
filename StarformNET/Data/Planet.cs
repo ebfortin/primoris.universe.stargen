@@ -11,7 +11,7 @@ namespace Primoris.Universe.Stargen.Data
     public class Planet : IEquatable<Planet>
     {
         public int Position;
-        public Star Star { get; set; }
+        public Star Star { get; }
         public Atmosphere Atmosphere = new Atmosphere();
 
         #region Orbit data
@@ -247,6 +247,11 @@ namespace Primoris.Universe.Stargen.Data
         {
 
         }
+
+		public Planet(Star star)
+		{
+			Star = star;
+		}
 
         public Planet(PlanetSeed seed, Star star, int num)
         {

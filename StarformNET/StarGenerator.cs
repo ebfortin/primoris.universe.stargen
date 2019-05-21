@@ -12,26 +12,7 @@ namespace Primoris.Universe.Stargen
 
         public static Star GetDefaultStar()
         {
-            var sun = new Star();
-
-            if (sun.Mass < 0.2 || sun.Mass > 1.5)
-            {
-                sun.Mass = Utilities.RandomNumber(0.7, 1.4);
-            }
-
-            if (sun.Luminosity == 0)
-            {
-                sun.Luminosity = Environment.MassToLuminosity(sun.Mass);
-            }
-
-            sun.EcosphereRadiusAU = Environment.StarEcosphereRadiusAU(sun.Luminosity);
-            sun.Life = 1.0E10 * (sun.Mass / sun.Luminosity);
-
-            sun.AgeYears = Utilities.RandomNumber(
-                MinSunAge,
-                sun.Life < MaxSunAge ? sun.Life : MaxSunAge);
-
-            return sun;
+			return new Star();
         }
     }
 }

@@ -5,6 +5,8 @@ namespace Primoris.Universe.Stargen
     // TODO destroy this motherfucker
     public static class GlobalConstants
     {
+		public static double EARTH_SUN_TEMPERATURE		  = 5778.0d;
+
         public static double RADIANS_PER_ROTATION         = (2.0 * Math.PI);
 
         public static double SUN_AGE_IN_YEARS             = (4600000000);
