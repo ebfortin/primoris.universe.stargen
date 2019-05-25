@@ -1,8 +1,8 @@
 using System;
+using Primoris.Universe.Stargen.Data;
 
 namespace Primoris.Universe.Stargen
 {
-    using Data;
 
 	[Obsolete]
     public static class StarGenerator

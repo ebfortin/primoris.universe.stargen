@@ -1,7 +1,9 @@
+using System;
+using Primoris.Universe.Stargen.Data;
+
 namespace Primoris.Universe.Stargen
 {
-    using System;
-    using Data;
+
 
     // TODO Figure out a way to logically break this class up
     public static class Environment

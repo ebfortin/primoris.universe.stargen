@@ -8,8 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System;
+
 namespace Primoris.Universe.Stargen.GUI.Properties {
-    using System;
     
     
     /// <summary>

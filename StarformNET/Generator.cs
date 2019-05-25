@@ -1,8 +1,11 @@
+using System;
+using System.Collections.Generic;
+using Primoris.Universe.Stargen.Data;
+
+
 namespace Primoris.Universe.Stargen
 {
-    using System;
-    using Data;
-    using System.Collections.Generic;
+
     
     public class Generator
     {
