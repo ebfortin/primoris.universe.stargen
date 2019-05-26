@@ -16,8 +16,8 @@ namespace Primoris.Universe.Stargen
 	public class NameGenerator
 	{
 		public NameGenerator(int order = 3, int minLength = 6) 
-			: this(Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.starnames.csv").ReadLines(),
-				  Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.greekletters.csv").ReadLines(),
+			: this(Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.Resources.starnames.csv").ReadLines(),
+				  Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.Resources.greekletters.csv").ReadLines(),
 				  order, 
 				  minLength)
 		{

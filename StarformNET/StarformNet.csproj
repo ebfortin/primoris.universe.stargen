@@ -9,12 +9,14 @@
 
   <ItemGroup>
     <None Remove="greekletters.csv" />
+    <None Remove="Resources\stellartypes.csv" />
     <None Remove="starnames.csv" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="greekletters.csv" />
-    <EmbeddedResource Include="starnames.csv" />
+    <EmbeddedResource Include="Resources\greekletters.csv" />
+    <EmbeddedResource Include="Resources\starnames.csv" />
+    <EmbeddedResource Include="Resources\stellartypes.csv" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -42,6 +44,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="12.1.2" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>

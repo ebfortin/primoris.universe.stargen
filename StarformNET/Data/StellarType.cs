@@ -1,17 +1,43 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using CsvHelper;
 
 
 namespace Primoris.Universe.Stargen.Data
 {
-	public class SpectralType
+	public class StellarType
 	{
-		#region Static Constructor
-		static SpectralType()
+
+		private class StellarTypeRow
 		{
+			public string Type { get; set; }
+			public double Mass { get; set; }
+			public double Luminosity { get; set; }
+			public double Radius { get; set; }
+			public double Temperature { get; set; }
+			public double ColorIndex { get; set; }
+			public double AbsMag { get; set; }
+			public double BoloCorr { get; set; }
+			public double BoloMag { get; set; }
+			public string ColorRGB { get; set; }
+		}
+
+		#region Static Constructor
+		static StellarType()
+		{
+			// Full StellarType table from http://www.isthe.com/chongo/tech/astro/HR-temp-mass-table-byhrclass.html
+
+			var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.Resources.stellartypes.csv");
+			var reader = new StreamReader(stream);
+			var csv = new CsvReader(reader);
+			_types = csv.GetRecords<StellarTypeRow>().ToList();
+
+
 			// Star temperature data from Lang's _Astrophysical Data: Planets and Stars_
 			// Temperatures from missing (and typically not used) types in those
 			// tables were just interpolated.
@@ -85,17 +111,65 @@ namespace Primoris.Universe.Stargen.Data
 		public int SubType { get; private set; }
 		public LuminosityClass LuminosityClass { get; private set; }
 		public double Temperature { get; private set; }
+		public double Mass { get; private set; }
+		public double Luminosity { get; private set; }
+		public double Radius { get; private set; }
 
-		public SpectralType(SpectralClass sc, LuminosityClass lc, int subType = 0, double temp = 0.0)
+		private static List<StellarTypeRow> _types;
+
+		public StellarType(SpectralClass sc, LuminosityClass lc, int subType = 0)
 		{
 			SpectralClass = sc;
 			LuminosityClass = lc;
 			SubType = subType;
-			Temperature = temp;
+
+			var str = (Enum.GetName(typeof(SpectralClass), sc) + SubType.ToString() + Enum.GetName(typeof(LuminosityClass), lc));
+			var data = (from row in _types
+						where row.Type == str
+						select new { Temperature = row.Temperature, Mass = row.Mass, Radius = row.Radius, Luminosity = row.Luminosity }).FirstOrDefault();
+			Temperature = data.Temperature;
+			Mass = data.Mass;
+			Luminosity = data.Luminosity;
+			Radius = data.Radius;
 		}
 
-		private SpectralType() { }
+		private StellarType() { }
 
+		public void ChangeLuminosity(double lum)
+		{
+			Luminosity = lum;
+			//Update(StellarType.FromLuminosityAndRadius(lum, Radius));
+		}
+
+		public void ChangeMass(double mass)
+		{
+			Mass = mass;
+			//Update(StellarType.FromMassAndRadius(mass, Radius));
+		}
+
+		public void ChangeTemperature(double temp)
+		{
+			Temperature = temp;
+			//Update(StellarType.FromMassAndTemperature(Mass, temp));
+		}
+
+		public void ChangeRadius(double radius)
+		{
+			Radius = radius;
+			//Update(StellarType.FromMassAndRadius(Mass, radius));
+		}
+
+		private void Update(StellarType st)
+		{
+			SpectralClass = st.SpectralClass;
+			LuminosityClass = st.LuminosityClass;
+			SubType = st.SubType;
+			Temperature = st.Temperature;
+			Mass = st.Mass;
+			Luminosity = st.Luminosity;
+			Radius = st.Radius;
+		}
+		
 		/// <summary>
 		/// Give a SpectralType given a star luminosity ratio to Earth's sun.
 		/// </summary>
@@ -105,10 +179,31 @@ namespace Primoris.Universe.Stargen.Data
 		/// <param name="lum">Luminosity ratio to Earth's sun.</param>
 		/// <param name="radius">Radius ratio to Earth's sun.</param>
 		/// <returns></returns>
-		public static SpectralType FromLuminosity(double lum, double radius = 1.0)
+		public static StellarType FromLuminosityAndRadius(double lum, double radius = 1.0)
 		{
-			double ta = GlobalConstants.EARTH_SUN_TEMPERATURE * Math.Pow(lum / Math.Pow(radius, 2.0), 1.0 / 4.0);
-			return SpectralType.FromTemperature(ta, lum);
+			var data =	(from row in _types
+						orderby (Math.Abs(lum - row.Luminosity) + Math.Abs(radius - row.Radius)) / 2.0
+						select row).FirstOrDefault();
+
+			StellarType st = StellarType.FromString(data.Type);
+			st.ChangeLuminosity(lum);
+			st.ChangeRadius(radius);
+
+			return st;
+		}
+
+		public static StellarType FromMassAndTemperature(double mass, double temp)
+		{
+			var data = (from row in _types
+						orderby (Math.Abs(mass - row.Mass) + Math.Abs(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE)) / 2.0
+						select row).FirstOrDefault();
+
+			StellarType st = StellarType.FromString(data.Type);
+			st.ChangeMass(mass);
+			st.ChangeTemperature(temp);
+
+			return st;
+			//return StellarType.FromTemperatureAndLuminosity(temp, Environment.MassToLuminosity(mass));
 		}
 
 		/// <summary>
@@ -121,14 +216,36 @@ namespace Primoris.Universe.Stargen.Data
 		/// <param name="mass">Mass ratio to earth's sun.</param>
 		/// <param name="radius">Radius ratio to earth's sun.</param>
 		/// <returns></returns>
-		public static SpectralType FromMass(double mass, double radius = 1.0)
+		public static StellarType FromMassAndRadius(double mass, double radius = 1.0)
 		{
-			var lum = Environment.MassToLuminosity(mass);
-			return SpectralType.FromLuminosity(lum, radius);
+			var data = (from row in _types
+						orderby (Math.Abs(mass - row.Mass) + Math.Abs(radius - row.Radius)) / 2.0
+						select row).FirstOrDefault();
+
+			StellarType st = StellarType.FromString(data.Type);
+			st.ChangeMass(mass);
+			st.ChangeRadius(radius);
+
+			return st;
+
+			//var lum = Environment.MassToLuminosity(mass);
+			//return StellarType.FromLuminosityAndRadius(lum, radius);
 		}
 
-		public static SpectralType FromTemperature(double eff_temp, double luminosity = 0.0)
+		public static StellarType FromTemperatureAndLuminosity(double eff_temp, double luminosity = 0.0)
 		{
+			var data = (from row in _types
+						orderby (Math.Abs(eff_temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE) + Math.Abs(luminosity - row.Luminosity)) / 2.0
+						select row).FirstOrDefault();
+
+			StellarType st = StellarType.FromString(data.Type);
+			st.ChangeTemperature(eff_temp);
+			st.ChangeLuminosity(luminosity);
+
+			return st;
+
+
+
 			string[] classes = { "x", "WN", "O", "B", "A", "F", "G", "K", "M", "L", "T", "Y" };
 			double[] tclass = { 200000.0, 52000.0, 30000.0, 10000.0, 7500.0, 6000.0, 5000.0, 3500.0, 2000.0, 1300.0, 700.0, 0.0 };
 
@@ -263,33 +380,26 @@ namespace Primoris.Universe.Stargen.Data
 					break;
 			}
 
-			return new SpectralType(aclass, clum, subType, eff_temp);
+			return new StellarType(aclass, clum, subType);
 		}
 
-		public static SpectralType FromString(string st)
+		public static StellarType FromString(string st)
 		{
 			if (String.IsNullOrEmpty(st))
-				return new SpectralType(SpectralClass.Undefined, LuminosityClass.Undefined);
+				return new StellarType(SpectralClass.Undefined, LuminosityClass.Undefined);
 
 			try
 			{
-				var stc = new SpectralType();
-
 				var mt = Regex.Match(st, @"(\D*)(\d*)(\D*)");
-				stc.SpectralClass = (SpectralClass)Enum.Parse(typeof(SpectralClass), mt.Groups[1].Value);
-				stc.LuminosityClass = (LuminosityClass)Enum.Parse(typeof(LuminosityClass), mt.Groups[3].Value);
+				SpectralClass sc = (SpectralClass)Enum.Parse(typeof(SpectralClass), mt.Groups[1].Value);
+				LuminosityClass lc = (LuminosityClass)Enum.Parse(typeof(LuminosityClass), mt.Groups[3].Value);
+				int subType = Int32.Parse(mt.Groups[2].Value);
 
-				int lumIndex = GetLuminosityIndex(stc.LuminosityClass);
-				SpectralClass starType = GetStarType(stc.SpectralClass);
-				stc.SubType = Int32.Parse(mt.Groups[2].Value);
-
-				stc.Temperature = StarTemperatures[starType][lumIndex][stc.SubType];
-
-				return stc;
+				return new StellarType(sc, lc, subType);
 			}
 			catch (Exception)
 			{
-				return new SpectralType(SpectralClass.Undefined, LuminosityClass.Undefined);
+				throw new ArgumentException();
 			}
 		}
 

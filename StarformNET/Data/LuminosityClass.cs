@@ -9,6 +9,7 @@ namespace Primoris.Universe.Stargen.Data
 	{
 		Undefined,
 		O,
+		Ia0, // Very luminous supergiants
 		Ia,  // Very luminous supergiants
 		Ib,  // Less luminous supergiants
 		II,  // Luminous giants
