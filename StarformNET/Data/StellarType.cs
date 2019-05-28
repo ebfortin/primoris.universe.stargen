@@ -42,7 +42,7 @@ namespace Primoris.Universe.Stargen.Data
 			// Temperatures from missing (and typically not used) types in those
 			// tables were just interpolated.
 
-			StarTemperatures.Add(SpectralClass.O, new List<double[]>());
+			/*StarTemperatures.Add(SpectralClass.O, new List<double[]>());
 			StarTemperatures[SpectralClass.O].Add(new double[] { 52500, 52500, 52500, 52500, 48000, 44500, 41000, 38000, 35800, 33000 });
 			StarTemperatures[SpectralClass.O].Add(new double[] { 50000, 50000, 50000, 50000, 45500, 42500, 39500, 37000, 34700, 32000 });
 			StarTemperatures[SpectralClass.O].Add(new double[] { 47300, 47300, 47300, 47300, 44100, 42500, 39500, 37000, 34700, 32000 });
@@ -103,10 +103,11 @@ namespace Primoris.Universe.Stargen.Data
 
 			StarTemperatures.Add(SpectralClass.WD, new List<double[]>());
 			StarTemperatures[SpectralClass.WD].Add(new double[] { 100000.0f, 50400.0f, 25200.0f, 16800.0f, 12600.0f, 10080.0f, 8400.0f, 7200.0f, 6300.0f, 5600.0f });
+		*/
 		}
 		#endregion
 
-		private static Dictionary<SpectralClass, List<double[]>> StarTemperatures { get; } = new Dictionary<SpectralClass, List<double[]>>();
+		//private static Dictionary<SpectralClass, List<double[]>> StarTemperatures { get; } = new Dictionary<SpectralClass, List<double[]>>();
 		public SpectralClass SpectralClass { get; private set; }
 		public int SubType { get; private set; }
 		public LuminosityClass LuminosityClass { get; private set; }
@@ -123,7 +124,7 @@ namespace Primoris.Universe.Stargen.Data
 			LuminosityClass = lc;
 			SubType = subType;
 
-			var str = (Enum.GetName(typeof(SpectralClass), sc) + SubType.ToString() + Enum.GetName(typeof(LuminosityClass), lc));
+			var str = (Enum.GetName(typeof(SpectralClass), sc) + SubType.ToString() + (lc != LuminosityClass.O ? Enum.GetName(typeof(LuminosityClass), lc) : ""));
 			var data = (from row in _types
 						where row.Type == str
 						select new { Temperature = row.Temperature, Mass = row.Mass, Radius = row.Radius, Luminosity = row.Luminosity }).FirstOrDefault();
@@ -137,36 +138,38 @@ namespace Primoris.Universe.Stargen.Data
 
 		public void ChangeLuminosity(double lum)
 		{
-			Luminosity = lum;
-			//Update(StellarType.FromLuminosityAndRadius(lum, Radius));
+			Update(Mass, lum, Temperature, Radius);
 		}
 
 		public void ChangeMass(double mass)
 		{
-			Mass = mass;
-			//Update(StellarType.FromMassAndRadius(mass, Radius));
+			Update(mass, Luminosity, Temperature, Radius);
 		}
 
 		public void ChangeTemperature(double temp)
 		{
-			Temperature = temp;
-			//Update(StellarType.FromMassAndTemperature(Mass, temp));
+			Update(Mass, Luminosity, temp, Radius);
 		}
 
 		public void ChangeRadius(double radius)
 		{
-			Radius = radius;
-			//Update(StellarType.FromMassAndRadius(Mass, radius));
+			Update(Mass, Luminosity, Temperature, radius);
 		}
 
-		private void Update(StellarType st)
+		private void Update(double mass, double lum, double temp, double radius)
 		{
+			var data = (from row in _types
+						orderby Math.Max(Math.Max(Math.Abs(lum - row.Luminosity), Math.Abs(radius - row.Radius)),
+									     Math.Max(Math.Abs(mass - row.Mass), Math.Abs(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE))) ascending
+						select row).FirstOrDefault();
+
+			StellarType st = StellarType.FromString(data.Type);
 			SpectralClass = st.SpectralClass;
 			LuminosityClass = st.LuminosityClass;
 			SubType = st.SubType;
-			Temperature = st.Temperature;
 			Mass = st.Mass;
 			Luminosity = st.Luminosity;
+			Temperature = st.Temperature;
 			Radius = st.Radius;
 		}
 		
@@ -182,7 +185,7 @@ namespace Primoris.Universe.Stargen.Data
 		public static StellarType FromLuminosityAndRadius(double lum, double radius = 1.0)
 		{
 			var data =	(from row in _types
-						orderby (Math.Abs(lum - row.Luminosity) + Math.Abs(radius - row.Radius)) / 2.0
+						orderby Math.Max(Math.Abs(lum - row.Luminosity), Math.Abs(radius - row.Radius)) ascending
 						select row).FirstOrDefault();
 
 			StellarType st = StellarType.FromString(data.Type);
@@ -195,7 +198,7 @@ namespace Primoris.Universe.Stargen.Data
 		public static StellarType FromMassAndTemperature(double mass, double temp)
 		{
 			var data = (from row in _types
-						orderby (Math.Abs(mass - row.Mass) + Math.Abs(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE)) / 2.0
+						orderby Math.Max(Math.Abs(mass - row.Mass), Math.Abs(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE)) ascending
 						select row).FirstOrDefault();
 
 			StellarType st = StellarType.FromString(data.Type);
@@ -219,7 +222,7 @@ namespace Primoris.Universe.Stargen.Data
 		public static StellarType FromMassAndRadius(double mass, double radius = 1.0)
 		{
 			var data = (from row in _types
-						orderby (Math.Abs(mass - row.Mass) + Math.Abs(radius - row.Radius)) / 2.0
+						orderby Math.Max(Math.Abs(mass - row.Mass), Math.Abs(radius - row.Radius))
 						select row).FirstOrDefault();
 
 			StellarType st = StellarType.FromString(data.Type);
@@ -235,7 +238,7 @@ namespace Primoris.Universe.Stargen.Data
 		public static StellarType FromTemperatureAndLuminosity(double eff_temp, double luminosity = 0.0)
 		{
 			var data = (from row in _types
-						orderby (Math.Abs(eff_temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE) + Math.Abs(luminosity - row.Luminosity)) / 2.0
+						orderby Math.Max(Math.Abs(eff_temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE), Math.Abs(luminosity - row.Luminosity))
 						select row).FirstOrDefault();
 
 			StellarType st = StellarType.FromString(data.Type);
@@ -390,9 +393,13 @@ namespace Primoris.Universe.Stargen.Data
 
 			try
 			{
-				var mt = Regex.Match(st, @"(\D*)(\d*)(\D*)");
+				var mt = Regex.Match(st, @"(\D*)(\d*)(\D*)?");
 				SpectralClass sc = (SpectralClass)Enum.Parse(typeof(SpectralClass), mt.Groups[1].Value);
-				LuminosityClass lc = (LuminosityClass)Enum.Parse(typeof(LuminosityClass), mt.Groups[3].Value);
+				LuminosityClass lc;
+				if (!String.IsNullOrEmpty(mt.Groups[3].Value))
+					lc = (LuminosityClass)Enum.Parse(typeof(LuminosityClass), mt.Groups[3].Value);
+				else
+					lc = LuminosityClass.O;
 				int subType = Int32.Parse(mt.Groups[2].Value);
 
 				return new StellarType(sc, lc, subType);
@@ -471,7 +478,7 @@ namespace Primoris.Universe.Stargen.Data
 
 		public override string ToString()
 		{
-			return Enum.GetName(typeof(SpectralClass), SpectralClass) + SubType.ToString() + Enum.GetName(typeof(LuminosityClass), LuminosityClass);
+			return (Enum.GetName(typeof(SpectralClass), SpectralClass) + SubType.ToString() + (LuminosityClass != LuminosityClass.O ? Enum.GetName(typeof(LuminosityClass), LuminosityClass) : ""));
 		}
 	}
 }

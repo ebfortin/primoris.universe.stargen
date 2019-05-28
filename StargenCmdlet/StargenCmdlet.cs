@@ -52,16 +52,20 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			switch(ParameterSetName)
 			{
 				case "LuminosityTemperature":
+					WriteVerbose("Luminosity & Temperature");
 					st = StellarType.FromTemperatureAndLuminosity(Luminosity, Temperature);
 					break;
 				case "LuminosityStellarType":
+					WriteVerbose("Luminosity & Stellar Type");
 					st = StellarType.FromString(StarStellarType);
 					st.ChangeLuminosity(Luminosity);
 					break;
 				case "MassTemperature":
+					WriteVerbose("Mass & Temperature");
 					st = StellarType.FromMassAndTemperature(Mass, Temperature);
 					break;
 				case "MassStellarType":
+					WriteVerbose("Mass & Stellar Type");
 					st = StellarType.FromString(StarStellarType);
 					st.ChangeMass(Mass);
 					break;

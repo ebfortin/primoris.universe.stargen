@@ -44,7 +44,7 @@ namespace Primoris.Universe.Stargen.Data
 		public static ChemType[] Load()
 		{
 			var a = Assembly.GetExecutingAssembly();
-			var s = a.GetManifestResourceStream("Primoris.Universe.Stargen.elements.dat");
+			var s = a.GetManifestResourceStream("Primoris.Universe.Stargen.Resources.elements.dat");
 
 			using (s)
 			{

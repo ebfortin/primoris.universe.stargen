@@ -38,9 +38,16 @@ namespace Primoris.Universe.Stargen.UnitTests
 				Assert.IsTrue(Math.Abs(st2.Temperature - 4327.0) <= 150.0);
 			}
 
+			[TestCategory("StellarType Creation")]
+			[TestMethod]
 			public void TestTemperatureAndLuminosity()
 			{
-
+				StellarType st = StellarType.FromTemperatureAndLuminosity(20000.0, 2.0);
+				Console.WriteLine(st.ToString());
+				Console.WriteLine(st.Luminosity);
+				Console.WriteLine(st.Mass);
+				Console.WriteLine(st.Temperature);
+				Console.WriteLine(st.Radius);
 			}
 
 			/// <summary>

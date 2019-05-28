@@ -13,4 +13,8 @@
     <ProjectReference Include="..\StarformNet\StarformNET.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Stargen.Cmdlets\" />
+  </ItemGroup>
+
 </Project>
