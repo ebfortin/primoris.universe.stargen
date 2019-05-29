@@ -1,20 +1,37 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <RootNamespace>Primoris.Universe.Stargen.Cmdlets</RootNamespace>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="12.1.2" />
     <PackageReference Include="System.Management.Automation" Version="6.2.0-preview.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StarformNet\StarformNET.csproj" />
+    <ProjectReference Include="..\StarformNet\StarformNET.csproj">
+      <Private>true</Private>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Stargen.Cmdlets\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Post-Build.ps1">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Start-Debug.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="pwsh -ExecutionPolicy RemoteSigned -command &quot;&amp; '$(ProjectDir)Post-Build.ps1' -ProjectName '$(ProjectName)' -ConfigurationName '$(ConfigurationName)' -TargetDir '$(TargetDir)'&quot;" />
+  </Target>
 
 </Project>

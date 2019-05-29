@@ -189,8 +189,8 @@ namespace Primoris.Universe.Stargen.Data
 						select row).FirstOrDefault();
 
 			StellarType st = StellarType.FromString(data.Type);
-			st.ChangeLuminosity(lum);
-			st.ChangeRadius(radius);
+			st.Luminosity = lum;
+			st.Radius = radius;
 
 			return st;
 		}
@@ -202,8 +202,8 @@ namespace Primoris.Universe.Stargen.Data
 						select row).FirstOrDefault();
 
 			StellarType st = StellarType.FromString(data.Type);
-			st.ChangeMass(mass);
-			st.ChangeTemperature(temp);
+			st.Mass = mass;
+			st.Temperature = temp;
 
 			return st;
 			//return StellarType.FromTemperatureAndLuminosity(temp, Environment.MassToLuminosity(mass));
@@ -226,8 +226,8 @@ namespace Primoris.Universe.Stargen.Data
 						select row).FirstOrDefault();
 
 			StellarType st = StellarType.FromString(data.Type);
-			st.ChangeMass(mass);
-			st.ChangeRadius(radius);
+			st.Mass = mass;
+			st.Radius = radius;
 
 			return st;
 
@@ -242,8 +242,8 @@ namespace Primoris.Universe.Stargen.Data
 						select row).FirstOrDefault();
 
 			StellarType st = StellarType.FromString(data.Type);
-			st.ChangeTemperature(eff_temp);
-			st.ChangeLuminosity(luminosity);
+			st.Temperature = eff_temp;
+			st.Luminosity = luminosity;
 
 			return st;
 

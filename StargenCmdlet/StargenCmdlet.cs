@@ -53,7 +53,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			{
 				case "LuminosityTemperature":
 					WriteVerbose("Luminosity & Temperature");
-					st = StellarType.FromTemperatureAndLuminosity(Luminosity, Temperature);
+					st = StellarType.FromTemperatureAndLuminosity(Temperature, Luminosity);
 					break;
 				case "LuminosityStellarType":
 					WriteVerbose("Luminosity & Stellar Type");
