@@ -6,35 +6,35 @@ using Primoris.Universe.Stargen.Data;
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {
-	[Cmdlet(VerbsCommon.Get, "Planets")]
+	[Cmdlet(VerbsCommon.Get, "Star")]
 	public class StargenCmdlet : PSCmdlet
 	{
 		[Parameter(ParameterSetName = "LuminosityTemperature", Mandatory = true)]
 		[Parameter(ParameterSetName = "LuminosityStellarType", Mandatory = true)]
 		[Parameter(ParameterSetName = "MassTemperature", Mandatory = false)]
 		[Parameter(ParameterSetName = "MassStellarType", Mandatory = false)]
-		public double Luminosity { get; set; } = 1.0;
+		public double Luminosity { get; set; } = double.NaN;
 
 		[Parameter]
 		[Parameter(ParameterSetName = "LuminosityTemperature", Mandatory = false)]
 		[Parameter(ParameterSetName = "LuminosityStellarType", Mandatory = false)]
 		[Parameter(ParameterSetName = "MassTemperature", Mandatory = true)]
 		[Parameter(ParameterSetName = "MassStellarType", Mandatory = true)]
-		public double Mass { get; set; } = 1.0;
+		public double Mass { get; set; } = double.NaN;
 
 		[Parameter(ParameterSetName = "LuminosityTemperature", Mandatory = true)]
 		[Parameter(ParameterSetName = "LuminosityStellarType", Mandatory = false)]
 		[Parameter(ParameterSetName = "MassTemperature", Mandatory = true)]
 		[Parameter(ParameterSetName = "MassStellarType", Mandatory = false)]
-		public double Temperature { get; set; } = 5780.0;
+		public double Temperature { get; set; } = double.NaN;
 
 		[Parameter]
 		[Parameter(ParameterSetName = "LuminosityTemperature", Mandatory = false)]
 		[Parameter(ParameterSetName = "LuminosityStellarType", Mandatory = true)]
 		[Parameter(ParameterSetName = "MassTemperature", Mandatory = false)]
 		[Parameter(ParameterSetName = "MassStellarType", Mandatory = true)]
-		public string StarStellarType { get; set; } = "G2V";
-
+		public string StarStellarType { get; set; } = String.Empty;
+		/*
 		[Parameter]
 		public double DustRatio { get; set; } = 0.0;
 
@@ -43,7 +43,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 
 		[Parameter]
 		public double EccentricityCoefficient { get; set; } = 0.077;
-
+		*/
 		protected override void ProcessRecord()
 		{
 			base.ProcessRecord();
