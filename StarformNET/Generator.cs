@@ -167,12 +167,12 @@ namespace Primoris.Universe.Stargen
             if (planet.IsGasGiant)
             {
                 planet.HasGreenhouseEffect = false;
-                planet.VolatileGasInventory = GlobalConstants.INCREDIBLY_LARGE_NUMBER;
-                planet.Atmosphere.SurfacePressure = GlobalConstants.INCREDIBLY_LARGE_NUMBER;
+                planet.VolatileGasInventory = GlobalConstants.NOT_APPLICABLE;
+                planet.Atmosphere.SurfacePressure = GlobalConstants.NOT_APPLICABLE;
 
-                planet.BoilingPointWaterKelvin = GlobalConstants.INCREDIBLY_LARGE_NUMBER;
+                planet.BoilingPointWaterKelvin = GlobalConstants.NOT_APPLICABLE;
 
-                planet.SurfaceTempKelvin = GlobalConstants.INCREDIBLY_LARGE_NUMBER;
+                planet.SurfaceTempKelvin = GlobalConstants.NOT_APPLICABLE;
                 planet.GreenhouseRiseKelvin = 0;
                 planet.Albedo = Utilities.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1);
                 planet.WaterCoverFraction = 1.0;
@@ -180,7 +180,7 @@ namespace Primoris.Universe.Stargen
                 planet.IceCoverFraction = 0.0;
                 planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAccelerationCMSec2);
                 planet.MolecularWeightRetained = Environment.MinMolecularWeight(planet);
-                planet.SurfaceGravityG = GlobalConstants.INCREDIBLY_LARGE_NUMBER;
+                planet.SurfaceGravityG = GlobalConstants.NOT_APPLICABLE;
             }
             else
             {
