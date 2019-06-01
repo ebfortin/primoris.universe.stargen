@@ -6,13 +6,6 @@
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\StarformNet\StarformNET.csproj">
-      <Project>{EDE19080-B97B-418C-86B8-909512579C1D}</Project>
-      <Name>StarformNET</Name>
-    </ProjectReference>
-  </ItemGroup>
   
   <ItemGroup>
     <None Include="TestData\testsystem.bin">
@@ -29,6 +22,10 @@
   
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\StarformNet\Primoris.Universe.Stargen.csproj" />
   </ItemGroup>
 
 </Project>

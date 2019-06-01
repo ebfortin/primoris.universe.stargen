@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 
 namespace Primoris.Universe.Stargen.Data
@@ -14,5 +15,10 @@ namespace Primoris.Universe.Stargen.Data
             GasType = gType;
             SurfacePressure = pressure;
         }
-    }
+
+		public override string ToString()
+		{
+			return GasType.DisplaySymbol + "[" + SurfacePressure.ToString("F5") + "]";
+		}
+	}
 }

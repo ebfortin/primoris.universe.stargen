@@ -26,10 +26,10 @@ namespace Primoris.Universe.Stargen.Data
 
 			if (lum == 0)
 			{
-				lum = Main.Environment.MassToLuminosity(Mass);
+				lum = Main.Environment.MassToLuminosity(mass);
 			}
 
-			StellarType = StellarType.FromLuminosityAndRadius(Luminosity, 1.0);
+			StellarType = StellarType.FromLuminosityAndRadius(lum, 1.0);
 
 			//EcosphereRadiusAU = Math.Sqrt(lum);
 			Life = 1.0E10 * (Mass / Luminosity);

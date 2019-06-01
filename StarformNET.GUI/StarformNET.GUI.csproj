@@ -4,9 +4,10 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StarformNet\StarformNET.csproj" />
+    <ProjectReference Include="..\StarformNet\Primoris.Universe.Stargen.csproj" />
   </ItemGroup>
 
   <ItemGroup>

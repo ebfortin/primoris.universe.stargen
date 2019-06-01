@@ -80,13 +80,13 @@ namespace Primoris.Universe.Stargen
 
         public static double GRAV_CONSTANT                = (6.672E-8);                    // units of dyne cm2/gram2	
         public static double MOLAR_GAS_CONST              = (8314.41);                     // units: g*m2/ = (sec2*K*mol); 
-        public static double K                            = (50.0);                        // K = gas/dust ratio		
+        public const double K                            = (50.0);                        // K = gas/dust ratio		
         public static double B                            = (1.2E-5);                      // Used in Crit_mass calc	
-        public static double DUST_DENSITY_COEFF           = (0.002);                       // A in Dole's paper		
+        public const double DUST_DENSITY_COEFF           = (0.002);                       // A in Dole's paper		
         public static double ALPHA                        = (5.0);                         // Used in density calcs	
         public static double N                            = (3.0);                         // Used in density calcs	
         public static double J                            = (1.46E-19);                    // Used in day-length calcs (cm2/sec2 g) 
-        public static double CLOUD_ECCENTRICITY           = (0.25);
+        public const double CLOUD_ECCENTRICITY           = (0.25);
 
         // Now for a few molecular weights (used for RMS velocity calcs):
         // This table is from Dole's book "Habitable Planets for Man", p. 38

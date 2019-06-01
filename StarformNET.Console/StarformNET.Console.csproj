@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StarformNet\StarformNET.csproj" />
+    <ProjectReference Include="..\StarformNet\Primoris.Universe.Stargen.csproj" />
   </ItemGroup>
 
 </Project>

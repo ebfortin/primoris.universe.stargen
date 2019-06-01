@@ -32,6 +32,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			}
 
 			var sys = Generator.GenerateStellarSystem(Name, new SystemGenerationOptions(), sun : sun);
+			WriteObject(sun);
 			WriteObject(sys.Planets);
 		}
 	}

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using System.Text;
 
 
 namespace Primoris.Universe.Stargen.Data
@@ -20,5 +21,13 @@ namespace Primoris.Universe.Stargen.Data
             Composition = new List<Gas>();
             PoisonousGases = new List<Gas>();
         }
-    }
+
+		public override string ToString()
+		{
+			var sb = new StringBuilder();
+			sb.AppendJoin<Gas>(';', Composition);
+
+			return sb.ToString();
+		}
+	}
 }
