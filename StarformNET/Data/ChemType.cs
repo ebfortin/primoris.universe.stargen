@@ -12,18 +12,18 @@ namespace Primoris.Universe.Stargen.Data
     // TODO break out abundance into a separate class for star/planet profiles
     public class ChemType
     {
-        public int    Num        { get; set; }
-        public string Symbol     { get; set; }
-        public string DisplaySymbol { get; set; }
-        public string Name       { get; set; }
-        public double Weight     { get; set; }
-        public double Melt       { get; set; }
-        public double Boil       { get; set; }
-        public double Density    { get; set; }
-        public double Abunde     { get; set; }
-        public double Abunds     { get; set; }  // Solar system abundance
-        public double Reactivity { get; set; }
-        public double MaxIpp     { get; set; } // Max inspired partial pressure im millibars
+        public int    Num        { get; }
+        public string Symbol     { get; }
+        public string DisplaySymbol { get; }
+        public string Name       { get; }
+        public double Weight     { get; }
+        public double Melt       { get; }
+        public double Boil       { get; }
+        public double Density    { get; }
+        public double Abunde     { get; }
+        public double Abunds     { get; }  // Solar system abundance
+        public double Reactivity { get; }
+        public double MaxIpp     { get; } // Max inspired partial pressure im millibars
 
         public ChemType(int an, string sym, string htmlsym, string name, double w, double m, double b, double dens, double ae, double abs, double rea, double mipp)
         {
