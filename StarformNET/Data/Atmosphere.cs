@@ -8,19 +8,149 @@ namespace Primoris.Universe.Stargen.Data
     [Serializable]
     public class Atmosphere
     {
-        public double SurfacePressure { get; set; }
+		public Planet Planet { get; internal set; }
+
+        public double SurfacePressure { get; }
 
         public Breathability Breathability { get; set; }
 
-        public List<Gas> Composition { get; set; }
+		public List<Gas> Composition { get; set; } = new List<Gas>();
 
-        public List<Gas> PoisonousGases { get; set; }
+		public List<Gas> PoisonousGases { get; set; } = new List<Gas>();
 
-        public Atmosphere()
+		public Atmosphere(Planet planet)
         {
+			Planet = planet;
+
             Composition = new List<Gas>();
             PoisonousGases = new List<Gas>();
+			SurfacePressure = 0.0;
         }
+
+		public Atmosphere(Planet planet, List<Gas> gases)
+		{
+			Planet = planet;
+
+			Composition = gases;
+			foreach (var gas in Composition)
+			{
+				SurfacePressure += gas.SurfacePressure;
+			}
+		}
+
+		public Atmosphere(Planet planet, double surfPressure)
+		{
+			Planet = planet;
+			SurfacePressure = surfPressure;
+			CalculateGases(planet);
+		}
+
+		public Atmosphere(Planet planet, ChemType[] gasTable)
+		{
+			SurfacePressure = Environment.Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
+			CalculateGases(planet, gasTable);
+		}
+
+		private void CalculateGases(Planet planet, ChemType[] gasTable = null)
+		{
+			gasTable ??= ChemType.Load();
+
+			var sun = planet.Star;
+			Composition = new List<Gas>();
+
+			if (!(SurfacePressure > 0))
+			{
+				return;
+			}
+
+			double[] amount = new double[gasTable.Length];
+			double totamount = 0;
+			double pressure = SurfacePressure / GlobalConstants.MILLIBARS_PER_BAR;
+			int n = 0;
+
+			// Determine the relative abundance of each gas in the planet's atmosphere
+			for (var i = 0; i < gasTable.Length; i++)
+			{
+				double yp = gasTable[i].Boil / (373.0 * ((Math.Log((pressure) + 0.001) / -5050.5) + (1.0 / 373.0)));
+
+				// TODO move both of these conditions to separate methods
+				if ((yp >= 0 && yp < planet.NighttimeTempKelvin) && (gasTable[i].Weight >= planet.MolecularWeightRetained))
+				{
+					double abund, react;
+					CheckForSpecialRules(out abund, out react, pressure, planet, gasTable[i]);
+
+					double vrms = Environment.RMSVelocity(gasTable[i].Weight, planet.ExosphereTempKelvin);
+					double pvrms = Math.Pow(1 / (1 + vrms / planet.EscapeVelocityCMSec), sun.AgeYears / 1e9);
+
+					double fract = (1 - (planet.MolecularWeightRetained / gasTable[i].Weight));
+
+					// Note that the amount calculated here is unitless and doesn't really mean
+					// anything except as a relative value
+					amount[i] = abund * pvrms * react * fract;
+					totamount += amount[i];
+					if (amount[i] > 0.0)
+					{
+						n++;
+					}
+				}
+				else
+				{
+					amount[i] = 0.0;
+				}
+			}
+
+			// For each gas present, calculate its partial pressure
+			if (n > 0)
+			{
+				Composition = new List<Gas>();
+
+				n = 0;
+				for (var i = 0; i < gasTable.Length; i++)
+				{
+					if (amount[i] > 0.0)
+					{
+						Composition.Add(
+							new Gas(gasTable[i], SurfacePressure * amount[i] / totamount));
+					}
+				}
+			}
+
+		}
+
+		private void CheckForSpecialRules(out double abund, out double react, double pressure, Planet planet, ChemType gas)
+		{
+			var sun = planet.Star;
+			var pres2 = 1.0;
+			abund = gas.Abunds;
+
+			if (gas.Symbol == "Ar")
+			{
+				react = .15 * sun.AgeYears / 4e9;
+			}
+			else if (gas.Symbol == "He")
+			{
+				abund = abund * (0.001 + (planet.GasMassSM / planet.MassSM));
+				pres2 = (0.75 + pressure);
+				react = Math.Pow(1 / (1 + gas.Reactivity), sun.AgeYears / 2e9 * pres2);
+			}
+			else if ((gas.Symbol == "O" || gas.Symbol == "O2") && sun.AgeYears > 2e9 && planet.SurfaceTempKelvin > 270 && planet.SurfaceTempKelvin < 400)
+			{
+				// pres2 = (0.65 + pressure/2); // Breathable - M: .55-1.4
+				pres2 = (0.89 + pressure / 4);  // Breathable - M: .6 -1.8
+				react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.AgeYears / 2e9, 0.25) * pres2);
+			}
+			else if (gas.Symbol == "CO2" && sun.AgeYears > 2e9 && planet.SurfaceTempKelvin > 270 && planet.SurfaceTempKelvin < 400)
+			{
+				pres2 = (0.75 + pressure);
+				react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.AgeYears / 2e9, 0.5) * pres2);
+				react *= 1.5;
+			}
+			else
+			{
+				pres2 = (0.75 + pressure);
+				react = Math.Pow(1 / (1 + gas.Reactivity), sun.AgeYears / 2e9 * pres2);
+			}
+		}
 
 		public override string ToString()
 		{

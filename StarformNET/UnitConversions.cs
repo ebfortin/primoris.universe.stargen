@@ -8,14 +8,14 @@
     /// </summary>
     public static class UnitConversions
     {
-        private static double MB_IN_MMHG = 1.3332239;
-        private static double CM_PER_KM = 1.0E5;
-        private static double EARTH_SURF_PRES_IN_MILLIBARS = 1013.25;
-        private static double SUN_MASS_IN_EARTH_MASSES = 332775.64;
-        private static double SOLAR_MASS_IN_GRAMS = 1.989E33;
-        private static double SOLAR_MASS_IN_KILOGRAMS = 1.989E30;
-        private static double EARTH_RADIUS_IN_CM = 6.3714E8;
-        private static double EARTH_RADIUS_IN_KM = 6371.393;
+        private const double MB_IN_MMHG = 1.3332239;
+        private const double CM_PER_KM = 1.0E5;
+        private const double EARTH_SURF_PRES_IN_MILLIBARS = 1013.25;
+        private const double SUN_MASS_IN_EARTH_MASSES = 332775.64;
+        private const double SOLAR_MASS_IN_GRAMS = 1.989E33;
+        private const double SOLAR_MASS_IN_KILOGRAMS = 1.989E30;
+        private const double EARTH_RADIUS_IN_CM = 6.3714E8;
+        private const double EARTH_RADIUS_IN_KM = 6371.393;
 
         /// <summary>
         /// Converts temperature from Kelvin to Fahrenheit degrees.
@@ -26,6 +26,11 @@
         {
             return tempK * (9.0 / 5.0) - 459.67;
         }
+
+		public static double KelvinToCelcius(double tempK)
+		{
+			return tempK - 273.15;
+		}
 
         /// <summary>
         /// Converts pressure from mmHg to millibars
@@ -137,7 +142,6 @@
         public static double PPMToMillibars(double ppm, double atm=1.0)
         {
             var pct = ppm / 1000000.0;
-            var presPerPart1Atm = EARTH_SURF_PRES_IN_MILLIBARS / 1000000.0;
             return pct * EARTH_SURF_PRES_IN_MILLIBARS * atm;
         }
 

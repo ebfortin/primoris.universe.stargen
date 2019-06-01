@@ -31,6 +31,9 @@
 
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="GitVersionTask" Version="4.0.0-beta*">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="CsvHelper" Version="12.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />

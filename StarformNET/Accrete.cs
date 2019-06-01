@@ -6,8 +6,8 @@ namespace Primoris.Universe.Stargen
 
     public class Accrete
     {
-        public double CloudEccentricity;
-        public double GasDustRatio;
+        public double CloudEccentricity { get; set; }
+        public double GasDustRatio { get; set; }
 
         private bool _dustLeft;
         private double _rInner;

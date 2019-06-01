@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 
 namespace Primoris.Universe.Stargen.Data
@@ -86,7 +87,7 @@ namespace Primoris.Universe.Stargen.Data
 				chemTable.Add(new ChemType(num, sym, sym, name, weight, melt, boil, dens, abunde, abunds, rea, maxIPP));
 			}
 
-			return chemTable.ToArray();
+			return (from row in chemTable orderby row.Weight ascending select row).ToArray();
 		}
 
 		public static ChemType[] Load(string file)
