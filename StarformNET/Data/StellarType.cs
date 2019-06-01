@@ -69,31 +69,31 @@ namespace Primoris.Universe.Stargen.Data
 
 		public void ChangeLuminosity(double lum)
 		{
-			Update(Mass, lum, Temperature, Radius);
+			ChangeAll(Mass, lum, Temperature, Radius);
 		}
 
 		public void ChangeMass(double mass)
 		{
-			Update(mass, Luminosity, Temperature, Radius);
+			ChangeAll(mass, Luminosity, Temperature, Radius);
 		}
 
 		public void ChangeTemperature(double temp)
 		{
-			Update(Mass, Luminosity, temp, Radius);
+			ChangeAll(Mass, Luminosity, temp, Radius);
 		}
 
 		public void ChangeRadius(double radius)
 		{
-			Update(Mass, Luminosity, Temperature, radius);
+			ChangeAll(Mass, Luminosity, Temperature, radius);
 		}
 
-		private void Update(double mass, double lum, double temp, double radius)
+		public void ChangeAll(double mass, double lum, double temp, double radius)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt(Math.Pow(lum - row.Luminosity, 2.0) + 
-										  Math.Pow(radius - row.Radius, 2.0) +
-									      Math.Pow(mass - row.Mass, 2.0) +
-										  Math.Pow(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0))
+						orderby Math.Sqrt((!double.IsNaN(lum) ? Math.Pow(lum - row.Luminosity, 2.0) : 0.0) + 
+										  (!double.IsNaN(radius) ? Math.Pow(radius - row.Radius, 2.0) : 0.0) +
+									      (!double.IsNaN(mass) ? Math.Pow(mass - row.Mass, 2.0) : 0.0) +
+										  (!double.IsNaN(temp) ? Math.Pow(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) : 0.0))
 						ascending
 						select row).FirstOrDefault();
 
@@ -101,10 +101,10 @@ namespace Primoris.Universe.Stargen.Data
 			SpectralClass = st.SpectralClass;
 			LuminosityClass = st.LuminosityClass;
 			SubType = st.SubType;
-			Mass = st.Mass;
-			Luminosity = st.Luminosity;
-			Temperature = st.Temperature;
-			Radius = st.Radius;
+			Mass = !double.IsNaN(mass) ? mass : st.Mass;
+			Luminosity = !double.IsNaN(lum) ? lum : st.Luminosity;
+			Temperature = !double.IsNaN(temp) ? temp : st.Temperature;
+			Radius = !double.IsNaN(radius) ? radius : st.Radius;
 		}
 		
 		/// <summary>
