@@ -324,7 +324,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 
             private Planet GetMockPlanet(Func<Gas[]> mockAtmoGen)
             {
-                var planet = new Planet(new Atmosphere(null, mockAtmoGen().ToList()));
+                var planet = new Planet(new Star(), new Atmosphere(null, mockAtmoGen().ToList()));
                 return planet;
             }
 

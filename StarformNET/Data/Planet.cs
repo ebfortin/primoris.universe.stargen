@@ -19,43 +19,43 @@ namespace Primoris.Universe.Stargen.Data
         /// <summary>
         /// Semi-major axis of the body's orbit in astronomical units (au).
         /// </summary>
-        public double SemiMajorAxisAU { get; set; }
+        public double SemiMajorAxisAU { get; private set; }
 
         /// <summary>
         /// Eccentricity of the body's orbit.
         /// </summary>
-        public double Eccentricity { get; set; }
+        public double Eccentricity { get; private set; }
 
         /// <summary>
         /// Axial tilt of the planet expressed in degrees.
         /// </summary>
-        public double AxialTiltDegrees { get; set; }
+        public double AxialTiltDegrees { get; private set; }
 
         /// <summary>
         /// Orbital zone the planet is located in. Value is 1, 2, or 3. Used in
         /// radius and volatile inventory calculations.
         /// </summary>
-        public int OrbitZone { get; set; }
+        public int OrbitZone { get; private set; }
 
         /// <summary>
         /// The length of the planet's year in days.
         /// </summary>
-        public double OrbitalPeriodDays { get; set; }
+        public double OrbitalPeriodDays { get; private set; }
 
         /// <summary>
         /// Angular velocity about the planet's axis in radians/sec.
         /// </summary>
-        public double AngularVelocityRadSec { get; set; }
+        public double AngularVelocityRadSec { get; private set; }
 
         /// <summary>
         /// The length of the planet's day in hours.
         /// </summary>
-        public double DayLengthHours { get; set; }
+        public double DayLengthHours { get; private set; }
 
         /// <summary>
         /// The Hill sphere of the planet expressed in km.
         /// </summary>
-        public double HillSphereKM { get; set; }
+        public double HillSphereKM { get; private set; }
 
         #endregion
 
@@ -64,79 +64,79 @@ namespace Primoris.Universe.Stargen.Data
         /// <summary>
         /// The mass of the planet in units of Solar mass.
         /// </summary>
-        public double MassSM { get; set; } 
+        public double MassSM { get; private set; } 
 
         /// <summary>
         /// The mass of dust retained by the planet (ie, the mass of the planet
         /// sans atmosphere). Given in units of Solar mass.
         /// </summary>
-        public double DustMassSM { get; set; }
+        public double DustMassSM { get; private set; }
 
         /// <summary>
         /// The mass of gas retained by the planet (ie, the mass of its
         /// atmosphere). Given in units of Solar mass.
         /// </summary>
-        public double GasMassSM { get; set; }
+        public double GasMassSM { get; private set; }
 
         /// <summary>
         /// The velocity required to escape from the body given in cm/sec.
         /// </summary>
-        public double EscapeVelocityCMSec { get; set; }
+        public double EscapeVelocityCMSec { get; private set; }
 
         /// <summary>
         /// The gravitational acceleration felt at the surface of the planet. Given in cm/sec^2
         /// </summary>
-        public double SurfaceAccelerationCMSec2 { get; set; }
+        public double SurfaceAccelerationCMSec2 { get; private set; }
 
         /// <summary>
         /// The gravitational acceleration felt at the surface of the planet. Given as a fraction of Earth gravity (Gs).
         /// </summary>
-        public double SurfaceGravityG { get; set; }
+        public double SurfaceGravityG { get; private set; }
 
         /// <summary>
         /// The radius of the planet's core in km.
         /// </summary>
-        public double CoreRadiusKM { get; set; }
+        public double CoreRadiusKM { get; private set; }
 
         /// <summary>
         /// The radius of the planet's surface in km.
         /// </summary>
-        public double RadiusKM { get; set; }
+        public double RadiusKM { get; private set; }
 
         /// <summary>
         /// The density of the planet given in g/cc. 
         /// </summary>
-        public double DensityGCC { get; set; }
+        public double DensityGCC { get; private set; }
 
         #endregion
 
         #region Planet properties
 
-        public PlanetType Type { get; set; }
+        public PlanetType Type { get; private set; }
 
         public bool IsGasGiant => Type == PlanetType.GasGiant ||
                                   Type == PlanetType.SubGasGiant ||
                                   Type == PlanetType.SubSubGasGiant;
 
-        public bool IsTidallyLocked { get; set; }
+        public bool IsTidallyLocked { get; private set; }
 
-        public bool IsEarthlike { get; set; }
+        public bool IsEarthlike { get; private set; }
 
-        public bool IsHabitable { get; set; }
+        public bool IsHabitable { get; private set; }
 
-        public bool HasResonantPeriod { get; set; }
+        public bool HasResonantPeriod { get; private set; }
 
-        public bool HasGreenhouseEffect { get; set; }
+        public bool HasGreenhouseEffect { get; private set; }
 
         #endregion
 
         #region Moon data
 
-        public List<Planet> Moons { get; set; }
+        public List<Planet> Moons { get; private set; }
 
-        public double MoonSemiMajorAxisAU { get; set; }
+        public double MoonSemiMajorAxisAU { get; private set; }
 
-        public double MoonEccentricity { get; set; }
+        public double MoonEccentricity { get; private set; }
 
         #endregion
 
@@ -146,31 +146,31 @@ namespace Primoris.Universe.Stargen.Data
         /// in cm/sec. Used to determine where or not a planet is capable of
         /// retaining an atmosphere.
         /// </summary>
-        public double RMSVelocityCMSec { get; set; }
+        public double RMSVelocityCMSec { get; private set; }
 
         /// <summary>
         /// The smallest molecular weight the planet is capable of retaining.
         /// I believe this is in g/mol.
         /// </summary>
-        public double MolecularWeightRetained { get; set; }
+        public double MolecularWeightRetained { get; private set; }
 
         /// <summary>
         /// Unitless value for the inventory of volatile gases that result from
         /// outgassing. Used in the calculation of surface pressure. See Fogg
         /// eq. 16. 
         /// </summary>
-        public double VolatileGasInventory { get; set; } 
+        public double VolatileGasInventory { get; private set; } 
 
         /// <summary>
         /// Boiling point of water on the planet given in Kelvin.
         /// </summary>
-        public double BoilingPointWaterKelvin { get; set; }
+        public double BoilingPointWaterKelvin { get; private set; }
 
         /// <summary>
         /// Planetary albedo. Unitless value between 0 (no reflection) and 1 
         /// (completely reflective).
         /// </summary>
-        public double Albedo { get; set; }
+        public double Albedo { get; private set; }
 
         #endregion
 
@@ -180,43 +180,43 @@ namespace Primoris.Universe.Stargen.Data
         /// orbit. 1.0 is the amount of illumination received by an object 1 au
         /// from the Sun.
         /// </summary>
-        public double Illumination { get; set; }
+        public double Illumination { get; private set; }
 
         /// <summary>
         /// Temperature at the body's exosphere given in Kelvin.
         /// </summary>
-        public double ExosphereTempKelvin { get; set; }
+        public double ExosphereTempKelvin { get; private set; }
 
         /// <summary>
         /// Temperature at the body's surface given in Kelvin.
         /// </summary>
-        public double SurfaceTempKelvin { get; set; }
+        public double SurfaceTempKelvin { get; private set; }
 
         /// <summary>
         /// Amount (in Kelvin) that the planet's surface temperature is being
         /// increased by a runaway greenhouse effect.
         /// </summary>
-        public double GreenhouseRiseKelvin { get; set; }
+        public double GreenhouseRiseKelvin { get; private set; }
 
         /// <summary>
         /// Average daytime temperature in Kelvin.
         /// </summary>
-        public double DaytimeTempKelvin { get; set; }
+        public double DaytimeTempKelvin { get; private set; }
 
         /// <summary>
         /// Average nighttime temperature in Kelvin.
         /// </summary>
-        public double NighttimeTempKelvin { get; set; }
+        public double NighttimeTempKelvin { get; private set; }
 
         /// <summary>
         /// Maximum (summer/day) temperature in Kelvin.
         /// </summary>
-        public double MaxTempKelvin { get; set; }
+        public double MaxTempKelvin { get; private set; }
 
         /// <summary>
         /// Minimum (winter/night) temperature in Kelvin.
         /// </summary>
-        public double MinTempKelvin { get; set; }
+        public double MinTempKelvin { get; private set; }
 
         #endregion
 
@@ -226,32 +226,29 @@ namespace Primoris.Universe.Stargen.Data
         /// Amount of the body's surface that is covered in water. Given as a
         /// value between 0 (no water) and 1 (completely covered).
         /// </summary>
-        public double WaterCoverFraction { get; set; }
+        public double WaterCoverFraction { get; private set; }
 
         /// <summary>
         /// Amount of the body's surface that is obscured by cloud cover. Given
         /// as a value between 0 (no cloud coverage) and 1 (surface not visible
         /// at all).
         /// </summary>
-        public double CloudCoverFraction { get; set; }
+        public double CloudCoverFraction { get; private set; }
 
         /// <summary>
         /// Amount of the body's surface that is covered in ice. Given as a 
         /// value between 0 (no ice) and 1 (completely covered).
         /// </summary>
-        public double IceCoverFraction { get; set; }
+        public double IceCoverFraction { get; private set; }
 
         #endregion
 
-        public Planet()
-        {
-
-        }
-
-		public Planet(Atmosphere atmos)
+		public Planet(Star sun, Atmosphere atmos)
 		{
+			Star = sun;
 			Atmosphere = atmos;
 			atmos.Planet = this;
+			CheckPlanet();
 		}
 
 		public Planet(Star sun, 
@@ -296,12 +293,14 @@ namespace Primoris.Universe.Stargen.Data
 			Atmosphere = new Atmosphere(this, surfPressure);
 
 			IterateSurfaceTemp();
+			CheckPlanet();
 		}
 
 		public Planet(Star star)
 		{
 			Star = star;
 			Atmosphere = new Atmosphere(this);
+			CheckPlanet();
 		}
 
         public Planet(PlanetSeed seed, Star star, int num, bool useRandomTilt, string planetID, bool isMoon, SystemGenerationOptions genOptions)
@@ -317,7 +316,15 @@ namespace Primoris.Universe.Stargen.Data
 			Atmosphere = new Atmosphere(this);
 
 			GeneratePlanet(seed, num, star, useRandomTilt, planetID, isMoon, genOptions);
+			CheckPlanet();
         }
+
+		private void CheckPlanet()
+		{
+			Illumination = Environment.MinimumIllumination(SemiMajorAxisAU, Star.Luminosity);
+			IsHabitable = Environment.IsHabitable(this);
+			IsEarthlike = Environment.IsEarthlike(this);
+		}
 
 		private void GeneratePlanet(PlanetSeed seed, int planetNo, Star sun, bool useRandomTilt, string planetID, bool isMoon, SystemGenerationOptions genOptions)
 		{
@@ -724,6 +731,11 @@ namespace Primoris.Universe.Stargen.Data
 			planet.NighttimeTempKelvin = Soft(lo, max, min);
 			planet.MaxTempKelvin = Soft(sh, max, min);
 			planet.MinTempKelvin = Soft(wl, max, min);
+		}
+
+		public void RecalculateGases(ChemType[] gasTable)
+		{
+			Atmosphere.RecalculateGases(gasTable);
 		}
 
 		public bool Equals(Planet other)

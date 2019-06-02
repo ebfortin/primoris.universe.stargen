@@ -10,13 +10,13 @@ namespace Primoris.Universe.Stargen.Data
     {
 		public Planet Planet { get; internal set; }
 
-        public double SurfacePressure { get; }
+        public double SurfacePressure { get; private set; }
 
-        public Breathability Breathability { get; set; }
+        public Breathability Breathability { get; private set; }
 
-		public List<Gas> Composition { get; set; } = new List<Gas>();
+		public List<Gas> Composition { get; private set; } = new List<Gas>();
 
-		public List<Gas> PoisonousGases { get; set; } = new List<Gas>();
+		public List<Gas> PoisonousGases { get; private set; } = new List<Gas>();
 
 		public Atmosphere(Planet planet)
         {
@@ -25,7 +25,9 @@ namespace Primoris.Universe.Stargen.Data
             Composition = new List<Gas>();
             PoisonousGases = new List<Gas>();
 			SurfacePressure = 0.0;
-        }
+
+			Breathability = CalculateBreathability();
+		}
 
 		public Atmosphere(Planet planet, List<Gas> gases)
 		{
@@ -36,6 +38,8 @@ namespace Primoris.Universe.Stargen.Data
 			{
 				SurfacePressure += gas.SurfacePressure;
 			}
+
+			Breathability = CalculateBreathability();
 		}
 
 		public Atmosphere(Planet planet, double surfPressure)
@@ -43,12 +47,68 @@ namespace Primoris.Universe.Stargen.Data
 			Planet = planet;
 			SurfacePressure = surfPressure;
 			CalculateGases(planet);
+
+			Breathability = CalculateBreathability();
 		}
 
 		public Atmosphere(Planet planet, ChemType[] gasTable)
 		{
 			SurfacePressure = Environment.Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
 			CalculateGases(planet, gasTable);
+
+			Breathability = Environment.Breathability(planet);
+		}
+
+		/// <summary>
+		/// Returns the breathability state of the planet's atmosphere.
+		/// </summary>
+		/// <returns></returns>
+		private Breathability CalculateBreathability()
+		{
+			// This function uses figures on the maximum inspired partial pressures
+			// of Oxygen, other atmospheric and traces gases as laid out on pages 15,
+			// 16 and 18 of Dole's Habitable Planets for Man to derive breathability
+			// of the planet's atmosphere.                                       JLB
+
+			var planet = Planet;
+
+			var oxygenOk = false;
+
+			if (Composition.Count == 0)
+			{
+				return Data.Breathability.None;
+			}
+
+			var poisonous = false;
+			PoisonousGases.Clear();
+			for (var index = 0; index < Composition.Count; index++)
+			{
+				var gas = Composition[index];
+
+				var ipp = Environment.InspiredPartialPressure(SurfacePressure, Composition[index].SurfacePressure);
+				if (ipp > gas.GasType.MaxIpp)
+				{
+					poisonous = true;
+					PoisonousGases.Add(gas);
+				}
+
+				// TODO why not just have a min_ipp for every gas, even if it's going to be zero for everything that's not oxygen?
+				if (gas.GasType.Num == GlobalConstants.AN_O)
+				{
+					oxygenOk = ((ipp >= GlobalConstants.MIN_O2_IPP) && (ipp <= GlobalConstants.MAX_O2_IPP));
+				}
+			}
+
+			if (poisonous)
+			{
+				return Data.Breathability.Poisonous;
+			}
+			return oxygenOk ? Data.Breathability.Breathable : Data.Breathability.Unbreathable;
+		}
+
+		public void RecalculateGases(ChemType[] gasTable)
+		{
+			CalculateGases(Planet, gasTable);
 		}
 
 		private void CalculateGases(Planet planet, ChemType[] gasTable = null)
