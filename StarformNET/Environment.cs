@@ -1056,55 +1056,7 @@ namespace Primoris.Universe.Stargen
 
             return (surf_pressure - pH2O) * fraction;
         }
-        
-        /// <summary>
-        /// Returns the breathability state of the planet's atmosphere.
-        /// </summary>
-        /// <returns></returns>
-        public static Breathability Breathability(Planet planet)
-        {
-            // This function uses figures on the maximum inspired partial pressures
-            // of Oxygen, other atmospheric and traces gases as laid out on pages 15,
-            // 16 and 18 of Dole's Habitable Planets for Man to derive breathability
-            // of the planet's atmosphere.                                       JLB
 
-            if (planet == null)
-            {
-                throw new ArgumentNullException();
-            }
 
-            var oxygenOk = false;
-
-            if (planet.Atmosphere.Composition.Count == 0)
-            {
-                return Data.Breathability.None;
-            }
-
-            var poisonous = false;
-            planet.Atmosphere.PoisonousGases.Clear();
-            for (var index = 0; index < planet.Atmosphere.Composition.Count; index++)
-            {
-                var gas = planet.Atmosphere.Composition[index];
-
-                var ipp = InspiredPartialPressure(planet.Atmosphere.SurfacePressure, planet.Atmosphere.Composition[index].SurfacePressure);
-                if (ipp > gas.GasType.MaxIpp)
-                {
-                    poisonous = true;
-                    planet.Atmosphere.PoisonousGases.Add(gas);
-                }
-
-                // TODO why not just have a min_ipp for every gas, even if it's going to be zero for everything that's not oxygen?
-                if (gas.GasType.Num == GlobalConstants.AN_O)
-                {
-                    oxygenOk = ((ipp >= GlobalConstants.MIN_O2_IPP) && (ipp <= GlobalConstants.MAX_O2_IPP));
-                }
-            }
-
-            if (poisonous)
-            {
-                return Data.Breathability.Poisonous;
-            }
-            return oxygenOk ? Data.Breathability.Breathable : Data.Breathability.Unbreathable;
-        }
     }
 }

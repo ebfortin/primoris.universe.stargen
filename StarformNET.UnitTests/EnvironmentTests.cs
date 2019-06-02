@@ -328,20 +328,20 @@ namespace Primoris.Universe.Stargen.UnitTests
                 return planet;
             }
 
-            [TestCategory("Breathability")]
+            /*[TestCategory("Breathability")]
             [ExpectedException(typeof(ArgumentNullException))]
             [TestMethod]
             public void TestNullPlanet()
             {
                 var breathe = Primoris.Universe.Stargen.Environment.Breathability(null);
-            }
+            }*/
 
             [TestCategory("Breathability")]
             [TestMethod]
             public void TestNoAtmoPlanet()
             {
                 var planet = GetMockPlanet(GetMockNoAtmo);
-                var breathe = Primoris.Universe.Stargen.Environment.Breathability(planet);
+				var breathe = planet.Atmosphere.Breathability;
                 Assert.AreEqual(Breathability.None, breathe);
             }
 
@@ -350,8 +350,8 @@ namespace Primoris.Universe.Stargen.UnitTests
             public void TestBreathablePlanet()
             {
                 var planet = GetMockPlanet(GetMockBreathableAtmo);
-                var breathe = Primoris.Universe.Stargen.Environment.Breathability(planet);
-                Assert.AreEqual(Breathability.Breathable, breathe);
+				var breathe = planet.Atmosphere.Breathability;
+				Assert.AreEqual(Breathability.Breathable, breathe);
             }
 
             [TestCategory("Breathability")]
@@ -359,8 +359,8 @@ namespace Primoris.Universe.Stargen.UnitTests
             public void TestUnbreathablePlanet()
             {
                 var planet = GetMockPlanet(GetMockUnbreathableAtmo);
-                var breathe = Primoris.Universe.Stargen.Environment.Breathability(planet);
-                Assert.AreEqual(Breathability.Unbreathable, breathe);
+				var breathe = planet.Atmosphere.Breathability;
+				Assert.AreEqual(Breathability.Unbreathable, breathe);
             }
 
             [TestCategory("Breathability")]
@@ -368,8 +368,8 @@ namespace Primoris.Universe.Stargen.UnitTests
             public void TestPoisonousPlanet()
             {
                 var planet = GetMockPlanet(GetMockPoisonousAtmo);
-                var breathe = Primoris.Universe.Stargen.Environment.Breathability(planet);
-                Assert.AreEqual(Breathability.Poisonous, breathe);
+				var breathe = planet.Atmosphere.Breathability;
+				Assert.AreEqual(Breathability.Poisonous, breathe);
             }
         }
     }

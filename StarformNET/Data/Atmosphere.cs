@@ -56,7 +56,7 @@ namespace Primoris.Universe.Stargen.Data
 			SurfacePressure = Environment.Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
 			CalculateGases(planet, gasTable);
 
-			Breathability = Environment.Breathability(planet);
+			Breathability = CalculateBreathability();
 		}
 
 		/// <summary>

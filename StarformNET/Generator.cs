@@ -62,47 +62,12 @@ namespace Primoris.Universe.Stargen
             return planets;
         }
 
-        private static void CheckForSpecialRules(out double abund, out double react, double pressure, Planet planet, ChemType gas)
-        {
-            var sun = planet.Star;
-            var pres2 = 1.0;
-            abund = gas.Abunds;
+		private static double GetStellarDustLimit(double stellarMassRatio)
+		{
+			return (200.0 * Math.Pow(stellarMassRatio, (1.0 / 3.0)));
+		}
 
-            if (gas.Symbol == "Ar")
-            {
-                react = .15 * sun.AgeYears / 4e9;
-            }
-            else if (gas.Symbol == "He")
-            {
-                abund = abund * (0.001 + (planet.GasMassSM / planet.MassSM));
-                pres2 = (0.75 + pressure);
-                react = Math.Pow(1 / (1 + gas.Reactivity), sun.AgeYears / 2e9 * pres2);
-            }
-            else if ((gas.Symbol == "O" || gas.Symbol == "O2") && sun.AgeYears > 2e9 && planet.SurfaceTempKelvin > 270 && planet.SurfaceTempKelvin < 400)
-            {
-                // pres2 = (0.65 + pressure/2); // Breathable - M: .55-1.4
-                pres2 = (0.89 + pressure / 4);  // Breathable - M: .6 -1.8
-                react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.AgeYears / 2e9, 0.25) * pres2);
-            }
-            else if (gas.Symbol == "CO2" && sun.AgeYears > 2e9 && planet.SurfaceTempKelvin > 270 && planet.SurfaceTempKelvin < 400)
-            {
-                pres2 = (0.75 + pressure);
-                react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.AgeYears / 2e9, 0.5) * pres2);
-                react *= 1.5;
-            }
-            else
-            {
-                pres2 = (0.75 + pressure);
-                react = Math.Pow(1 / (1 + gas.Reactivity), sun.AgeYears / 2e9 * pres2);
-            }
-        }
-
-        private static double GetStellarDustLimit(double stellarMassRatio)
-        {
-            return (200.0 * Math.Pow(stellarMassRatio, (1.0 / 3.0)));
-        }
-
-        private static double GetOuterLimit(Star star)
+		private static double GetOuterLimit(Star star)
         {
             if (star.BinaryMass < .001)
             {
