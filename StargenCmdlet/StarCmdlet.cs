@@ -10,6 +10,9 @@ namespace Primoris.Universe.Stargen.Cmdlets
 	public class StarCmdlet : PSCmdlet
 	{
 		[Parameter]
+		public bool CsvOutput { get; set; } = false;
+
+		[Parameter]
 		public string Name { get; set; } = String.Empty;
 
 		[Parameter]
@@ -26,24 +29,22 @@ namespace Primoris.Universe.Stargen.Cmdlets
 
 		[Parameter]
 		public string StarStellarType { get; set; } = "G2V";
-		/*
-		[Parameter]
-		public double DustRatio { get; set; } = 0.0;
 
-		[Parameter]
-		public double DustBorder { get; set; } = 0.3;
-
-		[Parameter]
-		public double EccentricityCoefficient { get; set; } = 0.077;
-		*/
 		protected override void ProcessRecord()
 		{
 			base.ProcessRecord();
 
 			StellarType st = StellarType.FromString(StarStellarType);
-			st.ChangeAll(Mass, Luminosity, Temperature, Radius);
+			st.Change(Mass, Luminosity, Temperature, Radius);
+
+			if (Name == String.Empty)
+			{
+				var ng = new NameGenerator();
+				Name = ng.NextName();
+			}
 
 			var sun = new Star(st);
+			sun.Name = Name;
 			WriteObject(sun);
 		}
 	}

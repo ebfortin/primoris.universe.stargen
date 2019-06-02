@@ -69,25 +69,25 @@ namespace Primoris.Universe.Stargen.Data
 
 		public void ChangeLuminosity(double lum)
 		{
-			ChangeAll(Mass, lum, Temperature, Radius);
+			Change(Mass, lum, Temperature, Radius);
 		}
 
 		public void ChangeMass(double mass)
 		{
-			ChangeAll(mass, Luminosity, Temperature, Radius);
+			Change(mass, Luminosity, Temperature, Radius);
 		}
 
 		public void ChangeTemperature(double temp)
 		{
-			ChangeAll(Mass, Luminosity, temp, Radius);
+			Change(Mass, Luminosity, temp, Radius);
 		}
 
 		public void ChangeRadius(double radius)
 		{
-			ChangeAll(Mass, Luminosity, Temperature, radius);
+			Change(Mass, Luminosity, Temperature, radius);
 		}
 
-		public void ChangeAll(double mass, double lum, double temp, double radius)
+		public void Change(double mass, double lum, double temp, double radius)
 		{
 			var data = (from row in _types
 						orderby Math.Sqrt((!double.IsNaN(lum) ? Math.Pow(lum - row.Luminosity, 2.0) : 0.0) + 
@@ -101,10 +101,38 @@ namespace Primoris.Universe.Stargen.Data
 			SpectralClass = st.SpectralClass;
 			LuminosityClass = st.LuminosityClass;
 			SubType = st.SubType;
+
+			double m = st.Mass;
+			double l = st.Luminosity;
+			double t = st.Temperature;
+			double r = st.Radius;
+
 			Mass = !double.IsNaN(mass) ? mass : st.Mass;
 			Luminosity = !double.IsNaN(lum) ? lum : st.Luminosity;
 			Temperature = !double.IsNaN(temp) ? temp : st.Temperature;
 			Radius = !double.IsNaN(radius) ? radius : st.Radius;
+
+			/*if(Mass != m && Luminosity == l)
+			{
+				Mass = Environment.LuminosityToMass(l);
+			}
+			else if (Mass == m && Luminosity != l)
+			{
+				Luminosity = Environment.MassToLuminosity(m);
+			}
+
+			// (R/Rs/((L/Ls)1/2))1/2 = (Ts/T)
+			if (Temperature != t && Radius == r)
+			{
+				Temperature = (1.0/Math.Sqrt(Radius / Math.Sqrt(Luminosity))) * GlobalConstants.EARTH_SUN_TEMPERATURE;
+			}
+			// R/Rs = (Ts/T)2(L/Ls)1/2
+			else if (Temperature == t && Radius != r)
+			{
+				Radius = Math.Pow((GlobalConstants.EARTH_SUN_TEMPERATURE / Temperature), 2.0) * Math.Sqrt(Luminosity);
+			}*/
+
+
 		}
 		
 		/// <summary>
