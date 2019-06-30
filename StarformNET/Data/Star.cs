@@ -118,5 +118,10 @@ namespace Primoris.Universe.Stargen.Data
         /// The eccentricity of the companion star's orbit.
         /// </summary>
         public double Eccentricity { get; }
+
+        public override string ToString()
+        {
+            return Name + " (" + StellarType + ")";
+        }
     }
 }

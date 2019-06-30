@@ -213,10 +213,20 @@ namespace Primoris.Universe.Stargen.Data
 			}
 		}
 
-		public override string ToString()
-		{
-			var sb = new StringBuilder();
-			sb.AppendJoin<Gas>(';', Composition);
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            if (SurfacePressure > 0.0)
+            {
+                sb.Append(SurfacePressure);
+                sb.Append(" : ");
+                sb.AppendJoin<Gas>(';', Composition);
+            } 
+            else 
+            {
+                sb.Append("None");
+            }
 
 			return sb.ToString();
 		}
