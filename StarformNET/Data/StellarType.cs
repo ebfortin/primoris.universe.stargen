@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Drawing;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,7 @@ namespace Primoris.Universe.Stargen.Data
 		public double Mass { get; private set; }
 		public double Luminosity { get; private set; }
 		public double Radius { get; private set; }
+		public Color Color { get; private set; }
 
 		private static List<StellarTypeRow> _types;
 
@@ -58,36 +60,37 @@ namespace Primoris.Universe.Stargen.Data
 			var str = (Enum.GetName(typeof(SpectralClass), sc) + SubType.ToString() + (lc != LuminosityClass.O ? Enum.GetName(typeof(LuminosityClass), lc) : ""));
 			var data = (from row in _types
 						where row.Type == str
-						select new { Temperature = row.Temperature, Mass = row.Mass, Radius = row.Radius, Luminosity = row.Luminosity }).FirstOrDefault();
+						select new { Temperature = row.Temperature, Mass = row.Mass, Radius = row.Radius, Luminosity = row.Luminosity, ColorRGB = row.ColorRGB }).FirstOrDefault();
 			Temperature = data.Temperature;
 			Mass = data.Mass;
 			Luminosity = data.Luminosity;
 			Radius = data.Radius;
+			Color = ConvertColor(data.ColorRGB);
 		}
 
 		private StellarType() { }
 
 		public void ChangeLuminosity(double lum)
 		{
-			ChangeAll(Mass, lum, Temperature, Radius);
+			Change(Mass, lum, Temperature, Radius);
 		}
 
 		public void ChangeMass(double mass)
 		{
-			ChangeAll(mass, Luminosity, Temperature, Radius);
+			Change(mass, Luminosity, Temperature, Radius);
 		}
 
 		public void ChangeTemperature(double temp)
 		{
-			ChangeAll(Mass, Luminosity, temp, Radius);
+			Change(Mass, Luminosity, temp, Radius);
 		}
 
 		public void ChangeRadius(double radius)
 		{
-			ChangeAll(Mass, Luminosity, Temperature, radius);
+			Change(Mass, Luminosity, Temperature, radius);
 		}
 
-		public void ChangeAll(double mass, double lum, double temp, double radius)
+		public void Change(double mass, double lum, double temp, double radius)
 		{
 			var data = (from row in _types
 						orderby Math.Sqrt((!double.IsNaN(lum) ? Math.Pow(lum - row.Luminosity, 2.0) : 0.0) + 
@@ -101,10 +104,18 @@ namespace Primoris.Universe.Stargen.Data
 			SpectralClass = st.SpectralClass;
 			LuminosityClass = st.LuminosityClass;
 			SubType = st.SubType;
-			Mass = !double.IsNaN(mass) ? mass : st.Mass;
-			Luminosity = !double.IsNaN(lum) ? lum : st.Luminosity;
-			Temperature = !double.IsNaN(temp) ? temp : st.Temperature;
-			Radius = !double.IsNaN(radius) ? radius : st.Radius;
+
+			double m = st.Mass;
+			double l = st.Luminosity;
+			double t = st.Temperature;
+			double r = st.Radius;
+
+			Mass = !double.IsNaN(mass) ? mass : m;
+			Luminosity = !double.IsNaN(lum) ? lum : l;
+			Temperature = !double.IsNaN(temp) ? temp : t;
+			Radius = !double.IsNaN(radius) ? radius : r;
+
+			Color = ConvertColor(data.ColorRGB);
 		}
 		
 		/// <summary>
@@ -127,6 +138,7 @@ namespace Primoris.Universe.Stargen.Data
 			StellarType st = StellarType.FromString(data.Type);
 			st.Luminosity = lum;
 			st.Radius = radius;
+			st.Color = ConvertColor(data.ColorRGB);
 
 			return st;
 		}
@@ -142,6 +154,7 @@ namespace Primoris.Universe.Stargen.Data
 			StellarType st = StellarType.FromString(data.Type);
 			st.Mass = mass;
 			st.Temperature = temp;
+			st.Color = ConvertColor(data.ColorRGB);
 
 			return st;
 		}
@@ -167,6 +180,7 @@ namespace Primoris.Universe.Stargen.Data
 			StellarType st = StellarType.FromString(data.Type);
 			st.Mass = mass;
 			st.Radius = radius;
+			st.Color = ConvertColor(data.ColorRGB);
 
 			return st;
 		}
@@ -182,8 +196,16 @@ namespace Primoris.Universe.Stargen.Data
 			StellarType st = StellarType.FromString(data.Type);
 			st.Temperature = eff_temp;
 			st.Luminosity = luminosity;
+			st.Color = ConvertColor(data.ColorRGB);
 
 			return st;
+		}
+
+		private static Color ConvertColor(string comps)
+		{
+			var gs = Regex.Match(comps, @"(\d{3})(\d{3})(\d{3})");
+	
+			return Color.FromArgb(int.Parse(gs.Groups[1].Value), int.Parse(gs.Groups[2].Value), int.Parse(gs.Groups[3].Value));
 		}
 
 		public static StellarType FromString(string st)

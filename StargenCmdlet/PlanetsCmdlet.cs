@@ -21,7 +21,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 		protected override void ProcessRecord()
 		{
 			StellarType st = StellarType.FromString(StarStellarType);
-			st.ChangeAll(Mass, Luminosity, Temperature, Radius);
+			st.Change(Mass, Luminosity, Temperature, Radius);
 
 			var sun = new Star(st);
 
