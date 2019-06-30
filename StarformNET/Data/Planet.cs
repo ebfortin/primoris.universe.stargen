@@ -12,7 +12,7 @@ namespace Primoris.Universe.Stargen.Data
     {
         public int Position;
         public Star Star { get; }
-		public Atmosphere Atmosphere { get; private set; }
+        public Atmosphere Atmosphere { get; private set; }
 
         #region Orbit data
 
@@ -292,14 +292,13 @@ namespace Primoris.Universe.Stargen.Data
 
 			Atmosphere = new Atmosphere(this, surfPressure);
 
-			IterateSurfaceTemp();
+			IterateSurfaceTemp(surfPressure);
 			CheckPlanet();
 		}
 
 		public Planet(Star star)
 		{
 			Star = star;
-			Atmosphere = new Atmosphere(this);
 			CheckPlanet();
 		}
 
@@ -313,14 +312,14 @@ namespace Primoris.Universe.Stargen.Data
             DustMassSM = seed.DustMass;
             GasMassSM = seed.GasMass;
 
-			Atmosphere = new Atmosphere(this);
-
 			GeneratePlanet(seed, num, star, useRandomTilt, planetID, isMoon, genOptions);
 			CheckPlanet();
         }
 
 		private void CheckPlanet()
 		{
+            Atmosphere ??= new Atmosphere(this);
+
 			Illumination = Environment.MinimumIllumination(SemiMajorAxisAU, Star.Luminosity);
 			IsHabitable = Environment.IsHabitable(this);
 			IsEarthlike = Environment.IsEarthlike(this);
@@ -337,6 +336,13 @@ namespace Primoris.Universe.Stargen.Data
 				planet.AxialTiltDegrees = Environment.Inclination(planet.SemiMajorAxisAU);
 			}
 			planet.ExosphereTempKelvin = GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(planet.SemiMajorAxisAU / sun.EcosphereRadiusAU);
+            // Exosphere temperature can't be realisticly higher than the surface temperature of the sun. We therefore clip at sun.Temperature.
+            // TODO: Make transition instead of brute clipping.
+            planet.ExosphereTempKelvin = planet.ExosphereTempKelvin > sun.Temperature ? sun.Temperature : planet.ExosphereTempKelvin;
+            // Exosphere can't be realisticly lower than the CMB radiation temperature, which is 2.7K. 
+            // TODO: Make transition instead of brute clipping.
+            planet.ExosphereTempKelvin = planet.ExosphereTempKelvin < GlobalConstants.VACCUM_TEMPERATURE ? GlobalConstants.VACCUM_TEMPERATURE : planet.ExosphereTempKelvin;
+
 			planet.RMSVelocityCMSec = Environment.RMSVelocity(GlobalConstants.MOL_NITROGEN, planet.ExosphereTempKelvin);
 			planet.CoreRadiusKM = Environment.KothariRadius(planet.DustMassSM, false, planet.OrbitZone);
 
@@ -446,24 +452,23 @@ namespace Primoris.Universe.Stargen.Data
 				planet.VolatileGasInventory = Environment.VolatileInventory(
 					planet.MassSM, planet.EscapeVelocityCMSec, planet.RMSVelocityCMSec, sun.Mass,
 					planet.OrbitZone, planet.HasGreenhouseEffect, (planet.GasMassSM / planet.MassSM) > 0.000001);
+                double surfpres = Environment.Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
 
-				Atmosphere = new Atmosphere(planet, genOptions.GasTable);
-
-				/*planet.Atmosphere.SurfacePressure = Environment.Pressure(
-					planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);*/
-
-				planet.BoilingPointWaterKelvin = Math.Abs(planet.Atmosphere.SurfacePressure) < 0.001
+				planet.BoilingPointWaterKelvin = Math.Abs(surfpres) < 0.001
 					? 0.0
-					: Environment.BoilingPoint(planet.Atmosphere.SurfacePressure);
+					: Environment.BoilingPoint(surfpres);
 
-				// Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
-				// planet.cloud_cover, planet.ice_cover
-				IterateSurfaceTemp();
+                // Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
+                // planet.cloud_cover, planet.ice_cover
+                IterateSurfaceTemp(surfpres);
 
-				planet.IsTidallyLocked = Environment.IsTidallyLocked(planet);
+                planet.IsTidallyLocked = Environment.IsTidallyLocked(planet);
 
-				// Assign planet type
-				if (planet.Atmosphere.SurfacePressure < 1.0)
+                // Generate complete atmosphere.
+                Atmosphere = new Atmosphere(planet, genOptions.GasTable);
+
+                // Assign planet type
+                if (planet.Atmosphere.SurfacePressure < 1.0)
 				{
 					if (!isMoon && ((planet.MassSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES) < GlobalConstants.ASTEROID_MASS_LIMIT))
 					{
@@ -566,7 +571,7 @@ namespace Primoris.Universe.Stargen.Data
 		/// 
 		/// </summary>
 		/// <param name="planet"></param>
-		private void IterateSurfaceTemp()
+		private void IterateSurfaceTemp(double surfpres)
 		{
 			var initTemp = Environment.EstTemp(Star.EcosphereRadiusAU, SemiMajorAxisAU, Albedo);
 
@@ -575,7 +580,7 @@ namespace Primoris.Universe.Stargen.Data
 			//var n2Life = GasLife(GlobalConstants.MOL_NITROGEN, planet);
 			//var nLife = GasLife(GlobalConstants.ATOMIC_NITROGEN, planet);
 
-			CalculateSurfaceTemperature(true, 0, 0, 0, 0, 0);
+			CalculateSurfaceTemperature(true, 0, 0, 0, 0, 0, 0);
 
 			for (var count = 0; count <= 25; count++)
 			{
@@ -585,7 +590,7 @@ namespace Primoris.Universe.Stargen.Data
 				var lastTemp = SurfaceTempKelvin;
 				var lastAlbedo = Albedo;
 
-				CalculateSurfaceTemperature(false, lastWater, lastClouds, lastIce, lastTemp, lastAlbedo);
+				CalculateSurfaceTemperature(false, lastWater, lastClouds, lastIce, lastTemp, lastAlbedo, surfpres);
 
 				if (Math.Abs(SurfaceTempKelvin - lastTemp) < 0.25)
 					break;
@@ -604,7 +609,7 @@ namespace Primoris.Universe.Stargen.Data
 		/// <param name="last_ice"></param>
 		/// <param name="last_temp"></param>
 		/// <param name="last_albedo"></param>
-		private void CalculateSurfaceTemperature(bool first, double last_water, double last_clouds, double last_ice, double last_temp, double last_albedo)
+		private void CalculateSurfaceTemperature(bool first, double last_water, double last_clouds, double last_ice, double last_temp, double last_albedo, double surfpres)
 		{
 			double effectiveTemp;
 			double waterRaw;
@@ -620,12 +625,12 @@ namespace Primoris.Universe.Stargen.Data
 
 				effectiveTemp = Environment.EffTemp(planet.Star.EcosphereRadiusAU, planet.SemiMajorAxisAU, planet.Albedo);
 				greenhouseTemp = Environment.GreenRise(Environment.Opacity(planet.MolecularWeightRetained,
-														 planet.Atmosphere.SurfacePressure),
+                                                         surfpres),
 												 effectiveTemp,
-												 planet.Atmosphere.SurfacePressure);
+                                                 surfpres);
 				planet.SurfaceTempKelvin = effectiveTemp + greenhouseTemp;
 
-				SetTempRange();
+				SetTempRange(surfpres);
 			}
 
 			if (planet.HasGreenhouseEffect && planet.MaxTempKelvin < planet.BoilingPointWaterKelvin)
@@ -637,7 +642,7 @@ namespace Primoris.Universe.Stargen.Data
 					planet.OrbitZone, planet.HasGreenhouseEffect, (planet.GasMassSM / planet.MassSM) > 0.000001);
 				//planet.Atmosphere.SurfacePressure = Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
 
-				planet.BoilingPointWaterKelvin = Environment.BoilingPoint(planet.Atmosphere.SurfacePressure);
+				planet.BoilingPointWaterKelvin = Environment.BoilingPoint(surfpres);
 			}
 
 			waterRaw = planet.WaterCoverFraction = Environment.HydroFraction(planet.VolatileGasInventory, planet.RadiusKM);
@@ -647,7 +652,7 @@ namespace Primoris.Universe.Stargen.Data
 													 planet.WaterCoverFraction);
 			planet.IceCoverFraction = Environment.IceFraction(planet.WaterCoverFraction, planet.SurfaceTempKelvin);
 
-			if ((planet.HasGreenhouseEffect) && (planet.Atmosphere.SurfacePressure > 0.0))
+			if ((planet.HasGreenhouseEffect) && (surfpres > 0.0))
 			{
 				planet.CloudCoverFraction = 1.0;
 			}
@@ -672,12 +677,12 @@ namespace Primoris.Universe.Stargen.Data
 				planet.WaterCoverFraction = 0.0;
 			}
 
-			planet.Albedo = Environment.PlanetAlbedo(planet.WaterCoverFraction, planet.CloudCoverFraction, planet.IceCoverFraction, planet.Atmosphere.SurfacePressure);
+			planet.Albedo = Environment.PlanetAlbedo(planet.WaterCoverFraction, planet.CloudCoverFraction, planet.IceCoverFraction, surfpres);
 
 			effectiveTemp = Environment.EffTemp(planet.Star.EcosphereRadiusAU, planet.SemiMajorAxisAU, planet.Albedo);
 			greenhouseTemp = Environment.GreenRise(
-				Environment.Opacity(planet.MolecularWeightRetained, planet.Atmosphere.SurfacePressure),
-				effectiveTemp, planet.Atmosphere.SurfacePressure);
+				Environment.Opacity(planet.MolecularWeightRetained, surfpres),
+				effectiveTemp, surfpres);
 			planet.SurfaceTempKelvin = effectiveTemp + greenhouseTemp;
 
 			if (!first)
@@ -692,7 +697,7 @@ namespace Primoris.Universe.Stargen.Data
 				planet.SurfaceTempKelvin = (planet.SurfaceTempKelvin + (last_temp * 2)) / 3;
 			}
 
-			SetTempRange();
+			SetTempRange(surfpres);
 		}
 
 		private double Lim(double x)
@@ -707,12 +712,12 @@ namespace Primoris.Universe.Stargen.Data
 			return (Lim(2 * dv / dm - 1) + 1) / 2 * dm + min;
 		}
 
-		private void SetTempRange()
+		private void SetTempRange(double surfpres)
 		{
 			var planet = this;
 
-			var pressmod = 1 / Math.Sqrt(1 + 20 * planet.Atmosphere.SurfacePressure / 1000.0);
-			var ppmod = 1 / Math.Sqrt(10 + 5 * planet.Atmosphere.SurfacePressure / 1000.0);
+			var pressmod = 1 / Math.Sqrt(1 + 20 * surfpres / 1000.0);
+			var ppmod = 1 / Math.Sqrt(10 + 5 * surfpres / 1000.0);
 			var tiltmod = Math.Abs(Math.Cos(planet.AxialTiltDegrees * Math.PI / 180) * Math.Pow(1 + planet.Eccentricity, 2));
 			var daymod = 1 / (200 / planet.DayLengthHours + 1);
 			var mh = Math.Pow(1 + daymod, pressmod);

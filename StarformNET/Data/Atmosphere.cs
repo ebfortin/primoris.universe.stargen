@@ -53,6 +53,7 @@ namespace Primoris.Universe.Stargen.Data
 
 		public Atmosphere(Planet planet, ChemType[] gasTable)
 		{
+            Planet = planet;
 			SurfacePressure = Environment.Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
 			CalculateGases(planet, gasTable);
 

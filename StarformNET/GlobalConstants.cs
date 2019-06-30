@@ -9,6 +9,9 @@ namespace Primoris.Universe.Stargen
 
         public static double RADIANS_PER_ROTATION         = (2.0 * Math.PI);
 
+        // Cosmic microwave background radiation temperature. Absolute minimum un space.
+        public static double VACCUM_TEMPERATURE           = (2.7);
+
         public static double SUN_AGE_IN_YEARS             = (4600000000);
         public static double ECCENTRICITY_COEFF           = (0.077);                       // Dole's was 0.077			
         public static double PROTOPLANET_MASS             = (1.0E-15);                     // Units of solar masses	
@@ -21,7 +24,7 @@ namespace Primoris.Universe.Stargen
         public static double KM_EARTH_RADIUS              = (6378.0);                      // Units of km				
         public static double EARTH_ACCELERATION           = (980.7);                       // Units of cm/sec2 (was 981.0)
         public static double EARTH_AXIAL_TILT             = (23.4);                        // Units of degrees			
-        public static double EARTH_EXOSPHERE_TEMP         = (1273.0);                      // Units of degrees Kelvin	
+        public static double EARTH_EXOSPHERE_TEMP         = (1273.0);                      // Units of degrees Kelvin (should be 1773).
         public static double SUN_MASS_IN_EARTH_MASSES     = (332775.64);
         public static double ASTEROID_MASS_LIMIT          = (0.001);                       // Units of Earth Masses	
         public static double EARTH_EFFECTIVE_TEMP         = (250.0);                       // Units of degrees Kelvin (was 255);	
