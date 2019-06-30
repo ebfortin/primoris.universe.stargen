@@ -1,8 +1,9 @@
-﻿using Main = Primoris.Universe.Stargen;
+﻿using System;
+using Main = Primoris.Universe.Stargen;
+using System.Drawing;
 
 namespace Primoris.Universe.Stargen.Data
 {
-    using System;
 
 	// UGLY Not comfortable with binary systems just having a second mass value
 
@@ -47,7 +48,25 @@ namespace Primoris.Universe.Stargen.Data
 			AgeYears = Utilities.RandomNumber(MinSunAge, Life < MaxSunAge ? Life : MaxSunAge);
 		}
 
-		public StellarType StellarType { get; }
+        public Star(StellarType st, string name) : this(st)
+        {
+            Name = name;
+        }
+
+        public StellarType StellarType { get; }
+		public Color Color { get => StellarType.Color; }
+		public double DistanceFromTypical
+		{
+			get
+			{
+				var st = StellarType.FromString(StellarType.ToString());
+				return Math.Sqrt(Math.Pow(Luminosity - st.Luminosity, 2.0) +
+							     Math.Pow(Radius - st.Radius, 2.0) +
+								 Math.Pow(Mass - st.Mass, 2.0) +
+								 Math.Pow(Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE - st.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0));
+				
+			}
+		}
 
         public string Name { get; set; }
 

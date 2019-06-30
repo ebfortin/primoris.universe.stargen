@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Management.Automation;
 using Primoris.Universe.Stargen;
 using Primoris.Universe.Stargen.Data;
@@ -10,7 +11,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 	public class StarCmdlet : PSCmdlet
 	{
 		[Parameter]
-		public bool CsvOutput { get; set; } = false;
+		public string CsvOutputPath { get; set; } = String.Empty;
 
 		[Parameter]
 		public string Name { get; set; } = String.Empty;
@@ -35,7 +36,8 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			base.ProcessRecord();
 
 			StellarType st = StellarType.FromString(StarStellarType);
-			st.Change(Mass, Luminosity, Temperature, Radius);
+			if(!double.IsNaN(Mass) || !double.IsNaN(Luminosity) || !double.IsNaN(Temperature) || !double.IsNaN(Radius))
+				st.Change(Mass, Luminosity, Temperature, Radius);
 
 			if (Name == String.Empty)
 			{
@@ -43,8 +45,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 				Name = ng.NextName();
 			}
 
-			var sun = new Star(st);
-			sun.Name = Name;
+			var sun = new Star(st, Name);
 			WriteObject(sun);
 		}
 	}
