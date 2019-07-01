@@ -61,19 +61,19 @@ namespace Primoris.Universe.Stargen.Cmdlets
 	public class PlanetsCmdlet : StarCmdlet
 	{
 		[Parameter]
-		public double DustRatio { get; set; } = 0.0;
+		public double DustDensityCoeff { get; set; } = GlobalConstants.DUST_DENSITY_COEFF;
 
 		[Parameter]
-		public double DustBorder { get; set; } = 0.3;
+		public double GasDensityRatio { get; set; } = GlobalConstants.K;
 
 		[Parameter]
-		public double EccentricityCoefficient { get; set; } = 0.077;
+		public double CloudEccentricity { get; set; } = GlobalConstants.CLOUD_ECCENTRICITY;
 
 		protected override void ProcessRecord()
 		{
             var sun = GenerateStar();
 
-            var sys = Generator.GenerateStellarSystem(Name, new SystemGenerationOptions(), sun : sun);
+            var sys = Generator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun : sun);
             if (String.IsNullOrEmpty(CsvOutputPath))
             {
                 WriteObject(sun);
