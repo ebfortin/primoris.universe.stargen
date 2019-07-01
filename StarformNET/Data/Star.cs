@@ -37,16 +37,16 @@ namespace Primoris.Universe.Stargen.Data
 			Life = 1.0E10 * (Mass / Luminosity);
 
 			if (double.IsNaN(age))
-				AgeYears = Utilities.RandomNumber(MinSunAge, Life < MaxSunAge ? Life : MaxSunAge);
+				Age = Utilities.RandomNumber(MinSunAge, Life < MaxSunAge ? Life : MaxSunAge);
 			else
-				AgeYears = age;
+				Age = age;
 		}
 
 		public Star(StellarType st)
 		{
 			StellarType = st;
 			Life = 1.0E10 * (st.Mass / st.Luminosity);
-			AgeYears = Utilities.RandomNumber(MinSunAge, Life < MaxSunAge ? Life : MaxSunAge);
+			Age = Utilities.RandomNumber(MinSunAge, Life < MaxSunAge ? Life : MaxSunAge);
 		}
 
         public Star(StellarType st, string name) : this(st)
@@ -74,7 +74,7 @@ namespace Primoris.Universe.Stargen.Data
         /// <summary>
         /// Age of the star in years.
         /// </summary>
-        public double AgeYears { get; }
+        public double Age { get; }
 
         /// <summary>
         /// The maximum lifetime of the star in years.
@@ -87,6 +87,8 @@ namespace Primoris.Universe.Stargen.Data
         /// centered on. Given in AU. 
         /// </summary>
         public double EcosphereRadiusAU { get => Math.Sqrt(Luminosity); }
+
+		public double EcosphereRadius { get => EcosphereRadiusAU * GlobalConstants.ASTRONOMICAL_UNIT_KM; }
 
         /// <summary>
         /// Luminosity of the star in solar luminosity units (L<sub>☉</sub>).

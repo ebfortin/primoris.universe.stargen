@@ -31,7 +31,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			Map(m => m.StellarType).TypeConverter<StellarTypeConverter>();
 			Map(m => m.Color).Ignore();
 			Map(m => m.Name);
-			Map(m => m.AgeYears);
+			Map(m => m.Age);
 			Map(m => m.Life);
 			Map(m => m.EcosphereRadiusAU);
 			Map(m => m.Luminosity);

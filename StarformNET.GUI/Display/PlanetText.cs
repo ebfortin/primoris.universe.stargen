@@ -81,12 +81,12 @@ namespace Primoris.Universe.Stargen.Display
             {
                 return "-";
             }
-            return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.BoilingPointWaterKelvin));
+            return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.BoilingPointWater));
         }
 
         public static string GetGreenhouseRise(Planet planet)
         {
-            return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.GreenhouseRiseKelvin));
+            return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.GreenhouseRiseTemperature));
         }
 
         public static string GetEscapeVelocity(Planet planet)
@@ -168,40 +168,40 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetDayTemp(Planet planet)
         {
-            return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.DaytimeTempKelvin));
+            return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.DaytimeTemperature));
         }
 
         public static string GetNightTemp(Planet planet)
         {
-            return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.NighttimeTempKelvin));
+            return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.NighttimeTemperature));
         }
 
         public static string GetExoTemp(Planet planet)
         {
-            return String.Format("{0:0.0} K", planet.ExosphereTempKelvin);
+            return String.Format("{0:0.0} K", planet.ExosphereTemperature);
         }
 
         public static string GetEstimatedHillSphereKM(Planet planet)
         {
-            return String.Format("{0:n0} km", planet.HillSphereKM);
+            return String.Format("{0:n0} km", planet.HillSphere);
         }
 
         public static string GetLengthofDayHours(Planet planet)
         {
-            if (planet.DayLengthHours > 24 * 7)
+            if (planet.DayLength > 24 * 7)
             {
-                return string.Format("{0:0.0} days ({1:0.0} hours)", planet.DayLengthHours / 24, planet.DayLengthHours);
+                return string.Format("{0:0.0} days ({1:0.0} hours)", planet.DayLength / 24, planet.DayLength);
             }
-            return String.Format("{0:0.0} hours", planet.DayLengthHours);
+            return String.Format("{0:0.0} hours", planet.DayLength);
         }
 
         public static string GetOrbitalPeriodDay(Planet planet)
         {
-            if (planet.OrbitalPeriodDays > 365 * 1.5)
+            if (planet.OrbitalPeriod > 365 * 1.5)
             {
-                return String.Format("{0:0.00} ({0:0.0} days)", planet.OrbitalPeriodDays / 365, planet.OrbitalPeriodDays);
+                return String.Format("{0:0.00} ({0:0.0} days)", planet.OrbitalPeriod / 365, planet.OrbitalPeriod);
             }
-            return String.Format("{0:0.0} days", planet.OrbitalPeriodDays);
+            return String.Format("{0:0.0} days", planet.OrbitalPeriod);
         }
 
         public static string GetOrbitalEccentricity(Planet planet)
@@ -221,12 +221,12 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetRadiusKM(Planet planet)
         {
-            return String.Format("{0:0} km", planet.RadiusKM);
+            return String.Format("{0:0} km", planet.Radius);
         }
 
         public static string GetRadiusER(Planet planet)
         {
-            return String.Format("{0:0.00} ER", planet.RadiusKM / GlobalConstants.KM_EARTH_RADIUS);
+            return String.Format("{0:0.00} ER", planet.Radius / GlobalConstants.KM_EARTH_RADIUS);
         }
 
         public static string GetMassStringEM(Planet planet)

@@ -10,9 +10,15 @@ namespace Primoris.Universe.Stargen
         public static double RADIANS_PER_ROTATION         = (2.0 * Math.PI);
 
         // Cosmic microwave background radiation temperature. Absolute minimum un space.
-        public static double VACCUM_TEMPERATURE           = (2.7);
+        public const double VACCUM_TEMPERATURE            = (2.7);
 
-        public static double SUN_AGE_IN_YEARS             = (4600000000);
+		public const double ASTRONOMICAL_UNIT_KM		  = (1.4959787070E+08);
+		public const double CMSEC_TO_MSEC				  = (0.01);
+		public const double CMSEC_TO_KMSEC			      = (1.0 / 100000.0);
+		public const double CMSEC2_TO_MSEC2				  = (0.01);
+		public const double GCM3_TO_KGM3				  = (1000.0);
+
+		public static double SUN_AGE_IN_YEARS             = (4600000000);
         public static double ECCENTRICITY_COEFF           = (0.077);                       // Dole's was 0.077			
         public static double PROTOPLANET_MASS             = (1.0E-15);                     // Units of solar masses	
         public static double CHANGE_IN_EARTH_ANG_VEL      = (-1.3E-15);                    // Units of radians/sec/year

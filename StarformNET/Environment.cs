@@ -153,7 +153,7 @@ namespace Primoris.Universe.Stargen
         /// </summary>
         public static bool IsTidallyLocked(Planet planet)
         {
-            return (int) planet.DayLengthHours == (int) (planet.OrbitalPeriodDays * 24);
+            return (int) planet.DayLength == (int) (planet.OrbitalPeriod * 24);
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace Primoris.Universe.Stargen
         /// </summary>
         public static bool IsEarthlike(Planet planet)
         {
-            double relTemp = (planet.SurfaceTempKelvin - GlobalConstants.FREEZING_POINT_OF_WATER) -
+            double relTemp = (planet.SurfaceTemperature - GlobalConstants.FREEZING_POINT_OF_WATER) -
                              GlobalConstants.EARTH_AVERAGE_CELSIUS;
             double seas = planet.WaterCoverFraction * 100.0;
             double clouds = planet.CloudCoverFraction * 100.0;
@@ -436,8 +436,8 @@ namespace Primoris.Universe.Stargen
         public static double AngularVelocity(Planet planet)
         {
             return AngularVelocity(planet.MassSM,
-                planet.RadiusKM, planet.DensityGCC, planet.SemiMajorAxisAU,
-                planet.IsGasGiant, planet.Star.Mass, planet.Star.AgeYears);
+                planet.Radius, planet.DensityGCC, planet.SemiMajorAxisAU,
+                planet.IsGasGiant, planet.Star.Mass, planet.Star.Age);
         }
 
         /// <summary>
@@ -985,9 +985,9 @@ namespace Primoris.Universe.Stargen
         {
             var surfGrav = planet.SurfaceGravityG;
             var mass = planet.MassSM;
-            var radius = planet.RadiusKM;
-            var exosphereTemp = planet.ExosphereTempKelvin;
-            var temp = planet.ExosphereTempKelvin;
+            var radius = planet.Radius;
+            var exosphereTemp = planet.ExosphereTemperature;
+            var temp = planet.ExosphereTemperature;
             var target = 5.0E9;
 
             var guess1 = MoleculeLimit(mass, radius, temp);
@@ -999,7 +999,7 @@ namespace Primoris.Universe.Stargen
 
             if (planet.Star != null)
             {
-                target = planet.Star.AgeYears;
+                target = planet.Star.Age;
             }
 
             if (life > target)

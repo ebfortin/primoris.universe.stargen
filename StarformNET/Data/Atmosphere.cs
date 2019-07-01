@@ -54,7 +54,7 @@ namespace Primoris.Universe.Stargen.Data
 		public Atmosphere(Planet planet, ChemType[] gasTable)
 		{
             Planet = planet;
-			SurfacePressure = Environment.Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
+			SurfacePressure = Environment.Pressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceGravityG);
 			CalculateGases(planet, gasTable);
 
 			Breathability = CalculateBreathability();
@@ -135,13 +135,13 @@ namespace Primoris.Universe.Stargen.Data
 				double yp = gasTable[i].Boil / (373.0 * ((Math.Log((pressure) + 0.001) / -5050.5) + (1.0 / 373.0)));
 
 				// TODO move both of these conditions to separate methods
-				if ((yp >= 0 && yp < planet.NighttimeTempKelvin) && (gasTable[i].Weight >= planet.MolecularWeightRetained))
+				if ((yp >= 0 && yp < planet.NighttimeTemperature) && (gasTable[i].Weight >= planet.MolecularWeightRetained))
 				{
 					double abund, react;
 					CheckForSpecialRules(out abund, out react, pressure, planet, gasTable[i]);
 
-					double vrms = Environment.RMSVelocity(gasTable[i].Weight, planet.ExosphereTempKelvin);
-					double pvrms = Math.Pow(1 / (1 + vrms / planet.EscapeVelocityCMSec), sun.AgeYears / 1e9);
+					double vrms = Environment.RMSVelocity(gasTable[i].Weight, planet.ExosphereTemperature);
+					double pvrms = Math.Pow(1 / (1 + vrms / planet.EscapeVelocityCMSec), sun.Age / 1e9);
 
 					double fract = (1 - (planet.MolecularWeightRetained / gasTable[i].Weight));
 
@@ -186,30 +186,30 @@ namespace Primoris.Universe.Stargen.Data
 
 			if (gas.Symbol == "Ar")
 			{
-				react = .15 * sun.AgeYears / 4e9;
+				react = .15 * sun.Age / 4e9;
 			}
 			else if (gas.Symbol == "He")
 			{
 				abund = abund * (0.001 + (planet.GasMassSM / planet.MassSM));
 				pres2 = (0.75 + pressure);
-				react = Math.Pow(1 / (1 + gas.Reactivity), sun.AgeYears / 2e9 * pres2);
+				react = Math.Pow(1 / (1 + gas.Reactivity), sun.Age / 2e9 * pres2);
 			}
-			else if ((gas.Symbol == "O" || gas.Symbol == "O2") && sun.AgeYears > 2e9 && planet.SurfaceTempKelvin > 270 && planet.SurfaceTempKelvin < 400)
+			else if ((gas.Symbol == "O" || gas.Symbol == "O2") && sun.Age > 2e9 && planet.SurfaceTemperature > 270 && planet.SurfaceTemperature < 400)
 			{
 				// pres2 = (0.65 + pressure/2); // Breathable - M: .55-1.4
 				pres2 = (0.89 + pressure / 4);  // Breathable - M: .6 -1.8
-				react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.AgeYears / 2e9, 0.25) * pres2);
+				react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.Age / 2e9, 0.25) * pres2);
 			}
-			else if (gas.Symbol == "CO2" && sun.AgeYears > 2e9 && planet.SurfaceTempKelvin > 270 && planet.SurfaceTempKelvin < 400)
+			else if (gas.Symbol == "CO2" && sun.Age > 2e9 && planet.SurfaceTemperature > 270 && planet.SurfaceTemperature < 400)
 			{
 				pres2 = (0.75 + pressure);
-				react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.AgeYears / 2e9, 0.5) * pres2);
+				react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.Age / 2e9, 0.5) * pres2);
 				react *= 1.5;
 			}
 			else
 			{
 				pres2 = (0.75 + pressure);
-				react = Math.Pow(1 / (1 + gas.Reactivity), sun.AgeYears / 2e9 * pres2);
+				react = Math.Pow(1 / (1 + gas.Reactivity), sun.Age / 2e9 * pres2);
 			}
 		}
 
