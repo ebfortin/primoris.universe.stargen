@@ -118,11 +118,11 @@ namespace Primoris.Universe.Stargen.Display
 
                 var moonYOffset = _planetSprites[i].SourceRect.Height + 2;
                 var moonStartY = _planetSprites[i].DrawLocation.Y + moonYOffset;
-                var columns = (int)Math.Ceiling((float)_planets.ElementAt(i).Moons.Count / MOONS_PER_COLUMN);
+                var columns = (int)Math.Ceiling((float)_planets.ElementAt(i).Satellites.Count() / MOONS_PER_COLUMN);
                 var moonStartX = _planetSprites[i].DrawLocation.X + (int)((_planetSprites[i].SourceRect.Width / 2.0f) - (4 * columns) + 2);
                 var x = moonStartX;
                 var y = moonStartY;
-                for (var k = 0; k < _planets.ElementAt(i).Moons.Count; k++)
+                for (var k = 0; k < _planets.ElementAt(i).Satellites.Count(); k++)
                 {
                     if (k % MOONS_PER_COLUMN == 0)
                     {

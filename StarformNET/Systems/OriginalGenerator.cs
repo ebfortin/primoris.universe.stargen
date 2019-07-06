@@ -57,7 +57,7 @@ namespace Primoris.Universe.Stargen.Systems
 
 				string planet_id = planetNo.ToString();
 
-				var planet = new Planet(seed, sun, planetNo, useRandomTilt, planet_id, false, genOptions);
+				var planet = new Planet(seed, sun, planetNo, useRandomTilt, planet_id, genOptions);
 				planets.Add(planet);
 			}
 

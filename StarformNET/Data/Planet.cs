@@ -1,5 +1,6 @@
 using Primoris.Universe.Stargen.Bodies;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Primoris.Universe.Stargen.Data
@@ -145,9 +146,9 @@ namespace Primoris.Universe.Stargen.Data
 
         #endregion
 
-        #region Moon data
+        #region Satellites data
 
-        public List<Planet> Moons { get; private set; }
+        public IEnumerable<Planet> Satellites { get; private set; }
 
         public double MoonSemiMajorAxisAU { get; private set; }
 
@@ -320,7 +321,7 @@ private set; }
 			Check();
 		}
 
-        public Planet(BodySeed seed, Star star, int num, bool useRandomTilt, string planetID, bool isMoon, SystemGenerationOptions genOptions)
+        public Planet(BodySeed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
         {
             Star = star;
             Position = num;
@@ -330,7 +331,7 @@ private set; }
             DustMassSM = seed.DustMass;
             GasMassSM = seed.GasMass;
 
-			Generate(seed, num, star, useRandomTilt, planetID, isMoon, genOptions);
+			Generate(seed, num, star, useRandomTilt, planetID, genOptions);
 			Check();
         }
 
@@ -343,7 +344,7 @@ private set; }
 			IsEarthlike = Environment.IsEarthlike(this);
 		}
 
-		protected virtual void Generate(BodySeed seed, int planetNo, Star sun, bool useRandomTilt, string planetID, bool isMoon, SystemGenerationOptions genOptions)
+		protected virtual void Generate(BodySeed seed, int planetNo, Star sun, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
 		{
 			var planet = this;
 
@@ -488,7 +489,7 @@ private set; }
                 // Assign planet type
                 if (planet.Atmosphere.SurfacePressure < 1.0)
 				{
-					if (!isMoon && ((planet.MassSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES) < GlobalConstants.ASTEROID_MASS_LIMIT))
+					if (((planet.MassSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES) < GlobalConstants.ASTEROID_MASS_LIMIT))
 					{
 						planet.Type = PlanetType.Asteroids;
 					}
@@ -545,11 +546,11 @@ private set; }
 			}
 
 			// Generate moons
-			planet.Moons = new List<Planet>();
-			if (!isMoon)
+			var sat = new List<Planet>();
+			var curMoon = seed.FirstSatellite;
+			var n = 0;
+			if (curMoon != null)
 			{
-				var curMoon = seed.FirstSatellite;
-				var n = 0;
 				while (curMoon != null)
 				{
 					if (curMoon.Mass * GlobalConstants.SUN_MASS_IN_EARTH_MASSES > .000001)
@@ -561,7 +562,7 @@ private set; }
 
 						string moon_id = String.Format("{0}.{1}", planetID, n);
 
-						var generatedMoon = new Planet(curMoon, sun, n, useRandomTilt, moon_id, true, genOptions);
+						var generatedMoon = new Planet(curMoon, sun, n, useRandomTilt, moon_id, genOptions);
 
 						double roche_limit = 2.44 * planet.Radius * Math.Pow((planet.DensityGCC / generatedMoon.DensityGCC), (1.0 / 3.0));
 						double hill_sphere = planet.SemiMajorAxisAU * GlobalConstants.KM_PER_AU * Math.Pow((planet.MassSM / (3.0 * sun.Mass)), (1.0 / 3.0));
@@ -576,11 +577,12 @@ private set; }
 							generatedMoon.MoonSemiMajorAxisAU = 0;
 							generatedMoon.MoonEccentricity = 0;
 						}
-						planet.Moons.Add(generatedMoon);
+						sat.Add(generatedMoon);
 					}
 					curMoon = curMoon.NextBody;
 				}
 			}
+			planet.Satellites = sat;
 		}
 
 		// TODO write summary
@@ -780,7 +782,7 @@ private set; }
                 Utilities.AlmostEqual(CoreRadius, other.CoreRadius) &&
                 Utilities.AlmostEqual(Radius, other.Radius) &&
                 Utilities.AlmostEqual(DensityGCC, other.DensityGCC) &&
-                Moons.Count == other.Moons.Count &&
+                Satellites.Count() == other.Satellites.Count() &&
                 Utilities.AlmostEqual(RMSVelocityCMSec, other.RMSVelocityCMSec) &&
                 Utilities.AlmostEqual(MolecularWeightRetained, other.MolecularWeightRetained) &&
                 Utilities.AlmostEqual(VolatileGasInventory, other.VolatileGasInventory) &&

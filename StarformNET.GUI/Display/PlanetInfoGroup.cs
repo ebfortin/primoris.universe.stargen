@@ -53,7 +53,7 @@ namespace Primoris.Universe.Stargen.Display
                 PlanetText.GetHydrosphere(planet),
                 PlanetText.GetIceCover(planet),
                 PlanetText.GetCloudCover(planet),
-                planet.Moons.Count.ToString(),
+                planet.Satellites.Count.ToString(),
                 PlanetText.GetSurfacePressureStringAtm(planet),
                 PlanetText.GetAtmoString(planet)
             };
