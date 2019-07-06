@@ -23,7 +23,7 @@ namespace Primoris.Universe.Stargen.Systems
 			return group;
 		}
 
-		public static StellarSystem GenerateStellarSystem(string systemName, SystemGenerationOptions genOptions = null, Star sun = null, List<BodySeed> seedSystem = null)
+		public static StellarSystem GenerateStellarSystem(string systemName, SystemGenerationOptions genOptions = null, Star sun = null, IEnumerable<BodySeed> seedSystem = null)
 		{
 			genOptions = genOptions ?? SystemGenerationOptions.DefaultOptions;
 			sun = sun ?? new Star();
@@ -34,7 +34,7 @@ namespace Primoris.Universe.Stargen.Systems
 			double outer_dust_limit = GetStellarDustLimit(sun.Mass);
 			seedSystem = seedSystem ?? accrete.CreateBodies(sun.Mass,
 				sun.Luminosity, 0.0, outer_dust_limit, outer_planet_limit,
-				genOptions.DustDensityCoeff, null);
+				genOptions.DustDensityCoeff);
 
 			var planets = GeneratePlanets(sun, seedSystem, useRandomTilt, genOptions);
 			return new StellarSystem()
@@ -46,13 +46,14 @@ namespace Primoris.Universe.Stargen.Systems
 			};
 		}
 
-		private static List<Planet> GeneratePlanets(Star sun, List<BodySeed> seeds, bool useRandomTilt, SystemGenerationOptions genOptions)
+		private static ICollection<Planet> GeneratePlanets(Star sun, IEnumerable<BodySeed> seeds, bool useRandomTilt, SystemGenerationOptions genOptions)
 		{
 			var planets = new List<Planet>();
-			for (var i = 0; i < seeds.Count; i++)
+			var i = 0;
+			foreach(var seed in seeds)
 			{
 				var planetNo = i + 1; // start counting planets at 1
-				var seed = seeds[i];
+				i += 1;
 
 				string planet_id = planetNo.ToString();
 

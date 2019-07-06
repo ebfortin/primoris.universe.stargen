@@ -1,14 +1,14 @@
+using System;
+using System.Linq;
+using System.Drawing;
+using System.Windows.Forms;
+using System.IO;
+using Primoris.Universe.Stargen.Display;
+using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Systems;
+
 namespace Primoris.Universe.Stargen
 {
-
-	using System;
-	using System.Drawing;
-	using System.Windows.Forms;
-	using System.IO;
-	using Display;
-	using Data;
-	using Primoris.Universe.Stargen.Systems;
-
 	public partial class MainGenerator : Form
     {
         private static string ArtFolder = "Art";
@@ -75,7 +75,7 @@ namespace Primoris.Universe.Stargen
             {
                 _planetSelector.SelectedIndex = s;
             }
-            _planetInfoGroup.SetPlanet(_system.Planets[s]);
+            _planetInfoGroup.SetPlanet(_system.Planets.ElementAt(s));
             _systemMap.SelectPlanet(s);
             _orbitMap.SelectPlanet(s);
             Refresh();
@@ -101,7 +101,7 @@ namespace Primoris.Universe.Stargen
             _systemInfo.SetSystem(_system.Planets);
             _orbitMap.SetSystem(_system.Planets);
             _planetInfoGroup.TabSpacing = 160;
-            _planetInfoGroup.SetPlanet(_system.Planets[0]);
+            _planetInfoGroup.SetPlanet(_system.Planets.ElementAt(0));
             _orbitMap.SelectPlanet(0);
             _systemMap.SelectPlanet(0);
         }

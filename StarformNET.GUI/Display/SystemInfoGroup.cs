@@ -1,19 +1,22 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using Primoris.Universe.Stargen.Data;
+
 
 namespace Primoris.Universe.Stargen.Display
 {
-    using System.Collections.Generic;
-    using Data;
 
     public class SystemInfoGroup : InfoGroup
     {
-        public void SetSystem(List<Planet> planets)
+        public void SetSystem(IEnumerable<Planet> planets)
         {
-            if (planets == null || planets[0] == null)
+            if (planets == null || planets.ElementAt(0) == null)
             {
                 return;
             }
 
-            var star = planets[0].Star;
+            var star = planets.ElementAt(0).Star;
 
             var labels = new List<string>()
             {
@@ -28,7 +31,7 @@ namespace Primoris.Universe.Stargen.Display
                 StarText.GetAgeStringYearsSciN(star),
                 StarText.GetLuminosityPercent(star),
                 StarText.GetMassPercent(star),
-                planets.Count.ToString()
+                planets.Count().ToString()
             };
 
             SetText(labels, values);

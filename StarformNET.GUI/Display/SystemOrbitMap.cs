@@ -89,7 +89,7 @@ namespace Primoris.Universe.Stargen.Display
             Refresh();
         }
 
-        public void SetSystem(List<Planet> system)
+        public void SetSystem(IEnumerable<Planet> system)
         {
             _orbits.Clear();
             foreach (var planet in system)

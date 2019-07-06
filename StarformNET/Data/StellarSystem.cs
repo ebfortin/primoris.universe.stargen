@@ -8,7 +8,7 @@
     {
         public string Name { get; set; }
         public Star Star { get; set; }
-        public List<Planet> Planets { get; set; }
+        public IEnumerable<Planet> Planets { get; set; }
         public SystemGenerationOptions Options { get; set; }
 
         public override string ToString()

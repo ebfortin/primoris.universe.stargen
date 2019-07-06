@@ -1,15 +1,17 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Primoris.Universe.Stargen;
+using Primoris.Universe.Stargen.Data;
+using System.Collections.Generic;
+using System;
+using System.Linq;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using Environment = Primoris.Universe.Stargen.Environment;
+using Primoris.Universe.Stargen.Systems;
+
 namespace Primoris.Universe.Stargen.UnitTests
 {
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using Primoris.Universe.Stargen;
-	using Data;
-	using System.Collections.Generic;
-	using System;
-	using System.IO;
-	using System.Runtime.Serialization;
-	using System.Runtime.Serialization.Formatters.Binary;
-	using Environment = Primoris.Universe.Stargen.Environment;
-	using Primoris.Universe.Stargen.Systems;
 
 	class GeneratorTests
 	{
@@ -21,14 +23,14 @@ namespace Primoris.Universe.Stargen.UnitTests
 
 			/*[TestCategory("Generator Regression")]
 			[TestMethod]*/
-			public void TestSameSeedAgainstSavedOutput()
+			/*public void TestSameSeedAgainstSavedOutput()
 			{
 				var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 				var testFileDir = Path.Combine(baseDir, TEST_FILE_PATH, TEST_FILE);
 
 				IFormatter formatter = new BinaryFormatter();
 				Stream stream = new FileStream(testFileDir, FileMode.Open, FileAccess.Read, FileShare.Read);
-				var savedSystem = (List<Planet>)formatter.Deserialize(stream);
+				var savedSystem = (ICollection<Planet>)formatter.Deserialize(stream);
 				stream.Close();
 
 				Utilities.InitRandomSeed(0);
@@ -36,35 +38,43 @@ namespace Primoris.Universe.Stargen.UnitTests
 				Assert.AreEqual(savedSystem.Count, newSystem.Count, "Incorrect number of planets");
 				for (var i = 0; i < savedSystem.Count; i++)
 				{
-					Assert.IsTrue(savedSystem[i].Equals(newSystem[i]), String.Format("Planet {0} not equal", i));
+					Assert.IsTrue(savedSystem.SequenceEqual<Planet>(newSystem), String.Format("Planet {0} not equal", i));
 				}
-			}
+			}*/
 
 			/*[TestCategory("Generator Regression")]
 			[TestMethod]*/
-			public void TestDifferentSeedAgainstSavedOutput()
+			/*public void TestDifferentSeedAgainstSavedOutput()
 			{
 				var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 				var testFileDir = Path.Combine(baseDir, TEST_FILE_PATH, TEST_FILE);
 
 				IFormatter formatter = new BinaryFormatter();
 				Stream stream = new FileStream(testFileDir, FileMode.Open, FileAccess.Read, FileShare.Read);
-				var savedSystem = (List<Planet>)formatter.Deserialize(stream);
+				var savedSystem = (ICollection<Planet>)formatter.Deserialize(stream);
 				stream.Close();
 
 				Utilities.InitRandomSeed(1);
 				var newSystem = OriginalGenerator.GenerateStellarSystem("test").Planets;
 				var atleastOneDifferent = false;
-				for (var i = 0; i < savedSystem.Count; i++)
+				if(savedSystem.Count != newSystem.Count)
+				{
+					atleastOneDifferent = true;
+				}
+				else
+				{
+					atleastOneDifferent = savedSystem.SequenceEqual<Planet>(newSystem);
+				}*/
+				/*for (var i = 0; i < savedSystem.Count; i++)
 				{
 					if (!savedSystem[i].Equals(newSystem[i]))
 					{
 						atleastOneDifferent = true;
 						break;
 					}
-				}
-				Assert.IsTrue(atleastOneDifferent);
-			}
+				}*/
+				/*Assert.IsTrue(atleastOneDifferent);
+			}*/
 		}
 
 		[TestClass]

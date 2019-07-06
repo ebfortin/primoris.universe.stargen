@@ -37,13 +37,14 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="dustDensityCoeff"></param>
 		/// <param name="seedSystem"></param>
 		/// <returns></returns>
-		public List<BodySeed> CreateBodies(double stellarMassRatio,
+		public IEnumerable<BodySeed> CreateBodies(double stellarMassRatio,
 											 double stellarLumRatio,
 											 double innerDust,
 											 double outerDust,
 											 double outerPlanetLimit,
 											 double dustDensityCoeff,
-											 BodySeed seedSystem)
+											 double semiMajorAxisAU = double.NaN,
+											 double ecc = double.NaN)
 		{
 			SetInitialConditions(innerDust, outerDust);
 
@@ -52,21 +53,12 @@ namespace Primoris.Universe.Stargen.Bodies
 				? FarthestPlanet(stellarMassRatio)
 				: outerPlanetLimit;
 
-			BodySeed seeds = seedSystem;
+			//BodySeed seeds = seedSystem;
 			while (_dustLeft)
 			{
 				double a, e;
-				if (seeds != null)
-				{
-					a = seeds.SemiMajorAxisAU;
-					e = seeds.Eccentricity;
-					seeds = seeds.NextBody;
-				}
-				else
-				{
-					a = Utilities.RandomNumber(planet_inner_bound, planet_outer_bound);
-					e = Utilities.RandomEccentricity();
-				}
+				a = double.IsNaN(semiMajorAxisAU) ? Utilities.RandomNumber(planet_inner_bound, planet_outer_bound) : semiMajorAxisAU;
+				e = double.IsNaN(ecc) ? Utilities.RandomEccentricity() : ecc;
 
 				double mass = GlobalConstants.PROTOPLANET_MASS;
 				double dust_mass = 0;

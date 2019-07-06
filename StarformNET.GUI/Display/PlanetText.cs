@@ -9,10 +9,10 @@ namespace Primoris.Universe.Stargen.Display
 
     public static class PlanetText
     {
-        public static string GetSystemText(List<Planet> planets)
+        public static string GetSystemText(IEnumerable<Planet> planets)
         {
             var sb = new StringBuilder();
-            var sun = planets[0].Star;
+            var sun = planets.ElementAt(0).Star;
             sb.AppendLine(StarText.GetFullStarTextRelative(sun, true));
             sb.AppendLine();
 
