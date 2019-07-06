@@ -7,8 +7,8 @@ namespace Primoris.Universe.Stargen.Data
     [Serializable]
     public class Gas
     {
-        public ChemType GasType { get; set; }
-        public double SurfacePressure { get; set; }
+        public ChemType GasType { get; private set; }
+        public double SurfacePressure { get; private set; }
 
         public Gas(ChemType gType, double pressure)
         {

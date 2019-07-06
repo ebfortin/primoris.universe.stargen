@@ -9,6 +9,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
 	using Environment = Primoris.Universe.Stargen.Environment;
+	using Primoris.Universe.Stargen.Systems;
 
 	class GeneratorTests
 	{
@@ -31,7 +32,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				stream.Close();
 
 				Utilities.InitRandomSeed(0);
-				var newSystem = Generator.GenerateStellarSystem("test").Planets;
+				var newSystem = OriginalGenerator.GenerateStellarSystem("test").Planets;
 				Assert.AreEqual(savedSystem.Count, newSystem.Count, "Incorrect number of planets");
 				for (var i = 0; i < savedSystem.Count; i++)
 				{
@@ -52,7 +53,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				stream.Close();
 
 				Utilities.InitRandomSeed(1);
-				var newSystem = Generator.GenerateStellarSystem("test").Planets;
+				var newSystem = OriginalGenerator.GenerateStellarSystem("test").Planets;
 				var atleastOneDifferent = false;
 				for (var i = 0; i < savedSystem.Count; i++)
 				{

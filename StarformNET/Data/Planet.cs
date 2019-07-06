@@ -1,13 +1,14 @@
+using Primoris.Universe.Stargen.Bodies;
 using System;
 using System.Collections.Generic;
 
 namespace Primoris.Universe.Stargen.Data
 {
 
-    // TODO break this class up
-    // TODO orbit zone is supposedly no longer used anywhere. Check references and possibly remove.
+	// TODO break this class up
+	// TODO orbit zone is supposedly no longer used anywhere. Check references and possibly remove.
 
-    [Serializable]
+	[Serializable]
     public class Planet : IEquatable<Planet>
     {
         public int Position;
@@ -264,7 +265,7 @@ namespace Primoris.Universe.Stargen.Data
 			Star = sun;
 			Atmosphere = atmos;
 			atmos.Planet = this;
-			CheckPlanet();
+			Check();
 		}
 
 		public Planet(Star sun, 
@@ -295,7 +296,7 @@ namespace Primoris.Universe.Stargen.Data
 			GasMassSM = gasMassSM;
 			DustMassSM = MassSM - GasMassSM;
 			Radius = radius;
-			DensityGCC = Environment.EmpiricalDensity(MassSM, SemiMajorAxisAU, Star.EcosphereRadiusAU, true);
+			DensityGCC = Environment.EmpiricalDensityGCC(MassSM, SemiMajorAxisAU, Star.EcosphereRadiusAU, true);
 			ExosphereTemperature = GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(SemiMajorAxisAU / Star.EcosphereRadiusAU);
 			SurfaceAccelerationCMSec2 = Environment.Acceleration(MassSM, Radius);
 			EscapeVelocityCMSec = Environment.EscapeVelocity(MassSM, Radius);
@@ -309,16 +310,16 @@ namespace Primoris.Universe.Stargen.Data
 			Atmosphere = new Atmosphere(this, surfPressure);
 
 			IterateSurfaceTemp(surfPressure);
-			CheckPlanet();
+			Check();
 		}
 
 		public Planet(Star star)
 		{
 			Star = star;
-			CheckPlanet();
+			Check();
 		}
 
-        public Planet(PlanetSeed seed, Star star, int num, bool useRandomTilt, string planetID, bool isMoon, SystemGenerationOptions genOptions)
+        public Planet(BodySeed seed, Star star, int num, bool useRandomTilt, string planetID, bool isMoon, SystemGenerationOptions genOptions)
         {
             Star = star;
             Position = num;
@@ -328,11 +329,11 @@ namespace Primoris.Universe.Stargen.Data
             DustMassSM = seed.DustMass;
             GasMassSM = seed.GasMass;
 
-			GeneratePlanet(seed, num, star, useRandomTilt, planetID, isMoon, genOptions);
-			CheckPlanet();
+			Generate(seed, num, star, useRandomTilt, planetID, isMoon, genOptions);
+			Check();
         }
 
-		private void CheckPlanet()
+		private void Check()
 		{
             Atmosphere ??= new Atmosphere(this);
 
@@ -341,7 +342,7 @@ namespace Primoris.Universe.Stargen.Data
 			IsEarthlike = Environment.IsEarthlike(this);
 		}
 
-		private void GeneratePlanet(PlanetSeed seed, int planetNo, Star sun, bool useRandomTilt, string planetID, bool isMoon, SystemGenerationOptions genOptions)
+		protected virtual void Generate(BodySeed seed, int planetNo, Star sun, bool useRandomTilt, string planetID, bool isMoon, SystemGenerationOptions genOptions)
 		{
 			var planet = this;
 
@@ -366,7 +367,7 @@ namespace Primoris.Universe.Stargen.Data
 			// Then if mass > Earth, it's at least 5% gas and retains He, it's
 			// some flavor of gas giant.
 
-			planet.DensityGCC = Environment.EmpiricalDensity(planet.MassSM, planet.SemiMajorAxisAU, sun.EcosphereRadiusAU, true);
+			planet.DensityGCC = Environment.EmpiricalDensityGCC(planet.MassSM, planet.SemiMajorAxisAU, sun.EcosphereRadiusAU, true);
 			planet.Radius = Environment.VolumeRadius(planet.MassSM, planet.DensityGCC);
 
 			planet.SurfaceAccelerationCMSec2 = Environment.Acceleration(planet.MassSM, planet.Radius);
@@ -438,7 +439,7 @@ namespace Primoris.Universe.Stargen.Data
 			planet.HasResonantPeriod = Environment.HasResonantPeriod(planet.AngularVelocityRadSec,
 				planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
 			planet.EscapeVelocityCMSec = Environment.EscapeVelocity(planet.MassSM, planet.Radius);
-			planet.HillSphere = Environment.SimplifiedHillSphereKM(sun.Mass, planet.MassSM, planet.SemiMajorAxisAU);
+			planet.HillSphere = Environment.SimplifiedHillSphere(sun.Mass, planet.MassSM, planet.SemiMajorAxisAU);
 
 			if (planet.IsGasGiant)
 			{
@@ -546,7 +547,7 @@ namespace Primoris.Universe.Stargen.Data
 			planet.Moons = new List<Planet>();
 			if (!isMoon)
 			{
-				var curMoon = seed.FirstMoon;
+				var curMoon = seed.FirstSatellite;
 				var n = 0;
 				while (curMoon != null)
 				{
@@ -576,7 +577,7 @@ namespace Primoris.Universe.Stargen.Data
 						}
 						planet.Moons.Add(generatedMoon);
 					}
-					curMoon = curMoon.NextPlanet;
+					curMoon = curMoon.NextBody;
 				}
 			}
 		}
@@ -625,7 +626,7 @@ namespace Primoris.Universe.Stargen.Data
 		/// <param name="last_ice"></param>
 		/// <param name="last_temp"></param>
 		/// <param name="last_albedo"></param>
-		private void CalculateSurfaceTemperature(bool first, double last_water, double last_clouds, double last_ice, double last_temp, double last_albedo, double surfpres)
+		protected virtual void CalculateSurfaceTemperature(bool first, double last_water, double last_clouds, double last_ice, double last_temp, double last_albedo, double surfpres)
 		{
 			double effectiveTemp;
 			double waterRaw;
@@ -716,19 +717,19 @@ namespace Primoris.Universe.Stargen.Data
 			SetTempRange(surfpres);
 		}
 
-		private double Lim(double x)
+		protected double Lim(double x)
 		{
 			return x / Math.Sqrt(Math.Sqrt(1 + x * x * x * x));
 		}
 
-		private double Soft(double v, double max, double min)
+		protected double Soft(double v, double max, double min)
 		{
 			double dv = v - min;
 			double dm = max - min;
 			return (Lim(2 * dv / dm - 1) + 1) / 2 * dm + min;
 		}
 
-		private void SetTempRange(double surfpres)
+		protected void SetTempRange(double surfpres)
 		{
 			var planet = this;
 

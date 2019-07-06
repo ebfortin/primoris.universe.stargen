@@ -1,14 +1,15 @@
 namespace Primoris.Universe.Stargen
 {
 
-    using System;
-    using System.Drawing;
-    using System.Windows.Forms;
-    using System.IO;
-    using Display;
-    using Data;
+	using System;
+	using System.Drawing;
+	using System.Windows.Forms;
+	using System.IO;
+	using Display;
+	using Data;
+	using Primoris.Universe.Stargen.Systems;
 
-    public partial class MainGenerator : Form
+	public partial class MainGenerator : Form
     {
         private static string ArtFolder = "Art";
         private static string PlanetsFile = "PixelPlanets.png";
@@ -109,7 +110,7 @@ namespace Primoris.Universe.Stargen
         {
             Utilities.InitRandomSeed((int)_seedSelector.Value);
             var curIdx = _systemListBox.SelectedIndex;
-            var newSystem = Generator.GenerateStellarSystem(_system.Name, GetSelectedOptions());
+            var newSystem = OriginalGenerator.GenerateStellarSystem(_system.Name, GetSelectedOptions());
             _group.Systems[curIdx] = newSystem;
             _systemListBox.Items[curIdx] = newSystem;
             SetSystem(newSystem);
@@ -134,7 +135,7 @@ namespace Primoris.Universe.Stargen
         {
             _systemListBox.Items.Clear();
             var options = GetSelectedOptions();
-            _group = Generator.GenerateStellarGroup((int)_seedSelector.Value, (int)_countSelector.Value, options);
+            _group = OriginalGenerator.GenerateStellarGroup((int)_seedSelector.Value, (int)_countSelector.Value, options);
             foreach (var system in _group.Systems)
             {
                 _systemListBox.Items.Add(system);

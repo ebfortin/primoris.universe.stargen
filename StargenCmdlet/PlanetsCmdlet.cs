@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Management.Automation;
-using Primoris.Universe.Stargen;
 using Primoris.Universe.Stargen.Data;
 using System.IO;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
-
+using Primoris.Universe.Stargen.Systems;
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {
@@ -73,7 +72,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 		{
             var sun = GenerateStar();
 
-            var sys = Generator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun : sun);
+            var sys = OriginalGenerator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun : sun);
             if (String.IsNullOrEmpty(CsvOutputPath))
             {
                 WriteObject(sun);

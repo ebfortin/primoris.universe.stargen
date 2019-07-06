@@ -149,7 +149,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var hAU = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereAU(SunMass, EarthMass, EarthSemiMajorAxisAU);
                 Assert.AreEqual(earthSphereAU, hAU, 0.001);
 
-                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereKM(SunMass, EarthMass, EarthSemiMajorAxisAU);
+                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphere(SunMass, EarthMass, EarthSemiMajorAxisAU);
                 Assert.AreEqual(earthSphereKM, hKM, 0.99);
             }
 
@@ -163,7 +163,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var hAU = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereAU(SunMass, MercuryMass, MercurySemiMajorAxisAU);
                 Assert.AreEqual(mercurySphereAU, hAU, 0.001);
 
-                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereKM(SunMass, MercuryMass, MercurySemiMajorAxisAU);
+                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphere(SunMass, MercuryMass, MercurySemiMajorAxisAU);
                 Assert.AreEqual(mercurySphereKM, hKM, 0.99);
             }
 
@@ -177,7 +177,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var hAU = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereAU(SunMass, VenusMass, VenusSemiMajorAxisAU);
                 Assert.AreEqual(venusSphereAU, hAU, 0.001);
 
-                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereKM(SunMass, VenusMass, VenusSemiMajorAxisAU);
+                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphere(SunMass, VenusMass, VenusSemiMajorAxisAU);
                 Assert.AreEqual(venusSphereKM, hKM, 0.99);
             }
 
@@ -191,7 +191,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var hAU = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereAU(SunMass, JupiterMass, JupiterSemiMajorAxisAU);
                 Assert.AreEqual(jupiterSphereAU, hAU, 0.001);
 
-                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphereKM(SunMass, JupiterMass, JupiterSemiMajorAxisAU);
+                var hKM = Primoris.Universe.Stargen.Environment.SimplifiedHillSphere(SunMass, JupiterMass, JupiterSemiMajorAxisAU);
                 Assert.AreEqual(jupiterSphereKM, hKM, 0.99);
             }
         }
@@ -221,7 +221,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var dAU = Primoris.Universe.Stargen.Environment.RocheLimitAU(EarthRadius, EarthDensity, MoonDensity);
                 Assert.AreEqual(earthMoonAU, dAU, 0.99);
 
-                var dKM = Primoris.Universe.Stargen.Environment.RocheLimitKM(EarthRadius, EarthDensity, MoonDensity);
+                var dKM = Primoris.Universe.Stargen.Environment.RocheLimit(EarthRadius, EarthDensity, MoonDensity);
                 Assert.AreEqual(earthMoonKM, dKM, 0.99);
             }
 
@@ -235,7 +235,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var dAU = Primoris.Universe.Stargen.Environment.RocheLimitAU(EarthRadius, EarthDensity, AvgCometDensity);
                 Assert.AreEqual(earthAvgCometAU, dAU, 0.99);
 
-                var dKM = Primoris.Universe.Stargen.Environment.RocheLimitKM(EarthRadius, EarthDensity, AvgCometDensity);
+                var dKM = Primoris.Universe.Stargen.Environment.RocheLimit(EarthRadius, EarthDensity, AvgCometDensity);
                 Assert.AreEqual(earthAvgCometKM, dKM, 0.99);
             }
 
@@ -249,7 +249,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var dAU = Primoris.Universe.Stargen.Environment.RocheLimitAU(SunRadius, SunDensity, EarthDensity);
                 Assert.AreEqual(sunEarthAU, dAU, 0.99);
 
-                var dKM = Primoris.Universe.Stargen.Environment.RocheLimitKM(SunRadius, SunDensity, EarthDensity);
+                var dKM = Primoris.Universe.Stargen.Environment.RocheLimit(SunRadius, SunDensity, EarthDensity);
                 Assert.AreEqual(sunEarthKM, dKM, 0.99);
             }
 
@@ -263,7 +263,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var dAU = Primoris.Universe.Stargen.Environment.RocheLimitAU(SunRadius, SunDensity, MoonDensity);
                 Assert.AreEqual(sunMoonAU, dAU, 0.99);
 
-                var dKM = Primoris.Universe.Stargen.Environment.RocheLimitKM(SunRadius, SunDensity, MoonDensity);
+                var dKM = Primoris.Universe.Stargen.Environment.RocheLimit(SunRadius, SunDensity, MoonDensity);
                 Assert.AreEqual(sunMoonKM, dKM, 0.99);
             }
 
@@ -277,7 +277,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var dAU = Primoris.Universe.Stargen.Environment.RocheLimitAU(SunRadius, SunDensity, JupiterDensity);
                 Assert.AreEqual(sunJupiterAU, dAU, 0.99);
 
-                var dKM = Primoris.Universe.Stargen.Environment.RocheLimitKM(SunRadius, SunDensity, JupiterDensity);
+                var dKM = Primoris.Universe.Stargen.Environment.RocheLimit(SunRadius, SunDensity, JupiterDensity);
                 Assert.AreEqual(sunJupiterKM, dKM, 0.99);
             }
         }

@@ -5,7 +5,8 @@ namespace Primoris.Universe.Stargen
 {
 
 
-    // TODO Figure out a way to logically break this class up
+    // TODO: Figure out a way to logically break this class up
+	// TODO: Make it a Service and Fluent API support.
     public static class Environment
     {
         /// <summary>
@@ -44,7 +45,7 @@ namespace Primoris.Universe.Stargen
         /// <param name="m">The mass of the smaller body</param>
         /// <param name="a">Semi-major axis in AU</param>
         /// <returns>Hill sphere in KM</returns>
-        public static double SimplifiedHillSphereKM(double M, double m, double a)
+        public static double SimplifiedHillSphere(double M, double m, double a)
         {
             return SimplifiedHillSphereAU(M, m, a) * GlobalConstants.KM_PER_AU;
         }
@@ -70,7 +71,7 @@ namespace Primoris.Universe.Stargen
         /// <param name="satelliteDensity">Density of the orbiting satellite
         /// in g/cc </param>
         /// <returns>Roche limit for the satellite in KM</returns>
-        public static double RocheLimitKM(double bodyRadius, double bodyDensity, double satelliteDensity)
+        public static double RocheLimit(double bodyRadius, double bodyDensity, double satelliteDensity)
         {
             return (1.26 * bodyRadius * Math.Pow(bodyDensity / satelliteDensity, 1.0 / 3.0)) / 1000.0;
         }
@@ -85,7 +86,7 @@ namespace Primoris.Universe.Stargen
         /// <returns>Roche limit for the satellite in AU</returns>
         public static double RocheLimitAU(double bodyRadius, double bodyDensity, double satelliteDensity)
         {
-            return RocheLimitKM(bodyRadius, bodyDensity, satelliteDensity) / GlobalConstants.KM_PER_AU;
+            return RocheLimit(bodyRadius, bodyDensity, satelliteDensity) / GlobalConstants.KM_PER_AU;
         }
 
 
@@ -161,7 +162,7 @@ namespace Primoris.Universe.Stargen
         /// </summary>
         public static bool IsHabitable(Planet planet)
         {
-            return planet.Atmosphere.Breathability == Data.Breathability.Breathable &&
+            return planet.Atmosphere.Breathability == Breathability.Breathable &&
                    !planet.HasResonantPeriod &&
                    !IsTidallyLocked(planet);
         }
@@ -314,7 +315,7 @@ namespace Primoris.Universe.Stargen
         /// <param name="rEcosphere"></param>
         /// <param name="isGasGiant"></param>
         /// <returns>Density in grams/cc</returns>
-        public static double EmpiricalDensity(double mass, double orbRadius, double rEcosphere, bool isGasGiant)
+        public static double EmpiricalDensityGCC(double mass, double orbRadius, double rEcosphere, bool isGasGiant)
         {
             double density = Math.Pow(mass * GlobalConstants.SUN_MASS_IN_EARTH_MASSES, (1.0 / 8.0));
             density *= Utilities.Pow1_4(rEcosphere / orbRadius);
