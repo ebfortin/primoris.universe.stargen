@@ -53,7 +53,6 @@ namespace Primoris.Universe.Stargen.Bodies
 				? FarthestPlanet(stellarMassRatio)
 				: outerPlanetLimit;
 
-			//BodySeed seeds = seedSystem;
 			while (_dustLeft)
 			{
 				double a, e;

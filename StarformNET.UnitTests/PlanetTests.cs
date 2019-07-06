@@ -22,7 +22,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 Utilities.InitRandomSeed(0);
                 var system2 = OriginalGenerator.GenerateStellarSystem("system2").Planets;
 
-                Assert.IsTrue(system1.SequenceEqual<Planet>(system2));
+                Assert.IsTrue(system1.SequenceEqual(system2));
             }
 
             [TestCategory("Planet.Equals")]
@@ -35,7 +35,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 Utilities.InitRandomSeed(1);
                 var system2 = OriginalGenerator.GenerateStellarSystem("system2").Planets;
 
-				Assert.IsFalse(system1.SequenceEqual<Planet>(system2));
+				Assert.IsFalse(system1.SequenceEqual(system2));
             }
         }
     }

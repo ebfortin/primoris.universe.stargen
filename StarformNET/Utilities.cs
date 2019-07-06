@@ -8,6 +8,9 @@ namespace Primoris.Universe.Stargen
 
         public static bool AlmostEqual(double v1, double v2, double diff=0.00001)
         {
+			if (v1 == v2)
+				return true;
+
             return Math.Abs(v1 - v2) <= Math.Abs(v1 * .00001);
         }
 

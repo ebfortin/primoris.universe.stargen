@@ -176,7 +176,8 @@ namespace Primoris.Universe.Stargen.Data
         /// outgassing. Used in the calculation of surface pressure. See Fogg
         /// eq. 16. 
         /// </summary>
-        public double VolatileGasInventory { get; private set; } 
+        public double VolatileGasInventory { get; 
+private set; } 
 
         /// <summary>
         /// Boiling point of water on the planet given in Kelvin.

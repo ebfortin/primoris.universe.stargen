@@ -160,6 +160,7 @@ namespace Primoris.Universe.Stargen
         public static double Q1_36                        = (1.258E19);                    // grams
         public static double Q2_36                        = (0.0698);                      // 1/Kelvin
 
-		public static double NOT_APPLICABLE = double.NaN; //(9.9999E37);
+		public const double NOT_APPLICABLE = double.PositiveInfinity; //(9.9999E37);
+		public const double OUT_OF_RANGE = 0.0;
     }
 }
