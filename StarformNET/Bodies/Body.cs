@@ -3,6 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using Primoris.Universe.Stargen.Physics;
 using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Systems;
+using Environment = Primoris.Universe.Stargen.Physics.Environment;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
@@ -333,7 +335,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			SemiMajorAxisAU = semiMajorAxisAU;
 			Eccentricity = eccentricity;
 			AxialTilt = axialTilt;
-			OrbitZone = Environment.OrbitalZone(Star.Luminosity, SemiMajorAxisAU);
+			OrbitZone = Physics.GetOrbitalZone(Star.Luminosity, SemiMajorAxisAU);
 			DayLength = dayLengthHours;
 			OrbitalPeriod = orbitalPeriodDays;
 
@@ -341,7 +343,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			GasMassSM = gasMassSM;
 			DustMassSM = MassSM - GasMassSM;
 			Radius = radius;
-			DensityGCC = Environment.EmpiricalDensityGCC(MassSM, SemiMajorAxisAU, Star.EcosphereRadiusAU, true);
+			DensityGCC = Physics.GetDensityFromStar(MassSM, SemiMajorAxisAU, Star.EcosphereRadiusAU, true);
 			ExosphereTemperature = GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(SemiMajorAxisAU / Star.EcosphereRadiusAU);
 			SurfaceAccelerationCMSec2 = Environment.Acceleration(MassSM, Radius);
 			EscapeVelocityCMSec = Environment.EscapeVelocity(MassSM, Radius);
@@ -399,9 +401,9 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			Atmosphere ??= new Atmosphere(this);
 
-			Illumination = Environment.MinimumIllumination(SemiMajorAxisAU, Star.Luminosity);
-			IsHabitable = Environment.IsHabitable(this);
-			IsEarthlike = Environment.IsEarthlike(this);
+			Illumination = Physics.GetMinimumIllumination(SemiMajorAxisAU, Star.Luminosity);
+			IsHabitable = Physics.TestIsHabitable(DayLength, OrbitalPeriod, Atmosphere.Breathability, HasResonantPeriod, IsTidallyLocked);
+			IsEarthlike = Physics.TestIsEarthLike(SurfaceTemperature, WaterCoverFraction, CloudCoverFraction, IceCoverFraction, Atmosphere.SurfacePressure, SurfaceGravityG, Atmosphere.Breathability, Type);
 		}
 
 		protected virtual void AdjustPropertiesForRockyBody()
@@ -480,7 +482,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			var planet = this;
 
-			planet.OrbitZone = Environment.OrbitalZone(sun.Luminosity, SemiMajorAxisAU);
+			planet.OrbitZone = Physics.GetOrbitalZone(sun.Luminosity, SemiMajorAxisAU);
 			planet.OrbitalPeriod = Environment.Period(SemiMajorAxisAU, MassSM, sun.Mass);
 			if (useRandomTilt)
 			{
@@ -489,7 +491,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 			planet.ExosphereTemperature = Physics.GetExosphereTemperature(SemiMajorAxisAU, sun.EcosphereRadiusAU, sun.Temperature);
 			planet.RMSVelocityCMSec = Physics.GetRMSVelocityCMSec(ExosphereTemperature);
-			planet.CoreRadius = Physics.GetRadius(DustMassSM, OrbitZone);
+			planet.CoreRadius = Physics.GetRadius(DustMassSM, OrbitZone, true);
 
 			// Calculate the radius as a gas giant, to verify it will retain gas.
 			// Then if mass > Earth, it's at least 5% gas and retains He, it's
@@ -512,7 +514,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			}
 			else // If not, it's rocky.
 			{
-				Radius = Physics.GetRadius(MassSM, OrbitZone);
+				Radius = Physics.GetRadius(MassSM, OrbitZone, false);
 				DensityGCC = Physics.GetDensityFromBody(MassSM, Radius);
 
 				//SurfaceAccelerationCMSec2 = Environment.Acceleration(MassSM, Radius);
@@ -534,12 +536,12 @@ namespace Primoris.Universe.Stargen.Bodies
 			}
 
 			planet.AngularVelocityRadSec = Physics.GetAngularVelocity(MassSM,
-									  Radius,
-									  DensityGCC,
-									  SemiMajorAxisAU,
-									  Physics.TestIsGasGiant(MassSM, GasMassSM, MolecularWeightRetained),
-									  sun.Mass,
-									  sun.Age);
+																  Radius,
+																  DensityGCC,
+																  SemiMajorAxisAU,
+																  Physics.TestIsGasGiant(MassSM, GasMassSM, MolecularWeightRetained),
+																  sun.Mass,
+																  sun.Age);
 			planet.DayLength = Physics.GetDayLength(planet.AngularVelocityRadSec, planet.OrbitalPeriod, planet.Eccentricity);
 			planet.HasResonantPeriod = Physics.TestHasResonantPeriod(planet.AngularVelocityRadSec, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
 			planet.EscapeVelocityCMSec = Physics.GetEscapeVelocity(planet.MassSM, planet.Radius);
@@ -571,7 +573,6 @@ namespace Primoris.Universe.Stargen.Bodies
 						 MaxTemperature,
 						 BoilingPointWater,
 						 SurfaceTemperature);
-
 			}
 
 			// Generate moons

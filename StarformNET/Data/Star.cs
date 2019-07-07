@@ -28,7 +28,7 @@ namespace Primoris.Universe.Stargen.Data
 
 			if (lum == 0)
 			{
-				lum = Main.Environment.MassToLuminosity(mass);
+				lum = Main.Physics.Environment.MassToLuminosity(mass);
 			}
 
 			StellarType = StellarType.FromLuminosityAndRadius(lum, 1.0);

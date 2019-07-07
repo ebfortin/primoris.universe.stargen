@@ -1,8 +1,7 @@
 using System;
 using Primoris.Universe.Stargen.Bodies;
-using Primoris.Universe.Stargen.Physics;
 
-namespace Primoris.Universe.Stargen
+namespace Primoris.Universe.Stargen.Physics
 {
 
 
@@ -10,20 +9,7 @@ namespace Primoris.Universe.Stargen
 	// TODO: Make it a Service and Fluent API support.
 	public static class Environment
     {
-        /// <summary>
-        /// Returns the illumination of a body at its farthest point from a
-        /// star.
-        /// </summary>
-        /// <param name="a">Semi-major axis of the body in au</param>
-        /// <param name="l">Luminance of the star in solar luminance units</param>
-        /// <returns>Illumination where 1.0 is equal to the light received by
-        /// the Earth from the Sun.</returns>
-        public static double MinimumIllumination(double a, double l)
-        {
-            // No idea about the source of this other than the obvious fact that
-            // light follows the inverse square law.
-            return Utilities.Pow2(1.0 / a) * l;
-        }
+
 
         /// <summary>
         /// Returns the radius (center?) of a star's ecosphere in au.
@@ -36,58 +22,6 @@ namespace Primoris.Universe.Stargen
             // No idea the source of this. It centers the Solar System's ecosphere at
             // 1 au.
             return Math.Sqrt(luminosity);
-        }
-
-        /// <summary>
-        /// Returns the hill sphere of object m orbiting object M with a semi-
-        /// major axis a. Ignores eccentricity.
-        /// </summary>
-        /// <param name="M">The mass of the larger body</param>
-        /// <param name="m">The mass of the smaller body</param>
-        /// <param name="a">Semi-major axis in AU</param>
-        /// <returns>Hill sphere in KM</returns>
-        public static double SimplifiedHillSphere(double M, double m, double a)
-        {
-            return SimplifiedHillSphereAU(M, m, a) * GlobalConstants.KM_PER_AU;
-        }
-
-        /// <summary>
-        /// Returns the hill sphere of object m orbiting object M with a semi-
-        /// major axis a. Ignores eccentricity.
-        /// </summary>
-        /// <param name="M">The mass of the larger body</param>
-        /// <param name="m">The mass of the smaller body</param>
-        /// <param name="a">Semi-major axis in AU</param>
-        /// <returns>Hill sphere in AU</returns>
-        public static double SimplifiedHillSphereAU(double M, double m, double a)
-        {
-            return a * Math.Pow(m / (3 * M), (1.0 / 3.0));
-        }
-
-        /// <summary>
-        /// Returns the Roche limit of an object in KM
-        /// </summary>
-        /// <param name="bodyRadius">Radius of the body in km</param>
-        /// <param name="bodyDensity">Density of the body in g/cc</param>
-        /// <param name="satelliteDensity">Density of the orbiting satellite
-        /// in g/cc </param>
-        /// <returns>Roche limit for the satellite in KM</returns>
-        public static double RocheLimit(double bodyRadius, double bodyDensity, double satelliteDensity)
-        {
-            return (1.26 * bodyRadius * Math.Pow(bodyDensity / satelliteDensity, 1.0 / 3.0)) / 1000.0;
-        }
-
-        /// <summary>
-        /// Returns the Roche limit of an object in AU
-        /// </summary>
-        /// <param name="bodyRadius">Radius of the body in km</param>
-        /// <param name="bodyDensity">Density of the body in g/cc</param>
-        /// <param name="satelliteDensity">Density of the orbiting satellite
-        /// in g/cc </param>
-        /// <returns>Roche limit for the satellite in AU</returns>
-        public static double RocheLimitAU(double bodyRadius, double bodyDensity, double satelliteDensity)
-        {
-            return RocheLimit(bodyRadius, bodyDensity, satelliteDensity) / GlobalConstants.KM_PER_AU;
         }
 
 
@@ -158,63 +92,6 @@ namespace Primoris.Universe.Stargen
             return (int) planet.DayLength == (int) (planet.OrbitalPeriod * 24);
         }
 
-        /// <summary>
-        /// Returns true if the planet's conditions can support human life
-        /// </summary>
-        public static bool IsHabitable(Body planet)
-        {
-            return planet.Atmosphere.Breathability == Breathability.Breathable &&
-                   !planet.HasResonantPeriod &&
-                   !IsTidallyLocked(planet);
-        }
-
-        /// <summary>
-        /// Returns true if the planet's conditions are similar to Earth
-        /// </summary>
-        public static bool IsEarthlike(Body planet)
-        {
-            double relTemp = (planet.SurfaceTemperature - GlobalConstants.FREEZING_POINT_OF_WATER) -
-                             GlobalConstants.EARTH_AVERAGE_CELSIUS;
-            double seas = planet.WaterCoverFraction * 100.0;
-            double clouds = planet.CloudCoverFraction * 100.0;
-            double pressure = planet.Atmosphere.SurfacePressure / GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS;
-            double ice = planet.IceCoverFraction * 100.0;
-
-            return
-                planet.SurfaceGravityG >= .8 &&
-                planet.SurfaceGravityG <= 1.2 &&
-                relTemp >= -2.0 &&
-                relTemp <= 3.0 &&
-                ice <= 10.0 &&
-                pressure >= 0.5 &&
-                pressure <= 2.0 &&
-                clouds >= 40.0 &&
-                clouds <= 80.0 &&
-                seas >= 50.0 &&
-                seas <= 80.0 &&
-                planet.Type != BodyType.Water &&
-                planet.Atmosphere.Breathability == Bodies.Breathability.Breathable;
-        }
-
-        /// <summary>
-        /// This function, given the orbital radius of a planet in AU, returns
-        /// the orbital 'zone' of the planet.
-        /// </summary>
-        public static int OrbitalZone(double luminosity, double orbRadius)
-        {
-            if (orbRadius < (4.0 * Math.Sqrt(luminosity)))
-            {
-                return (1);
-            }
-            else if (orbRadius < (15.0 * Math.Sqrt(luminosity)))
-            {
-                return (2);
-            }
-            else
-            {
-                return (3);
-            }
-        }
 
         /// <summary>
         /// Calculates the radius of a planet.
@@ -231,105 +108,6 @@ namespace Primoris.Universe.Stargen
             return (Math.Pow((3.0 * volume) / (4.0 * Math.PI), (1.0 / 3.0)) / GlobalConstants.CM_PER_KM);
         }
 
-        /// <summary>
-        /// Returns the radius of the planet in kilometers.        
-        /// </summary>
-        /// <param name="mass">Mass in units of solar mass</param>
-        /// <param name="giant">Is the planet a gas giant?</param>
-        /// <param name="zone">Orbital zone</param>
-        /// <returns>Radius in km</returns>
-        public static double KothariRadius(double mass, bool giant, int zone)
-        {
-            // This formula is listed as eq.9 in Fogg's article, although some typos
-            // crop up in that eq.  See "The Internal Constitution of Planets", by
-            // Dr. D. S. Kothari, Mon. Not. of the Royal Astronomical Society, vol 96
-            // pp.833-843, 1936 for the derivation.  Specifically, this is Kothari's
-            // eq.23, which appears on page 840.
-            // http://articles.adsabs.harvard.edu//full/1936MNRAS..96..833K/0000840.000.html
-
-            double temp1;
-            double temp, temp2, atomic_weight, atomic_num;
-
-            if (zone == 1)
-            {
-                if (giant)
-                {
-                    atomic_weight = 9.5;
-                    atomic_num = 4.5;
-                }
-                else
-                {
-                    atomic_weight = 15.0;
-                    atomic_num = 8.0;
-                }
-            }
-            else if (zone == 2)
-            {
-                if (giant)
-                {
-                    atomic_weight = 2.47;
-                    atomic_num = 2.0;
-                }
-                else
-                {
-                    atomic_weight = 10.0;
-                    atomic_num = 5.0;
-                }
-            }
-            else
-            {
-                if (giant)
-                {
-                    atomic_weight = 7.0;
-                    atomic_num = 4.0;
-                }
-                else
-                {
-                    atomic_weight = 10.0;
-                    atomic_num = 5.0;
-                }
-            }
-
-            temp1 = atomic_weight * atomic_num;
-
-            temp = (2.0 * GlobalConstants.BETA_20 * Math.Pow(GlobalConstants.SOLAR_MASS_IN_GRAMS, (1.0 / 3.0)))
-                   / (GlobalConstants.A1_20 * Math.Pow(temp1, (1.0 / 3.0)));
-
-            temp2 = GlobalConstants.A2_20 * Math.Pow(atomic_weight, (4.0 / 3.0)) *
-                    Math.Pow(GlobalConstants.SOLAR_MASS_IN_GRAMS, (2.0 / 3.0));
-            temp2 = temp2 * Math.Pow(mass, (2.0 / 3.0));
-            temp2 = temp2 / (GlobalConstants.A1_20 * Utilities.Pow2(atomic_num));
-            temp2 = 1.0 + temp2;
-            temp = temp / temp2;
-            temp = (temp * Math.Pow(mass, (1.0 / 3.0))) / GlobalConstants.CM_PER_KM;
-
-            temp /= GlobalConstants.JIMS_FUDGE; /* Make Earth = actual earth */
-
-            return (temp);
-        }
-
-        /// <summary>
-        /// Returns the the empirical density in grams/cc
-        /// </summary>
-        /// <param name="mass">Mass in units of solar masses</param>
-        /// <param name="orbRadius">Radius in units of AU</param>
-        /// <param name="rEcosphere"></param>
-        /// <param name="isGasGiant"></param>
-        /// <returns>Density in grams/cc</returns>
-        public static double EmpiricalDensityGCC(double mass, double orbRadius, double rEcosphere, bool isGasGiant)
-        {
-            double density = Math.Pow(mass * GlobalConstants.SUN_MASS_IN_EARTH_MASSES, (1.0 / 8.0));
-            density *= Utilities.Pow1_4(rEcosphere / orbRadius);
-
-            if (isGasGiant)
-            {
-                return (density * 1.2);
-            }
-            else
-            {
-                return (density * 5.5);
-            }
-        }
 
         /// <summary>
         /// Density returned in units of grams/cc

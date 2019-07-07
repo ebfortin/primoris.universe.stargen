@@ -3,8 +3,8 @@ using System;
 using System.Text;
 using System.Linq;
 using Primoris.Universe.Stargen.Physics;
-using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Data;
+using Environment = Primoris.Universe.Stargen.Physics.Environment;
 
 namespace Primoris.Universe.Stargen.Bodies
 {

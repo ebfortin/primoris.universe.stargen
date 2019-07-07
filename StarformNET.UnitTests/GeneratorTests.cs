@@ -8,7 +8,7 @@ using System.Linq;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using Environment = Primoris.Universe.Stargen.Environment;
+using Environment = Primoris.Universe.Stargen.Physics;
 using Primoris.Universe.Stargen.Systems;
 
 namespace Primoris.Universe.Stargen.UnitTests
