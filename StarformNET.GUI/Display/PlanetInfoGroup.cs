@@ -1,12 +1,13 @@
-using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Bodies;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Primoris.Universe.Stargen.Display
 {
 
-    public class PlanetInfoGroup : InfoGroup
+	public class PlanetInfoGroup : InfoGroup
     {
-        public void SetPlanet(Planet planet)
+        public void SetPlanet(Body planet)
         {
             var labels = new List<string>()
             {
@@ -53,7 +54,7 @@ namespace Primoris.Universe.Stargen.Display
                 PlanetText.GetHydrosphere(planet),
                 PlanetText.GetIceCover(planet),
                 PlanetText.GetCloudCover(planet),
-                planet.Satellites.Count.ToString(),
+                planet.Satellites.Count().ToString(),
                 PlanetText.GetSurfacePressureStringAtm(planet),
                 PlanetText.GetAtmoString(planet)
             };

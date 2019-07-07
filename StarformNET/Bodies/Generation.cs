@@ -1,5 +1,3 @@
-using Primoris.Universe.Stargen.Data;
-
 namespace Primoris.Universe.Stargen.Bodies
 {
 	public class Generation

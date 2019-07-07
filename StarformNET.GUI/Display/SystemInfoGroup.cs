@@ -1,15 +1,14 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Primoris.Universe.Stargen.Data;
-
+using Primoris.Universe.Stargen.Bodies;
 
 namespace Primoris.Universe.Stargen.Display
 {
 
-    public class SystemInfoGroup : InfoGroup
+	public class SystemInfoGroup : InfoGroup
     {
-        public void SetSystem(IEnumerable<Planet> planets)
+        public void SetSystem(IEnumerable<Body> planets)
         {
             if (planets == null || planets.ElementAt(0) == null)
             {

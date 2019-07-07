@@ -1,7 +1,9 @@
+using Primoris.Universe.Stargen.Bodies;
+using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Physics;
+
 namespace Primoris.Universe.Stargen
 {
-	using Data;
-	using Primoris.Universe.Stargen.Physics;
 
 	public class SystemGenerationOptions
     {

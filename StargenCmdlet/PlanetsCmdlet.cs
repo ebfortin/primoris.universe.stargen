@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Management.Automation;
-using Primoris.Universe.Stargen.Data;
 using System.IO;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using Primoris.Universe.Stargen.Systems;
 using Primoris.Universe.Stargen.Physics;
+using Primoris.Universe.Stargen.Bodies;
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {
-	internal class PlanetMap : ClassMap<Planet>
+	internal class PlanetMap : ClassMap<Body>
 	{
 		public PlanetMap()
 		{
@@ -88,9 +88,9 @@ namespace Primoris.Universe.Stargen.Cmdlets
 				var w = new StreamWriter(f);
 				var cw = new CsvWriter(w, conf);
 
-				cw.WriteHeader<Planet>();
+				cw.WriteHeader<Body>();
 				cw.NextRecord();
-				cw.WriteRecords<Planet>(sys.Planets);
+				cw.WriteRecords<Body>(sys.Planets);
 				cw.Flush();
 
 				w.Close();

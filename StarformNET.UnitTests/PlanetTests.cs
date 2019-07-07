@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Primoris.Universe.Stargen.Systems;
-using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Bodies;
 using System.Linq;
 
 

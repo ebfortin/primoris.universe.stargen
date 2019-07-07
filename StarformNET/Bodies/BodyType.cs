@@ -1,4 +1,4 @@
-namespace Primoris.Universe.Stargen.Data
+namespace Primoris.Universe.Stargen.Bodies
 {
     public enum BodyType
     {

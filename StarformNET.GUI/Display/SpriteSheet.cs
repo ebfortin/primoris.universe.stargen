@@ -3,7 +3,7 @@ namespace Primoris.Universe.Stargen.Display
     using System.Drawing;
     using System;
     using System.Collections.Generic;
-    using Data;
+    using Bodies;
 
     public class PlanetSpriteSheet
     {

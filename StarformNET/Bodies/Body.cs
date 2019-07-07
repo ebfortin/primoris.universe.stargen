@@ -1,17 +1,17 @@
-using Primoris.Universe.Stargen.Bodies;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using Primoris.Universe.Stargen.Physics;
+using Primoris.Universe.Stargen.Data;
 
-namespace Primoris.Universe.Stargen.Data
+namespace Primoris.Universe.Stargen.Bodies
 {
 
 	// TODO break this class up
 	// TODO orbit zone is supposedly no longer used anywhere. Check references and possibly remove.
 
 	[Serializable]
-	public class Planet : IEquatable<Planet>
+	public class Body : IEquatable<Body>
 	{
 		private static readonly IBodyPhysics DefaultPhysics = new BurrowsBodyPhysics();
 
@@ -155,7 +155,7 @@ namespace Primoris.Universe.Stargen.Data
 
 		#region Satellites data
 
-		public IEnumerable<Planet> Satellites { get; private set; }
+		public IEnumerable<Body> Satellites { get; private set; }
 
 		public double MoonSemiMajorAxisAU { get; private set; }
 
@@ -268,9 +268,9 @@ namespace Primoris.Universe.Stargen.Data
 
 		#endregion
 
-		public Planet(Star sun, Atmosphere atmos) : this(DefaultPhysics, sun, atmos) { }
+		public Body(Star sun, Atmosphere atmos) : this(DefaultPhysics, sun, atmos) { }
 
-		public Planet(IBodyPhysics phys, Star sun, Atmosphere atmos)
+		public Body(IBodyPhysics phys, Star sun, Atmosphere atmos)
 		{
 			Physics = phys;
 
@@ -280,7 +280,7 @@ namespace Primoris.Universe.Stargen.Data
 			Check();
 		}
 
-		public Planet(Star sun,
+		public Body(Star sun,
 					  double semiMajorAxisAU,
 					  double eccentricity,
 					  double axialTilt,
@@ -310,7 +310,7 @@ namespace Primoris.Universe.Stargen.Data
 							   surfGrav)
 		{ }
 
-		public Planet(IBodyPhysics phys,
+		public Body(IBodyPhysics phys,
 					  Star sun,
 					  double semiMajorAxisAU,
 					  double eccentricity,
@@ -358,7 +358,7 @@ namespace Primoris.Universe.Stargen.Data
 			Check();
 		}
 
-		public Planet(Star star) 
+		public Body(Star star)
 			: this(DefaultPhysics, star) { }
 
 		/// <summary>
@@ -366,7 +366,7 @@ namespace Primoris.Universe.Stargen.Data
 		/// </summary>
 		/// <param name="phys"></param>
 		/// <param name="star"></param>
-		public Planet(IBodyPhysics phys, Star star)
+		public Body(IBodyPhysics phys, Star star)
 		{
 			Physics = phys;
 
@@ -374,10 +374,10 @@ namespace Primoris.Universe.Stargen.Data
 			Check();
 		}
 
-		public Planet(BodySeed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions) 
+		public Body(BodySeed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
 			: this(DefaultPhysics, seed, star, num, useRandomTilt, planetID, genOptions) { }
 
-		public Planet(IBodyPhysics phys, BodySeed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
+		public Body(IBodyPhysics phys, BodySeed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
 		{
 			Physics = phys;
 
@@ -414,7 +414,7 @@ namespace Primoris.Universe.Stargen.Data
 			double radius = Radius;
 			double surfaceAccelerationCMSec2 = SurfaceAccelerationCMSec2;
 
-			if ((gasMassSM / massSM) > 0.000001)
+			if (gasMassSM / massSM > 0.000001)
 			{
 				var h2Mass = gasMassSM * 0.85;
 				var heMass = (gasMassSM - h2Mass) * 0.999;
@@ -426,7 +426,7 @@ namespace Primoris.Universe.Stargen.Data
 
 				if (h2Life < age)
 				{
-					var h2Loss = ((1.0 - (1.0 / Math.Exp(age / h2Life))) * h2Mass);
+					var h2Loss = (1.0 - 1.0 / Math.Exp(age / h2Life)) * h2Mass;
 
 					GasMassSM -= h2Loss;
 					MassSM -= h2Loss;
@@ -437,7 +437,7 @@ namespace Primoris.Universe.Stargen.Data
 
 				if (heLife < age)
 				{
-					var heLoss = ((1.0 - (1.0 / Math.Exp(age / heLife))) * heMass);
+					var heLoss = (1.0 - 1.0 / Math.Exp(age / heLife)) * heMass;
 
 					GasMassSM -= heLoss;
 					MassSM -= heLoss;
@@ -530,7 +530,7 @@ namespace Primoris.Universe.Stargen.Data
 												   GasMassSM,
 												   OrbitZone,
 												   HasGreenhouseEffect,
-												   (GasMassSM / MassSM) > 0.000001);
+												   GasMassSM / MassSM > 0.000001);
 			}
 
 			planet.AngularVelocityRadSec = Physics.GetAngularVelocity(MassSM,
@@ -575,7 +575,7 @@ namespace Primoris.Universe.Stargen.Data
 			}
 
 			// Generate moons
-			var sat = new List<Planet>();
+			var sat = new List<Body>();
 			var curMoon = seed.FirstSatellite;
 			var n = 0;
 			if (curMoon != null)
@@ -589,14 +589,14 @@ namespace Primoris.Universe.Stargen.Data
 
 						n++;
 
-						string moon_id = String.Format("{0}.{1}", planetID, n);
+						string moon_id = string.Format("{0}.{1}", planetID, n);
 
-						var generatedMoon = new Planet(curMoon, sun, n, useRandomTilt, moon_id, genOptions);
+						var generatedMoon = new Body(curMoon, sun, n, useRandomTilt, moon_id, genOptions);
 
-						double roche_limit = 2.44 * planet.Radius * Math.Pow((planet.DensityGCC / generatedMoon.DensityGCC), (1.0 / 3.0));
-						double hill_sphere = planet.SemiMajorAxisAU * GlobalConstants.KM_PER_AU * Math.Pow((planet.MassSM / (3.0 * sun.Mass)), (1.0 / 3.0));
+						double roche_limit = 2.44 * planet.Radius * Math.Pow(planet.DensityGCC / generatedMoon.DensityGCC, 1.0 / 3.0);
+						double hill_sphere = planet.SemiMajorAxisAU * GlobalConstants.KM_PER_AU * Math.Pow(planet.MassSM / (3.0 * sun.Mass), 1.0 / 3.0);
 
-						if ((roche_limit * 3.0) < hill_sphere)
+						if (roche_limit * 3.0 < hill_sphere)
 						{
 							generatedMoon.MoonSemiMajorAxisAU = Utilities.RandomNumber(roche_limit * 1.5, hill_sphere / 2.0) / GlobalConstants.KM_PER_AU;
 							generatedMoon.MoonEccentricity = Utilities.RandomEccentricity();
@@ -613,15 +613,6 @@ namespace Primoris.Universe.Stargen.Data
 			}
 			planet.Satellites = sat;
 		}
-
-
-
-
-
-
-
-
-
 
 		// TODO write summary
 		// TODO parameter for number of iterations? does it matter?
@@ -697,7 +688,7 @@ namespace Primoris.Universe.Stargen.Data
 
 				planet.VolatileGasInventory = Environment.VolatileInventory(planet.MassSM,
 					planet.EscapeVelocityCMSec, planet.RMSVelocityCMSec, planet.Star.Mass,
-					planet.OrbitZone, planet.HasGreenhouseEffect, (planet.GasMassSM / planet.MassSM) > 0.000001);
+					planet.OrbitZone, planet.HasGreenhouseEffect, planet.GasMassSM / planet.MassSM > 0.000001);
 				//planet.Atmosphere.SurfacePressure = Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
 
 				planet.BoilingPointWater = Environment.BoilingPoint(surfpres);
@@ -710,12 +701,12 @@ namespace Primoris.Universe.Stargen.Data
 													 planet.WaterCoverFraction);
 			planet.IceCoverFraction = Environment.IceFraction(planet.WaterCoverFraction, planet.SurfaceTemperature);
 
-			if ((planet.HasGreenhouseEffect) && (surfpres > 0.0))
+			if (planet.HasGreenhouseEffect && surfpres > 0.0)
 			{
 				planet.CloudCoverFraction = 1.0;
 			}
 
-			if ((planet.DaytimeTemperature >= planet.BoilingPointWater) && (!first) && !(Environment.IsTidallyLocked(planet) || planet.HasResonantPeriod))
+			if (planet.DaytimeTemperature >= planet.BoilingPointWater && !first && !(Environment.IsTidallyLocked(planet) || planet.HasResonantPeriod))
 			{
 				planet.WaterCoverFraction = 0.0;
 				boilOff = true;
@@ -730,7 +721,7 @@ namespace Primoris.Universe.Stargen.Data
 				}
 			}
 
-			if (planet.SurfaceTemperature < (GlobalConstants.FREEZING_POINT_OF_WATER - 3.0))
+			if (planet.SurfaceTemperature < GlobalConstants.FREEZING_POINT_OF_WATER - 3.0)
 			{
 				planet.WaterCoverFraction = 0.0;
 			}
@@ -747,12 +738,12 @@ namespace Primoris.Universe.Stargen.Data
 			{
 				if (!boilOff)
 				{
-					planet.WaterCoverFraction = (planet.WaterCoverFraction + (last_water * 2)) / 3;
+					planet.WaterCoverFraction = (planet.WaterCoverFraction + last_water * 2) / 3;
 				}
-				planet.CloudCoverFraction = (planet.CloudCoverFraction + (last_clouds * 2)) / 3;
-				planet.IceCoverFraction = (planet.IceCoverFraction + (last_ice * 2)) / 3;
-				planet.Albedo = (planet.Albedo + (last_albedo * 2)) / 3;
-				planet.SurfaceTemperature = (planet.SurfaceTemperature + (last_temp * 2)) / 3;
+				planet.CloudCoverFraction = (planet.CloudCoverFraction + last_clouds * 2) / 3;
+				planet.IceCoverFraction = (planet.IceCoverFraction + last_ice * 2) / 3;
+				planet.Albedo = (planet.Albedo + last_albedo * 2) / 3;
+				planet.SurfaceTemperature = (planet.SurfaceTemperature + last_temp * 2) / 3;
 			}
 
 			SetTempRange(surfpres);
@@ -801,7 +792,7 @@ namespace Primoris.Universe.Stargen.Data
 			Atmosphere.RecalculateGases(gasTable);
 		}
 
-		public bool Equals(Planet other)
+		public bool Equals(Body other)
 		{
 			return Position == other.Position &&
 				Utilities.AlmostEqual(SemiMajorAxisAU, other.SemiMajorAxisAU) &&

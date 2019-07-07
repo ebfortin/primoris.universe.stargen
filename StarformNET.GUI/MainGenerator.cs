@@ -4,8 +4,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using Primoris.Universe.Stargen.Display;
-using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Systems;
+using Primoris.Universe.Stargen.Data;
 
 namespace Primoris.Universe.Stargen
 {
@@ -91,7 +92,7 @@ namespace Primoris.Universe.Stargen
             _systemMap.SetNewSystem(_system.Planets);
             _planetSelector.Items.Clear();
 
-            foreach (Planet planet in _system.Planets)
+            foreach (Body planet in _system.Planets)
             {
                 _planetSelector.Items.Add(String.Format("Planet {0}", planet.Position));
             }

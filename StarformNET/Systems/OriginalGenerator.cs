@@ -46,9 +46,9 @@ namespace Primoris.Universe.Stargen.Systems
 			};
 		}
 
-		private static ICollection<Planet> GeneratePlanets(Star sun, IEnumerable<BodySeed> seeds, bool useRandomTilt, SystemGenerationOptions genOptions)
+		private static ICollection<Body> GeneratePlanets(Star sun, IEnumerable<BodySeed> seeds, bool useRandomTilt, SystemGenerationOptions genOptions)
 		{
-			var planets = new List<Planet>();
+			var planets = new List<Body>();
 			var i = 0;
 			foreach(var seed in seeds)
 			{
@@ -57,7 +57,7 @@ namespace Primoris.Universe.Stargen.Systems
 
 				string planet_id = planetNo.ToString();
 
-				var planet = new Planet(seed, sun, planetNo, useRandomTilt, planet_id, genOptions);
+				var planet = new Body(seed, sun, planetNo, useRandomTilt, planet_id, genOptions);
 				planets.Add(planet);
 			}
 

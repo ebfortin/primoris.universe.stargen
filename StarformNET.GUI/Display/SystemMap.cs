@@ -3,12 +3,12 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Bodies;
 
 namespace Primoris.Universe.Stargen.Display
 {
 
-    public class SystemMap : PictureBox
+	public class SystemMap : PictureBox
     {
         public static int MOONS_PER_COLUMN = 4;
 
@@ -16,14 +16,14 @@ namespace Primoris.Universe.Stargen.Display
         public int PlanetPadding { get; set; }
 
         private List<Sprite> _planetSprites = new List<Sprite>();
-        private IEnumerable<Planet> _planets;
+        private IEnumerable<Body> _planets;
         public int SelectedPlanetIndex = -1;
         private Pen _selectionPen = new Pen(Color.White, 1);
         private Pen _focusedSelectionPen = new Pen(Color.Red, 1);
 
         public event EventHandler<EventArgs> PlanetClicked;
 
-        public void SetNewSystem(IEnumerable<Planet> planets)
+        public void SetNewSystem(IEnumerable<Body> planets)
         {
             _planets = planets;
             _planetSprites.Clear();

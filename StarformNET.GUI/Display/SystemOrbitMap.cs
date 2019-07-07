@@ -1,12 +1,13 @@
+using Primoris.Universe.Stargen.Bodies;
+using Primoris.Universe.Stargen.Physics;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+
 namespace Primoris.Universe.Stargen.Display
 {
-	using Data;
-	using Primoris.Universe.Stargen.Physics;
-	using System;
-	using System.Collections.Generic;
-	using System.Drawing;
-	using System.Linq;
-	using System.Windows.Forms;
 
 	public class SystemOrbitMap : PictureBox
     {
@@ -19,7 +20,7 @@ namespace Primoris.Universe.Stargen.Display
             public float size;
             public Brush color;
 
-            public OrbitParameters(Planet planet, float angle)
+            public OrbitParameters(Body planet, float angle)
             {
                 a = Math.Sqrt(planet.SemiMajorAxisAU);
                 e = planet.Eccentricity;
@@ -90,7 +91,7 @@ namespace Primoris.Universe.Stargen.Display
             Refresh();
         }
 
-        public void SetSystem(IEnumerable<Planet> system)
+        public void SetSystem(IEnumerable<Body> system)
         {
             _orbits.Clear();
             foreach (var planet in system)

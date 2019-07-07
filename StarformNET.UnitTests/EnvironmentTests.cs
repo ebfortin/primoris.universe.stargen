@@ -1,9 +1,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Bodies;
 using System.Linq;
 using System.Collections.Generic;
 using System;
 using Primoris.Universe.Stargen.Physics;
+using Primoris.Universe.Stargen.Data;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
@@ -322,9 +323,9 @@ namespace Primoris.Universe.Stargen.UnitTests
                 return new Gas[0];
             }
 
-            private Planet GetMockPlanet(Func<Gas[]> mockAtmoGen)
+            private Body GetMockPlanet(Func<Gas[]> mockAtmoGen)
             {
-                var planet = new Planet(new Star(), new Atmosphere(null, mockAtmoGen().ToList()));
+                var planet = new Body(new Star(), new Atmosphere(null, mockAtmoGen().ToList()));
                 return planet;
             }
 

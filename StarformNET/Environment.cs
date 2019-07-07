@@ -1,5 +1,5 @@
 using System;
-using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Physics;
 
 namespace Primoris.Universe.Stargen
@@ -153,7 +153,7 @@ namespace Primoris.Universe.Stargen
         /// <summary>
         /// Returns true if the planet is tidally locked to its parent body.
         /// </summary>
-        public static bool IsTidallyLocked(Planet planet)
+        public static bool IsTidallyLocked(Body planet)
         {
             return (int) planet.DayLength == (int) (planet.OrbitalPeriod * 24);
         }
@@ -161,7 +161,7 @@ namespace Primoris.Universe.Stargen
         /// <summary>
         /// Returns true if the planet's conditions can support human life
         /// </summary>
-        public static bool IsHabitable(Planet planet)
+        public static bool IsHabitable(Body planet)
         {
             return planet.Atmosphere.Breathability == Breathability.Breathable &&
                    !planet.HasResonantPeriod &&
@@ -171,7 +171,7 @@ namespace Primoris.Universe.Stargen
         /// <summary>
         /// Returns true if the planet's conditions are similar to Earth
         /// </summary>
-        public static bool IsEarthlike(Planet planet)
+        public static bool IsEarthlike(Body planet)
         {
             double relTemp = (planet.SurfaceTemperature - GlobalConstants.FREEZING_POINT_OF_WATER) -
                              GlobalConstants.EARTH_AVERAGE_CELSIUS;
@@ -193,7 +193,7 @@ namespace Primoris.Universe.Stargen
                 seas >= 50.0 &&
                 seas <= 80.0 &&
                 planet.Type != BodyType.Water &&
-                planet.Atmosphere.Breathability == Data.Breathability.Breathable;
+                planet.Atmosphere.Breathability == Bodies.Breathability.Breathable;
         }
 
         /// <summary>
@@ -435,7 +435,7 @@ namespace Primoris.Universe.Stargen
         /// <param name="planet">The planet to calculate angular velocity
         /// for</param>
         /// <returns>Angular velocity in radians/sec</returns>
-        public static double AngularVelocity(Planet planet)
+        public static double AngularVelocity(Body planet)
         {
             return AngularVelocity(planet.MassSM,
                 planet.Radius, planet.DensityGCC, planet.SemiMajorAxisAU,
@@ -983,7 +983,7 @@ namespace Primoris.Universe.Stargen
         /// <summary>
         /// Calculates the minimum molecular weight retained by a planet
         /// </summary>
-        public static double MinMolecularWeight(Planet planet)
+        public static double MinMolecularWeight(Body planet)
         {
             var surfGrav = planet.SurfaceGravityG;
             var mass = planet.MassSM;

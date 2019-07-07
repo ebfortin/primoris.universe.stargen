@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Primoris.Universe.Stargen;
 using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Bodies;
 using System.Collections.Generic;
 using System;
 using System.Linq;
@@ -23,48 +24,48 @@ namespace Primoris.Universe.Stargen.UnitTests
 
 			/*[TestCategory("Generator Regression")]
 			[TestMethod]*/
-			/*public void TestSameSeedAgainstSavedOutput()
+			public void TestSameSeedAgainstSavedOutput()
 			{
 				var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 				var testFileDir = Path.Combine(baseDir, TEST_FILE_PATH, TEST_FILE);
 
 				IFormatter formatter = new BinaryFormatter();
 				Stream stream = new FileStream(testFileDir, FileMode.Open, FileAccess.Read, FileShare.Read);
-				var savedSystem = (ICollection<Planet>)formatter.Deserialize(stream);
+				var savedSystem = ((StellarSystem)formatter.Deserialize(stream)).Planets;
 				stream.Close();
 
 				Utilities.InitRandomSeed(0);
 				var newSystem = OriginalGenerator.GenerateStellarSystem("test").Planets;
-				Assert.AreEqual(savedSystem.Count, newSystem.Count, "Incorrect number of planets");
-				for (var i = 0; i < savedSystem.Count; i++)
+				Assert.AreEqual(savedSystem.Count(), newSystem.Count(), "Incorrect number of planets");
+				for (var i = 0; i < savedSystem.Count(); i++)
 				{
-					Assert.IsTrue(savedSystem.SequenceEqual<Planet>(newSystem), String.Format("Planet {0} not equal", i));
+					Assert.IsTrue(savedSystem.SequenceEqual<Body>(newSystem), String.Format("Planet {0} not equal", i));
 				}
-			}*/
+			}
 
 			/*[TestCategory("Generator Regression")]
 			[TestMethod]*/
-			/*public void TestDifferentSeedAgainstSavedOutput()
+			public void TestDifferentSeedAgainstSavedOutput()
 			{
 				var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 				var testFileDir = Path.Combine(baseDir, TEST_FILE_PATH, TEST_FILE);
 
 				IFormatter formatter = new BinaryFormatter();
 				Stream stream = new FileStream(testFileDir, FileMode.Open, FileAccess.Read, FileShare.Read);
-				var savedSystem = (ICollection<Planet>)formatter.Deserialize(stream);
+				var savedSystem = ((StellarSystem)formatter.Deserialize(stream)).Planets;
 				stream.Close();
 
 				Utilities.InitRandomSeed(1);
 				var newSystem = OriginalGenerator.GenerateStellarSystem("test").Planets;
 				var atleastOneDifferent = false;
-				if(savedSystem.Count != newSystem.Count)
+				if(savedSystem.Count() != newSystem.Count())
 				{
 					atleastOneDifferent = true;
 				}
 				else
 				{
-					atleastOneDifferent = savedSystem.SequenceEqual<Planet>(newSystem);
-				}*/
+					atleastOneDifferent = savedSystem.SequenceEqual<Body>(newSystem);
+				}
 				/*for (var i = 0; i < savedSystem.Count; i++)
 				{
 					if (!savedSystem[i].Equals(newSystem[i]))
@@ -73,8 +74,8 @@ namespace Primoris.Universe.Stargen.UnitTests
 						break;
 					}
 				}*/
-				/*Assert.IsTrue(atleastOneDifferent);
-			}*/
+				Assert.IsTrue(atleastOneDifferent);
+			}
 		}
 
 		[TestClass]
@@ -87,16 +88,16 @@ namespace Primoris.Universe.Stargen.UnitTests
 				return new Star(1.0, 1.0, 1e10);
 			}
 
-			private Planet GetTestPlanetAtmosphere()
+			private Body GetTestPlanetAtmosphere()
 			{
-				var planet = new Planet(GetTestStar(), 0.723332, 0.0067, 2.8, 2802.0, 225.0, 0.000002447, 2.41E-10, 6051.8, 92000.0, 737.0, 737.0, 737.0, 0.9);
+				var planet = new Body(GetTestStar(), 0.723332, 0.0067, 2.8, 2802.0, 225.0, 0.000002447, 2.41E-10, 6051.8, 92000.0, 737.0, 737.0, 737.0, 0.9);
 
 				return planet;
 			}
 
-			private Planet GetTestPlanetNoAtmosphere()
+			private Body GetTestPlanetNoAtmosphere()
 			{
-				var planet = new Planet(GetTestStar());
+				var planet = new Body(GetTestStar());
 				return planet;
 			}
 
@@ -104,8 +105,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 			[TestMethod]
 			public void TestEmptyPlanet()
 			{
-				var planet = new Planet(GetTestStar());
-				//Generator.CalculateGases(planet, new ChemType[0]);
+				var planet = new Body(GetTestStar());
 
 				Assert.AreEqual(0, planet.Atmosphere.Composition.Count);
 			}
@@ -140,8 +140,6 @@ namespace Primoris.Universe.Stargen.UnitTests
 				};
 
                 var planet = GetTestPlanetAtmosphere();
-                var star = planet.Star;
-                //Generator.CalculateGases(planet, ChemType.Load());
 
                 Assert.AreEqual(expected.Count, planet.Atmosphere.Composition.Count);
 
@@ -156,8 +154,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             public void TestNoAtmosphereDefaultChemTable()
             {
                 var planet = GetTestPlanetNoAtmosphere();
-                var star = planet.Star;
-                //Generator.CalculateGases(planet, ChemType.Load());
+
 
                 Assert.AreEqual(0, planet.Atmosphere.Composition.Count);
             }

@@ -1,5 +1,4 @@
 using System;
-using Primoris.Universe.Stargen.Data;
 using System.Collections.Generic;
 using Primoris.Universe.Stargen.Physics;
 
