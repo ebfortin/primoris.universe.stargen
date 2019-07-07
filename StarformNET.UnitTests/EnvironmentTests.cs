@@ -1,14 +1,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Primoris.Universe.Stargen;
 using Primoris.Universe.Stargen.Data;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using Primoris.Universe.Stargen.Physics;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
 
-    class EnvironmentTests
+	class EnvironmentTests
     {
         [TestClass]
         public class GasLifeTest

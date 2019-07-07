@@ -1,14 +1,15 @@
 namespace Primoris.Universe.Stargen
 {
-    using System;
+	using Primoris.Universe.Stargen.Physics;
+	using System;
 
-    public static class Utilities
+	public static class Utilities
     {
         public static Random Random = new Random();
 
         public static bool AlmostEqual(double v1, double v2, double diff=0.00001)
         {
-			if (v1 == v2)
+			if (double.IsNaN(v1) && double.IsNaN(v2))
 				return true;
 
             return Math.Abs(v1 - v2) <= Math.Abs(v1 * .00001);

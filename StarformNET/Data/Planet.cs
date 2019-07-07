@@ -2,6 +2,7 @@ using Primoris.Universe.Stargen.Bodies;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Primoris.Universe.Stargen.Physics;
 
 namespace Primoris.Universe.Stargen.Data
 {
@@ -10,95 +11,101 @@ namespace Primoris.Universe.Stargen.Data
 	// TODO orbit zone is supposedly no longer used anywhere. Check references and possibly remove.
 
 	[Serializable]
-    public class Planet : IEquatable<Planet>
-    {
-        public int Position;
-        public Star Star { get; }
-        public Atmosphere Atmosphere { get; private set; }
+	public class Planet : IEquatable<Planet>
+	{
+		private static readonly IBodyPhysics DefaultPhysics = new BurrowsBodyPhysics();
 
-        #region Orbit data
+		public IBodyPhysics Physics { get; set; }
 
-        /// <summary>
-        /// Semi-major axis of the body's orbit in astronomical units (au).
-        /// </summary>
-        public double SemiMajorAxisAU { get; private set; }
+		public int Position { get; private set; }
+		//private readonly double SemiAxisMajorAU;
+
+		public Star Star { get; }
+		public Atmosphere Atmosphere { get; private set; }
+
+		#region Orbit data
+
+		/// <summary>
+		/// Semi-major axis of the body's orbit in astronomical units (au).
+		/// </summary>
+		public double SemiMajorAxisAU { get; private set; }
 
 		public double SemiMajorAxis { get => SemiMajorAxisAU * GlobalConstants.ASTRONOMICAL_UNIT_KM; }
 
-        /// <summary>
-        /// Eccentricity of the body's orbit.
-        /// </summary>
-        public double Eccentricity { get; private set; }
+		/// <summary>
+		/// Eccentricity of the body's orbit.
+		/// </summary>
+		public double Eccentricity { get; private set; }
 
-        /// <summary>
-        /// Axial tilt of the planet expressed in degrees.
-        /// </summary>
-        public double AxialTilt { get; private set; }
+		/// <summary>
+		/// Axial tilt of the planet expressed in degrees.
+		/// </summary>
+		public double AxialTilt { get; private set; }
 
-        /// <summary>
-        /// Orbital zone the planet is located in. Value is 1, 2, or 3. Used in
-        /// radius and volatile inventory calculations.
-        /// </summary>
-        public int OrbitZone { get; private set; }
+		/// <summary>
+		/// Orbital zone the planet is located in. Value is 1, 2, or 3. Used in
+		/// radius and volatile inventory calculations.
+		/// </summary>
+		public int OrbitZone { get; private set; }
 
-        /// <summary>
-        /// The length of the planet's year in days.
-        /// </summary>
-        public double OrbitalPeriod { get; private set; }
+		/// <summary>
+		/// The length of the planet's year in days.
+		/// </summary>
+		public double OrbitalPeriod { get; private set; }
 
-        /// <summary>
-        /// Angular velocity about the planet's axis in radians/sec.
-        /// </summary>
-        public double AngularVelocityRadSec { get; private set; }
+		/// <summary>
+		/// Angular velocity about the planet's axis in radians/sec.
+		/// </summary>
+		public double AngularVelocityRadSec { get; private set; }
 
-        /// <summary>
-        /// The length of the planet's day in hours.
-        /// </summary>
-        public double DayLength { get; private set; }
+		/// <summary>
+		/// The length of the planet's day in hours.
+		/// </summary>
+		public double DayLength { get; private set; }
 
-        /// <summary>
-        /// The Hill sphere of the planet expressed in km.
-        /// </summary>
-        public double HillSphere { get; private set; }
+		/// <summary>
+		/// The Hill sphere of the planet expressed in km.
+		/// </summary>
+		public double HillSphere { get; private set; }
 
-        #endregion
+		#endregion
 
-        #region Size & mass data
+		#region Size & mass data
 
-        /// <summary>
-        /// The mass of the planet in units of Solar mass.
-        /// </summary>
-        public double MassSM { get; private set; } 
+		/// <summary>
+		/// The mass of the planet in units of Solar mass.
+		/// </summary>
+		public double MassSM { get; private set; }
 
 		public double Mass { get => MassSM * GlobalConstants.SOLAR_MASS_IN_KILOGRAMS; }
 
-        /// <summary>
-        /// The mass of dust retained by the planet (ie, the mass of the planet
-        /// sans atmosphere). Given in units of Solar mass.
-        /// </summary>
-        public double DustMassSM { get; private set; }
+		/// <summary>
+		/// The mass of dust retained by the planet (ie, the mass of the planet
+		/// sans atmosphere). Given in units of Solar mass.
+		/// </summary>
+		public double DustMassSM { get; private set; }
 
 		public double DustMass { get => DustMassSM * GlobalConstants.SOLAR_MASS_IN_KILOGRAMS; }
 
-        /// <summary>
-        /// The mass of gas retained by the planet (ie, the mass of its
-        /// atmosphere). Given in units of Solar mass.
-        /// </summary>
-        public double GasMassSM { get; private set; }
+		/// <summary>
+		/// The mass of gas retained by the planet (ie, the mass of its
+		/// atmosphere). Given in units of Solar mass.
+		/// </summary>
+		public double GasMassSM { get; private set; }
 
 		public double GasMass { get => GasMassSM * GlobalConstants.SOLAR_MASS_IN_KILOGRAMS; }
 
-        /// <summary>
-        /// The velocity required to escape from the body given in cm/sec.
-        /// </summary>
-        public double EscapeVelocityCMSec { get; private set; }
+		/// <summary>
+		/// The velocity required to escape from the body given in cm/sec.
+		/// </summary>
+		public double EscapeVelocityCMSec { get; private set; }
 
 		public double EscapeVelocity { get => EscapeVelocityCMSec * GlobalConstants.CMSEC_TO_MSEC; }
 
-        /// <summary>
-        /// The gravitational acceleration felt at the surface of the planet. Given in cm/sec^2
-        /// </summary>
-        public double SurfaceAccelerationCMSec2 { get; private set; }
+		/// <summary>
+		/// The gravitational acceleration felt at the surface of the planet. Given in cm/sec^2
+		/// </summary>
+		public double SurfaceAccelerationCMSec2 { get; private set; }
 
 		public double SurfaceAcceleration { get => SurfaceAccelerationCMSec2 * GlobalConstants.CMSEC2_TO_MSEC2; }
 
@@ -107,174 +114,208 @@ namespace Primoris.Universe.Stargen.Data
 		/// </summary>
 		public double SurfaceGravityG { get; private set; }
 
-        /// <summary>
-        /// The radius of the planet's core in km.
-        /// </summary>
-        public double CoreRadius { get; private set; }
+		/// <summary>
+		/// The radius of the planet's core in km.
+		/// </summary>
+		public double CoreRadius { get; private set; }
 
-        /// <summary>
-        /// The radius of the planet's surface in km.
-        /// </summary>
-        public double Radius { get; private set; }
+		/// <summary>
+		/// The radius of the planet's surface in km.
+		/// </summary>
+		public double Radius { get; private set; }
 
-        /// <summary>
-        /// The density of the planet given in g/cc. 
-        /// </summary>
-        public double DensityGCC { get; private set; }
+		/// <summary>
+		/// The density of the planet given in g/cc. 
+		/// </summary>
+		public double DensityGCC { get; private set; }
 
 		public double Density { get => DensityGCC * GlobalConstants.GCM3_TO_KGM3; }
 
-        #endregion
+		#endregion
 
-        #region Planet properties
+		#region Planet properties
 
-        public PlanetType Type { get; private set; }
+		public BodyType Type { get; private set; }
 
-        public bool IsGasGiant => Type == PlanetType.GasGiant ||
-                                  Type == PlanetType.SubGasGiant ||
-                                  Type == PlanetType.SubSubGasGiant;
+		public bool IsGasGiant => Type == BodyType.GasGiant ||
+								  Type == BodyType.SubGasGiant ||
+								  Type == BodyType.SubSubGasGiant;
 
-        public bool IsTidallyLocked { get; private set; }
+		public bool IsTidallyLocked { get; private set; }
 
-        public bool IsEarthlike { get; private set; }
+		public bool IsEarthlike { get; private set; }
 
-        public bool IsHabitable { get; private set; }
+		public bool IsHabitable { get; private set; }
 
-        public bool HasResonantPeriod { get; private set; }
+		public bool HasResonantPeriod { get; private set; }
 
-        public bool HasGreenhouseEffect { get; private set; }
+		public bool HasGreenhouseEffect { get; private set; }
 
-        #endregion
+		#endregion
 
-        #region Satellites data
+		#region Satellites data
 
-        public IEnumerable<Planet> Satellites { get; private set; }
+		public IEnumerable<Planet> Satellites { get; private set; }
 
-        public double MoonSemiMajorAxisAU { get; private set; }
+		public double MoonSemiMajorAxisAU { get; private set; }
 
-        public double MoonEccentricity { get; private set; }
+		public double MoonEccentricity { get; private set; }
 
-        #endregion
+		#endregion
 
-        #region Atmospheric data
-        /// <summary>
-        /// The root-mean-square velocity of N2 at the planet's exosphere given
-        /// in cm/sec. Used to determine where or not a planet is capable of
-        /// retaining an atmosphere.
-        /// </summary>
-        public double RMSVelocityCMSec { get; private set; }
+		#region Atmospheric data
+		/// <summary>
+		/// The root-mean-square velocity of N2 at the planet's exosphere given
+		/// in cm/sec. Used to determine where or not a planet is capable of
+		/// retaining an atmosphere.
+		/// </summary>
+		public double RMSVelocityCMSec { get; private set; }
 
 		public double RMSVelocity { get => RMSVelocityCMSec * GlobalConstants.CMSEC_TO_MSEC; }
 
-        /// <summary>
-        /// The smallest molecular weight the planet is capable of retaining.
-        /// I believe this is in g/mol.
-        /// </summary>
-        public double MolecularWeightRetained { get; private set; }
+		/// <summary>
+		/// The smallest molecular weight the planet is capable of retaining.
+		/// I believe this is in g/mol.
+		/// </summary>
+		public double MolecularWeightRetained { get; private set; }
 
-        /// <summary>
-        /// Unitless value for the inventory of volatile gases that result from
-        /// outgassing. Used in the calculation of surface pressure. See Fogg
-        /// eq. 16. 
-        /// </summary>
-        public double VolatileGasInventory { get; 
-private set; } 
+		/// <summary>
+		/// Unitless value for the inventory of volatile gases that result from
+		/// outgassing. Used in the calculation of surface pressure. See Fogg
+		/// eq. 16. 
+		/// </summary>
+		public double VolatileGasInventory { get; private set; }
 
-        /// <summary>
-        /// Boiling point of water on the planet given in Kelvin.
-        /// </summary>
-        public double BoilingPointWater { get; private set; }
+		/// <summary>
+		/// Boiling point of water on the planet given in Kelvin.
+		/// </summary>
+		public double BoilingPointWater { get; private set; }
 
-        /// <summary>
-        /// Planetary albedo. Unitless value between 0 (no reflection) and 1 
-        /// (completely reflective).
-        /// </summary>
-        public double Albedo { get; private set; }
+		/// <summary>
+		/// Planetary albedo. Unitless value between 0 (no reflection) and 1 
+		/// (completely reflective).
+		/// </summary>
+		public double Albedo { get; private set; }
 
-        #endregion
+		#endregion
 
-        #region Temperature data
-        /// <summary>
-        /// Illumination received by the body at at the farthest point of its
-        /// orbit. 1.0 is the amount of illumination received by an object 1 au
-        /// from the Sun.
-        /// </summary>
-        public double Illumination { get; private set; }
+		#region Temperature data
+		/// <summary>
+		/// Illumination received by the body at at the farthest point of its
+		/// orbit. 1.0 is the amount of illumination received by an object 1 au
+		/// from the Sun.
+		/// </summary>
+		public double Illumination { get; private set; }
 
-        /// <summary>
-        /// Temperature at the body's exosphere given in Kelvin.
-        /// </summary>
-        public double ExosphereTemperature { get; private set; }
+		/// <summary>
+		/// Temperature at the body's exosphere given in Kelvin.
+		/// </summary>
+		public double ExosphereTemperature { get; private set; }
 
-        /// <summary>
-        /// Temperature at the body's surface given in Kelvin.
-        /// </summary>
-        public double SurfaceTemperature { get; private set; }
+		/// <summary>
+		/// Temperature at the body's surface given in Kelvin.
+		/// </summary>
+		public double SurfaceTemperature { get; private set; }
 
-        /// <summary>
-        /// Amount (in Kelvin) that the planet's surface temperature is being
-        /// increased by a runaway greenhouse effect.
-        /// </summary>
-        public double GreenhouseRiseTemperature { get; private set; }
+		/// <summary>
+		/// Amount (in Kelvin) that the planet's surface temperature is being
+		/// increased by a runaway greenhouse effect.
+		/// </summary>
+		public double GreenhouseRiseTemperature { get; private set; }
 
-        /// <summary>
-        /// Average daytime temperature in Kelvin.
-        /// </summary>
-        public double DaytimeTemperature { get; private set; }
+		/// <summary>
+		/// Average daytime temperature in Kelvin.
+		/// </summary>
+		public double DaytimeTemperature { get; private set; }
 
-        /// <summary>
-        /// Average nighttime temperature in Kelvin.
-        /// </summary>
-        public double NighttimeTemperature { get; private set; }
+		/// <summary>
+		/// Average nighttime temperature in Kelvin.
+		/// </summary>
+		public double NighttimeTemperature { get; private set; }
 
-        /// <summary>
-        /// Maximum (summer/day) temperature in Kelvin.
-        /// </summary>
-        public double MaxTemperature { get; private set; }
+		/// <summary>
+		/// Maximum (summer/day) temperature in Kelvin.
+		/// </summary>
+		public double MaxTemperature { get; private set; }
 
-        /// <summary>
-        /// Minimum (winter/night) temperature in Kelvin.
-        /// </summary>
-        public double MinTemperature { get; private set; }
+		/// <summary>
+		/// Minimum (winter/night) temperature in Kelvin.
+		/// </summary>
+		public double MinTemperature { get; private set; }
 
-        #endregion
+		#endregion
 
-        #region Surface coverage
+		#region Surface coverage
 
-        /// <summary>
-        /// Amount of the body's surface that is covered in water. Given as a
-        /// value between 0 (no water) and 1 (completely covered).
-        /// </summary>
-        public double WaterCoverFraction { get; private set; }
+		/// <summary>
+		/// Amount of the body's surface that is covered in water. Given as a
+		/// value between 0 (no water) and 1 (completely covered).
+		/// </summary>
+		public double WaterCoverFraction { get; private set; }
 
-        /// <summary>
-        /// Amount of the body's surface that is obscured by cloud cover. Given
-        /// as a value between 0 (no cloud coverage) and 1 (surface not visible
-        /// at all).
-        /// </summary>
-        public double CloudCoverFraction { get; private set; }
+		/// <summary>
+		/// Amount of the body's surface that is obscured by cloud cover. Given
+		/// as a value between 0 (no cloud coverage) and 1 (surface not visible
+		/// at all).
+		/// </summary>
+		public double CloudCoverFraction { get; private set; }
 
-        /// <summary>
-        /// Amount of the body's surface that is covered in ice. Given as a 
-        /// value between 0 (no ice) and 1 (completely covered).
-        /// </summary>
-        public double IceCoverFraction { get; private set; }
+		/// <summary>
+		/// Amount of the body's surface that is covered in ice. Given as a 
+		/// value between 0 (no ice) and 1 (completely covered).
+		/// </summary>
+		public double IceCoverFraction { get; private set; }
 
-        #endregion
+		#endregion
 
-		public Planet(Star sun, Atmosphere atmos)
+		public Planet(Star sun, Atmosphere atmos) : this(DefaultPhysics, sun, atmos) { }
+
+		public Planet(IBodyPhysics phys, Star sun, Atmosphere atmos)
 		{
+			Physics = phys;
+
 			Star = sun;
 			Atmosphere = atmos;
 			atmos.Planet = this;
 			Check();
 		}
 
-		public Planet(Star sun, 
-					  double semiMajorAxisAU, 
-					  double eccentricity, 
-					  double axialTilt, 
-					  double dayLengthHours, 
+		public Planet(Star sun,
+					  double semiMajorAxisAU,
+					  double eccentricity,
+					  double axialTilt,
+					  double dayLengthHours,
+					  double orbitalPeriodDays,
+					  double massSM,
+					  double gasMassSM,
+					  double radius,
+					  double surfPressure,
+					  double dayTimeTempK,
+					  double nightTimeTempK,
+					  double surfTempK,
+					  double surfGrav) : this(DefaultPhysics,
+							   sun,
+							   semiMajorAxisAU,
+							   eccentricity,
+							   axialTilt,
+							   dayLengthHours,
+							   orbitalPeriodDays,
+							   massSM,
+							   gasMassSM,
+							   radius,
+							   surfPressure,
+							   dayTimeTempK,
+							   nightTimeTempK,
+							   surfTempK,
+							   surfGrav)
+		{ }
+
+		public Planet(IBodyPhysics phys,
+					  Star sun,
+					  double semiMajorAxisAU,
+					  double eccentricity,
+					  double axialTilt,
+					  double dayLengthHours,
 					  double orbitalPeriodDays,
 					  double massSM,
 					  double gasMassSM,
@@ -285,6 +326,8 @@ private set; }
 					  double surfTempK,
 					  double surfGrav)
 		{
+			Physics = phys;
+
 			Star = sun;
 
 			SemiMajorAxisAU = semiMajorAxisAU;
@@ -311,238 +354,224 @@ private set; }
 
 			Atmosphere = new Atmosphere(this, surfPressure);
 
-			IterateSurfaceTemp(surfPressure);
+			AdjustSurfaceTemperatures(surfPressure);
 			Check();
 		}
 
-		public Planet(Star star)
+		public Planet(Star star) 
+			: this(DefaultPhysics, star) { }
+
+		/// <summary>
+		/// TODO: This constructor do not work!!!
+		/// </summary>
+		/// <param name="phys"></param>
+		/// <param name="star"></param>
+		public Planet(IBodyPhysics phys, Star star)
 		{
+			Physics = phys;
+
 			Star = star;
 			Check();
 		}
 
-        public Planet(BodySeed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
-        {
-            Star = star;
-            Position = num;
-            SemiMajorAxisAU = seed.SemiMajorAxisAU;
-            Eccentricity = seed.Eccentricity;
-            MassSM = seed.Mass;
-            DustMassSM = seed.DustMass;
-            GasMassSM = seed.GasMass;
+		public Planet(BodySeed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions) 
+			: this(DefaultPhysics, seed, star, num, useRandomTilt, planetID, genOptions) { }
+
+		public Planet(IBodyPhysics phys, BodySeed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
+		{
+			Physics = phys;
+
+			Star = star;
+			Position = num;
+			SemiMajorAxisAU = seed.SemiMajorAxisAU;
+			Eccentricity = seed.Eccentricity;
+			MassSM = seed.Mass;
+			DustMassSM = seed.DustMass;
+			GasMassSM = seed.GasMass;
 
 			Generate(seed, num, star, useRandomTilt, planetID, genOptions);
 			Check();
-        }
+		}
+
+
 
 		private void Check()
 		{
-            Atmosphere ??= new Atmosphere(this);
+			Atmosphere ??= new Atmosphere(this);
 
 			Illumination = Environment.MinimumIllumination(SemiMajorAxisAU, Star.Luminosity);
 			IsHabitable = Environment.IsHabitable(this);
 			IsEarthlike = Environment.IsEarthlike(this);
 		}
 
+		protected virtual void AdjustPropertiesForRockyBody()
+		{
+			double age = Star.Age;
+			double massSM = MassSM;
+			double gasMassSM = GasMassSM;
+			double exosphereTemperature = ExosphereTemperature;
+			double surfaceGravityG = SurfaceGravityG;
+			double radius = Radius;
+			double surfaceAccelerationCMSec2 = SurfaceAccelerationCMSec2;
+
+			if ((gasMassSM / massSM) > 0.000001)
+			{
+				var h2Mass = gasMassSM * 0.85;
+				var heMass = (gasMassSM - h2Mass) * 0.999;
+
+				var h2Life = Environment.GasLife(GlobalConstants.MOL_HYDROGEN, exosphereTemperature,
+					surfaceGravityG, radius);
+				var heLife = Environment.GasLife(GlobalConstants.HELIUM, exosphereTemperature,
+					surfaceGravityG, radius);
+
+				if (h2Life < age)
+				{
+					var h2Loss = ((1.0 - (1.0 / Math.Exp(age / h2Life))) * h2Mass);
+
+					GasMassSM -= h2Loss;
+					MassSM -= h2Loss;
+
+					SurfaceAccelerationCMSec2 = Environment.Acceleration(massSM, radius);
+					SurfaceGravityG = Environment.Gravity(surfaceAccelerationCMSec2);
+				}
+
+				if (heLife < age)
+				{
+					var heLoss = ((1.0 - (1.0 / Math.Exp(age / heLife))) * heMass);
+
+					GasMassSM -= heLoss;
+					MassSM -= heLoss;
+
+					SurfaceAccelerationCMSec2 = Environment.Acceleration(massSM, radius);
+					SurfaceGravityG = Environment.Gravity(surfaceAccelerationCMSec2);
+				}
+			}
+
+			SurfaceGravityG = Environment.Gravity(surfaceAccelerationCMSec2);
+		}
+
+		public void AdjustPropertiesForGasBody()
+		{
+			HasGreenhouseEffect = false;
+			VolatileGasInventory = GlobalConstants.NOT_APPLICABLE;
+			BoilingPointWater = GlobalConstants.NOT_APPLICABLE;
+
+			SurfaceTemperature = GlobalConstants.NOT_APPLICABLE;
+			GreenhouseRiseTemperature = 0;
+			Albedo = Utilities.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1);
+			WaterCoverFraction = 1.0;
+			CloudCoverFraction = 1.0;
+			IceCoverFraction = 0.0;
+
+			HasGreenhouseEffect = false;
+			VolatileGasInventory = GlobalConstants.NOT_APPLICABLE;
+
+			BoilingPointWater = GlobalConstants.NOT_APPLICABLE;
+
+			SurfaceTemperature = GlobalConstants.NOT_APPLICABLE;
+			GreenhouseRiseTemperature = 0;
+			Albedo = Utilities.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1);
+			WaterCoverFraction = 1.0;
+			CloudCoverFraction = 1.0;
+			IceCoverFraction = 0.0;
+		}
+
 		protected virtual void Generate(BodySeed seed, int planetNo, Star sun, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
 		{
 			var planet = this;
 
-			planet.OrbitZone = Environment.OrbitalZone(sun.Luminosity, planet.SemiMajorAxisAU);
-			planet.OrbitalPeriod = Environment.Period(planet.SemiMajorAxisAU, planet.MassSM, sun.Mass);
+			planet.OrbitZone = Environment.OrbitalZone(sun.Luminosity, SemiMajorAxisAU);
+			planet.OrbitalPeriod = Environment.Period(SemiMajorAxisAU, MassSM, sun.Mass);
 			if (useRandomTilt)
 			{
-				planet.AxialTilt = Environment.Inclination(planet.SemiMajorAxisAU);
+				planet.AxialTilt = Environment.Inclination(SemiMajorAxisAU);
 			}
-			planet.ExosphereTemperature = GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(planet.SemiMajorAxisAU / sun.EcosphereRadiusAU);
-            // Exosphere temperature can't be realisticly higher than the surface temperature of the sun. We therefore clip at sun.Temperature.
-            // TODO: Make transition instead of brute clipping.
-            planet.ExosphereTemperature = planet.ExosphereTemperature > sun.Temperature ? sun.Temperature : planet.ExosphereTemperature;
-            // Exosphere can't be realisticly lower than the CMB radiation temperature, which is 2.7K. 
-            // TODO: Make transition instead of brute clipping.
-            planet.ExosphereTemperature = planet.ExosphereTemperature < GlobalConstants.VACCUM_TEMPERATURE ? GlobalConstants.VACCUM_TEMPERATURE : planet.ExosphereTemperature;
 
-			planet.RMSVelocityCMSec = Environment.RMSVelocity(GlobalConstants.MOL_NITROGEN, planet.ExosphereTemperature);
-			planet.CoreRadius = Environment.KothariRadius(planet.DustMassSM, false, planet.OrbitZone);
+			planet.ExosphereTemperature = Physics.GetExosphereTemperature(SemiMajorAxisAU, sun.EcosphereRadiusAU, sun.Temperature);
+			planet.RMSVelocityCMSec = Physics.GetRMSVelocityCMSec(ExosphereTemperature);
+			planet.CoreRadius = Physics.GetRadius(DustMassSM, OrbitZone);
 
 			// Calculate the radius as a gas giant, to verify it will retain gas.
 			// Then if mass > Earth, it's at least 5% gas and retains He, it's
 			// some flavor of gas giant.
 
-			planet.DensityGCC = Environment.EmpiricalDensityGCC(planet.MassSM, planet.SemiMajorAxisAU, sun.EcosphereRadiusAU, true);
-			planet.Radius = Environment.VolumeRadius(planet.MassSM, planet.DensityGCC);
+			planet.DensityGCC = Physics.GetDensityFromStar(MassSM, SemiMajorAxisAU, sun.EcosphereRadiusAU, true);
+			planet.Radius = Environment.VolumeRadius(MassSM, DensityGCC);
 
-			planet.SurfaceAccelerationCMSec2 = Environment.Acceleration(planet.MassSM, planet.Radius);
+			planet.SurfaceAccelerationCMSec2 = Environment.Acceleration(MassSM, Radius);
 			planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAccelerationCMSec2);
 
-			planet.MolecularWeightRetained = Environment.MinMolecularWeight(planet);
+			planet.MolecularWeightRetained = Physics.GetMolecularWeightRetained(SurfaceGravityG, MassSM, Radius, ExosphereTemperature, sun.Age);
 
 			// Is the planet a gas giant?
-			if (((planet.MassSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES) > 1.0) && ((planet.GasMassSM / planet.MassSM) > 0.05) && (planet.MolecularWeightRetained <= 4.0))
+			if (Physics.TestIsGasGiant(MassSM, GasMassSM, MolecularWeightRetained))
 			{
-				if ((planet.GasMassSM / planet.MassSM) < 0.20)
-				{
-					planet.Type = PlanetType.SubSubGasGiant;
-				}
-				else if ((planet.MassSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES) < 20.0)
-				{
-					planet.Type = PlanetType.SubGasGiant;
-				}
-				else
-				{
-					planet.Type = PlanetType.GasGiant;
-				}
+				//Type = GetGasGiantType(MassSM, GasMassSM);
+
+				AdjustPropertiesForGasBody();
 			}
 			else // If not, it's rocky.
 			{
-				planet.Radius = Environment.KothariRadius(planet.MassSM, false, planet.OrbitZone);
-				planet.DensityGCC = Environment.VolumeDensity(planet.MassSM, planet.Radius);
+				Radius = Physics.GetRadius(MassSM, OrbitZone);
+				DensityGCC = Physics.GetDensityFromBody(MassSM, Radius);
 
-				planet.SurfaceAccelerationCMSec2 = Environment.Acceleration(planet.MassSM, planet.Radius);
-				planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAccelerationCMSec2);
+				//SurfaceAccelerationCMSec2 = Environment.Acceleration(MassSM, Radius);
+				//SurfaceGravityG = Environment.Gravity(SurfaceAccelerationCMSec2);
 
-				if ((planet.GasMassSM / planet.MassSM) > 0.000001)
-				{
-					var h2Mass = planet.GasMassSM * 0.85;
-					var heMass = (planet.GasMassSM - h2Mass) * 0.999;
+				AdjustPropertiesForRockyBody();
 
-					var h2Life = Environment.GasLife(GlobalConstants.MOL_HYDROGEN, planet.ExosphereTemperature,
-						planet.SurfaceGravityG, planet.Radius);
-					var heLife = Environment.GasLife(GlobalConstants.HELIUM, planet.ExosphereTemperature,
-						planet.SurfaceGravityG, planet.Radius);
+				MolecularWeightRetained = Physics.GetMolecularWeightRetained(SurfaceGravityG, MassSM, Radius, ExosphereTemperature, sun.Age);
 
-					if (h2Life < sun.Age)
-					{
-						var h2Loss = ((1.0 - (1.0 / Math.Exp(sun.Age / h2Life))) * h2Mass);
-
-						planet.GasMassSM -= h2Loss;
-						planet.MassSM -= h2Loss;
-
-						planet.SurfaceAccelerationCMSec2 = Environment.Acceleration(planet.MassSM, planet.Radius);
-						planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAccelerationCMSec2);
-					}
-
-					if (heLife < sun.Age)
-					{
-						var heLoss = ((1.0 - (1.0 / Math.Exp(sun.Age / heLife))) * heMass);
-
-						planet.GasMassSM -= heLoss;
-						planet.MassSM -= heLoss;
-
-						planet.SurfaceAccelerationCMSec2 = Environment.Acceleration(planet.MassSM, planet.Radius);
-						planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAccelerationCMSec2);
-					}
-				}
+				HasGreenhouseEffect = Physics.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxisAU);
+				VolatileGasInventory = Physics.GetVolatileGasInventory(MassSM,
+												   EscapeVelocity,
+												   RMSVelocityCMSec,
+												   sun.Mass,
+												   GasMassSM,
+												   OrbitZone,
+												   HasGreenhouseEffect,
+												   (GasMassSM / MassSM) > 0.000001);
 			}
 
-			planet.AngularVelocityRadSec = Environment.AngularVelocity(planet);
-			planet.DayLength = Environment.DayLength(planet.AngularVelocityRadSec, planet.OrbitalPeriod,
-				planet.Eccentricity);
-			planet.HasResonantPeriod = Environment.HasResonantPeriod(planet.AngularVelocityRadSec,
-				planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
-			planet.EscapeVelocityCMSec = Environment.EscapeVelocity(planet.MassSM, planet.Radius);
-			planet.HillSphere = Environment.SimplifiedHillSphere(sun.Mass, planet.MassSM, planet.SemiMajorAxisAU);
+			planet.AngularVelocityRadSec = Physics.GetAngularVelocity(MassSM,
+									  Radius,
+									  DensityGCC,
+									  SemiMajorAxisAU,
+									  Physics.TestIsGasGiant(MassSM, GasMassSM, MolecularWeightRetained),
+									  sun.Mass,
+									  sun.Age);
+			planet.DayLength = Physics.GetDayLength(planet.AngularVelocityRadSec, planet.OrbitalPeriod, planet.Eccentricity);
+			planet.HasResonantPeriod = Physics.TestHasResonantPeriod(planet.AngularVelocityRadSec, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
+			planet.EscapeVelocityCMSec = Physics.GetEscapeVelocity(planet.MassSM, planet.Radius);
 
-			if (planet.IsGasGiant)
+			planet.HillSphere = Physics.GetHillSphere(sun.Mass, planet.MassSM, planet.SemiMajorAxisAU);
+
+			if (!Physics.TestIsGasGiant(MassSM, GasMassSM, MolecularWeightRetained))
 			{
-				planet.HasGreenhouseEffect = false;
-				planet.VolatileGasInventory = GlobalConstants.NOT_APPLICABLE;
-				// This has been moved to Atmosphere default constructor and have a value of 0.0.
-				//planet.Atmosphere.SurfacePressure = GlobalConstants.NOT_APPLICABLE;
+				double surfpres = Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceGravityG);
 
-				planet.BoilingPointWater = GlobalConstants.NOT_APPLICABLE;
 
-				planet.SurfaceTemperature = GlobalConstants.NOT_APPLICABLE;
-				planet.GreenhouseRiseTemperature = 0;
-				planet.Albedo = Utilities.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1);
-				planet.WaterCoverFraction = 1.0;
-				planet.CloudCoverFraction = 1.0;
-				planet.IceCoverFraction = 0.0;
-				planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAccelerationCMSec2);
-				planet.MolecularWeightRetained = Environment.MinMolecularWeight(planet);
-				planet.SurfaceGravityG = GlobalConstants.NOT_APPLICABLE;
-			}
-			else
-			{
-				planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAccelerationCMSec2);
-				planet.MolecularWeightRetained = Environment.MinMolecularWeight(planet);
+				planet.BoilingPointWater = Physics.GetBoilingPointWater(surfpres);
 
-				planet.HasGreenhouseEffect = Environment.Greenhouse(sun.EcosphereRadiusAU, planet.SemiMajorAxisAU);
-				planet.VolatileGasInventory = Environment.VolatileInventory(
-					planet.MassSM, planet.EscapeVelocityCMSec, planet.RMSVelocityCMSec, sun.Mass,
-					planet.OrbitZone, planet.HasGreenhouseEffect, (planet.GasMassSM / planet.MassSM) > 0.000001);
-                double surfpres = Environment.Pressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceGravityG);
+				// Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
+				// planet.cloud_cover, planet.ice_cover
+				AdjustSurfaceTemperatures(surfpres);
 
-				planet.BoilingPointWater = Math.Abs(surfpres) < 0.001
-					? 0.0
-					: Environment.BoilingPoint(surfpres);
+				planet.IsTidallyLocked = Physics.TestIsTidallyLocked(DayLength, OrbitalPeriod);
 
-                // Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
-                // planet.cloud_cover, planet.ice_cover
-                IterateSurfaceTemp(surfpres);
+				// Generate complete atmosphere.
+				Atmosphere = new Atmosphere(planet, genOptions.GasTable);
 
-                planet.IsTidallyLocked = Environment.IsTidallyLocked(planet);
+				Type = Physics.GetBodyType(MassSM,
+						 GasMassSM,
+						 MolecularWeightRetained,
+						 Atmosphere.SurfacePressure,
+						 WaterCoverFraction,
+						 IceCoverFraction,
+						 MaxTemperature,
+						 BoilingPointWater,
+						 SurfaceTemperature);
 
-                // Generate complete atmosphere.
-                Atmosphere = new Atmosphere(planet, genOptions.GasTable);
-
-                // Assign planet type
-                if (planet.Atmosphere.SurfacePressure < 1.0)
-				{
-					if (((planet.MassSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES) < GlobalConstants.ASTEROID_MASS_LIMIT))
-					{
-						planet.Type = PlanetType.Asteroids;
-					}
-					else
-					{
-						planet.Type = PlanetType.Barren;
-					}
-				}
-				else if ((planet.Atmosphere.SurfacePressure > 6000.0) && (planet.MolecularWeightRetained <= 2.0)) // Retains Hydrogen
-				{
-					planet.Type = PlanetType.SubSubGasGiant;
-					
-					// Not necessary. Is already initialized in Atmosphere constructor.
-					//planet.Atmosphere.Composition = new List<Gas>();
-				}
-				else
-				{
-					// Atmospheres:
-					// TODO remove PlanetType enum entirely and replace it with a more flexible classification systme
-					if (planet.WaterCoverFraction >= 0.95) // >95% water
-					{
-						planet.Type = PlanetType.Water;
-					}
-					else if (planet.IceCoverFraction >= 0.95) // >95% ice
-					{
-						planet.Type = PlanetType.Ice;
-					}
-					else if (planet.WaterCoverFraction > 0.05) // Terrestrial
-					{
-						planet.Type = PlanetType.Terrestrial;
-					}
-					else if (planet.MaxTemperature > planet.BoilingPointWater) // Hot = Venusian
-					{
-						planet.Type = PlanetType.Venusian;
-					}
-					else if ((planet.GasMassSM / planet.MassSM) > 0.0001) // Accreted gas, but no greenhouse or liquid water make it an ice world
-					{
-						planet.Type = PlanetType.Ice;
-						planet.IceCoverFraction = 1.0;
-					}
-					else if (planet.Atmosphere.SurfacePressure <= 250.0) // Thin air = Martian
-					{
-						planet.Type = PlanetType.Martian;
-					}
-					else if (planet.SurfaceTemperature < GlobalConstants.FREEZING_POINT_OF_WATER)
-					{
-						planet.Type = PlanetType.Ice;
-					}
-					else
-					{
-						planet.Type = PlanetType.Undefined;
-					}
-				}
 			}
 
 			// Generate moons
@@ -585,13 +614,22 @@ private set; }
 			planet.Satellites = sat;
 		}
 
+
+
+
+
+
+
+
+
+
 		// TODO write summary
 		// TODO parameter for number of iterations? does it matter?
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="planet"></param>
-		private void IterateSurfaceTemp(double surfpres)
+		private void AdjustSurfaceTemperatures(double surfpres)
 		{
 			var initTemp = Environment.EstTemp(Star.EcosphereRadiusAU, SemiMajorAxisAU, Albedo);
 
@@ -629,7 +667,7 @@ private set; }
 		/// <param name="last_ice"></param>
 		/// <param name="last_temp"></param>
 		/// <param name="last_albedo"></param>
-		protected virtual void CalculateSurfaceTemperature(bool first, double last_water, double last_clouds, double last_ice, double last_temp, double last_albedo, double surfpres)
+		private void CalculateSurfaceTemperature(bool first, double last_water, double last_clouds, double last_ice, double last_temp, double last_albedo, double surfpres)
 		{
 			double effectiveTemp;
 			double waterRaw;
@@ -645,9 +683,9 @@ private set; }
 
 				effectiveTemp = Environment.EffTemp(planet.Star.EcosphereRadiusAU, planet.SemiMajorAxisAU, planet.Albedo);
 				greenhouseTemp = Environment.GreenRise(Environment.Opacity(planet.MolecularWeightRetained,
-                                                         surfpres),
+														 surfpres),
 												 effectiveTemp,
-                                                 surfpres);
+												 surfpres);
 				planet.SurfaceTemperature = effectiveTemp + greenhouseTemp;
 
 				SetTempRange(surfpres);
@@ -764,41 +802,41 @@ private set; }
 		}
 
 		public bool Equals(Planet other)
-        {
-            return Position == other.Position &&
-                Utilities.AlmostEqual(SemiMajorAxisAU, other.SemiMajorAxisAU) &&
-                Utilities.AlmostEqual(Eccentricity, other.Eccentricity) &&
-                Utilities.AlmostEqual(AxialTilt, other.AxialTilt) &&
-                OrbitZone == other.OrbitZone &&
-                Utilities.AlmostEqual(OrbitalPeriod, other.OrbitalPeriod) &&
-                Utilities.AlmostEqual(DayLength, other.DayLength) &&
-                Utilities.AlmostEqual(HillSphere, other.HillSphere) &&
-                Utilities.AlmostEqual(MassSM, other.MassSM) &&
-                Utilities.AlmostEqual(DustMassSM, other.DustMassSM) &&
-                Utilities.AlmostEqual(GasMassSM, other.GasMassSM) &&
-                Utilities.AlmostEqual(EscapeVelocityCMSec, other.EscapeVelocityCMSec) &&
-                Utilities.AlmostEqual(SurfaceAccelerationCMSec2, other.SurfaceAccelerationCMSec2) &&
-                Utilities.AlmostEqual(SurfaceGravityG, other.SurfaceGravityG) &&
-                Utilities.AlmostEqual(CoreRadius, other.CoreRadius) &&
-                Utilities.AlmostEqual(Radius, other.Radius) &&
-                Utilities.AlmostEqual(DensityGCC, other.DensityGCC) &&
-                Satellites.Count() == other.Satellites.Count() &&
-                Utilities.AlmostEqual(RMSVelocityCMSec, other.RMSVelocityCMSec) &&
-                Utilities.AlmostEqual(MolecularWeightRetained, other.MolecularWeightRetained) &&
-                Utilities.AlmostEqual(VolatileGasInventory, other.VolatileGasInventory) &&
-                Utilities.AlmostEqual(BoilingPointWater, other.BoilingPointWater) &&
-                Utilities.AlmostEqual(Albedo, other.Albedo) &&
-                Utilities.AlmostEqual(Illumination, other.Illumination) &&
-                Utilities.AlmostEqual(ExosphereTemperature, other.ExosphereTemperature) &&
-                Utilities.AlmostEqual(SurfaceTemperature, other.SurfaceTemperature) &&
-                Utilities.AlmostEqual(GreenhouseRiseTemperature, other.GreenhouseRiseTemperature) &&
-                Utilities.AlmostEqual(DaytimeTemperature, other.DaytimeTemperature) &&
-                Utilities.AlmostEqual(NighttimeTemperature, other.NighttimeTemperature) &&
-                Utilities.AlmostEqual(MaxTemperature, other.MaxTemperature) &&
-                Utilities.AlmostEqual(MinTemperature, other.MinTemperature) &&
-                Utilities.AlmostEqual(WaterCoverFraction, other.WaterCoverFraction) &&
-                Utilities.AlmostEqual(CloudCoverFraction, other.CloudCoverFraction) &&
-                Utilities.AlmostEqual(IceCoverFraction, other.IceCoverFraction);
-        }
-    }
+		{
+			return Position == other.Position &&
+				Utilities.AlmostEqual(SemiMajorAxisAU, other.SemiMajorAxisAU) &&
+				Utilities.AlmostEqual(Eccentricity, other.Eccentricity) &&
+				Utilities.AlmostEqual(AxialTilt, other.AxialTilt) &&
+				OrbitZone == other.OrbitZone &&
+				Utilities.AlmostEqual(OrbitalPeriod, other.OrbitalPeriod) &&
+				Utilities.AlmostEqual(DayLength, other.DayLength) &&
+				Utilities.AlmostEqual(HillSphere, other.HillSphere) &&
+				Utilities.AlmostEqual(MassSM, other.MassSM) &&
+				Utilities.AlmostEqual(DustMassSM, other.DustMassSM) &&
+				Utilities.AlmostEqual(GasMassSM, other.GasMassSM) &&
+				Utilities.AlmostEqual(EscapeVelocityCMSec, other.EscapeVelocityCMSec) &&
+				Utilities.AlmostEqual(SurfaceAccelerationCMSec2, other.SurfaceAccelerationCMSec2) &&
+				Utilities.AlmostEqual(SurfaceGravityG, other.SurfaceGravityG) &&
+				Utilities.AlmostEqual(CoreRadius, other.CoreRadius) &&
+				Utilities.AlmostEqual(Radius, other.Radius) &&
+				Utilities.AlmostEqual(DensityGCC, other.DensityGCC) &&
+				Satellites.Count() == other.Satellites.Count() &&
+				Utilities.AlmostEqual(RMSVelocityCMSec, other.RMSVelocityCMSec) &&
+				Utilities.AlmostEqual(MolecularWeightRetained, other.MolecularWeightRetained) &&
+				Utilities.AlmostEqual(VolatileGasInventory, other.VolatileGasInventory) &&
+				Utilities.AlmostEqual(BoilingPointWater, other.BoilingPointWater) &&
+				Utilities.AlmostEqual(Albedo, other.Albedo) &&
+				Utilities.AlmostEqual(Illumination, other.Illumination) &&
+				Utilities.AlmostEqual(ExosphereTemperature, other.ExosphereTemperature) &&
+				Utilities.AlmostEqual(SurfaceTemperature, other.SurfaceTemperature) &&
+				Utilities.AlmostEqual(GreenhouseRiseTemperature, other.GreenhouseRiseTemperature) &&
+				Utilities.AlmostEqual(DaytimeTemperature, other.DaytimeTemperature) &&
+				Utilities.AlmostEqual(NighttimeTemperature, other.NighttimeTemperature) &&
+				Utilities.AlmostEqual(MaxTemperature, other.MaxTemperature) &&
+				Utilities.AlmostEqual(MinTemperature, other.MinTemperature) &&
+				Utilities.AlmostEqual(WaterCoverFraction, other.WaterCoverFraction) &&
+				Utilities.AlmostEqual(CloudCoverFraction, other.CloudCoverFraction) &&
+				Utilities.AlmostEqual(IceCoverFraction, other.IceCoverFraction);
+		}
+	}
 }

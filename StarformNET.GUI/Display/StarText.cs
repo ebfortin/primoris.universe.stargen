@@ -1,10 +1,11 @@
 namespace Primoris.Universe.Stargen.Display
 {
-    using System;
-    using System.Text;
-    using Data;
+	using System;
+	using System.Text;
+	using Data;
+	using Primoris.Universe.Stargen.Physics;
 
-    public static class StarText
+	public static class StarText
     {
         /// <summary>
         /// Returns a simple, multi-line string containing basic

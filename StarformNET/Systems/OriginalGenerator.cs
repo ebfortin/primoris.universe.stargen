@@ -29,7 +29,7 @@ namespace Primoris.Universe.Stargen.Systems
 			sun = sun ?? new Star();
 			var useRandomTilt = seedSystem == null;
 
-			var accrete = new OriginalAccrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);
+			var accrete = new BurrowsAccrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);
 			double outer_planet_limit = GetOuterLimit(sun);
 			double outer_dust_limit = GetStellarDustLimit(sun.Mass);
 			seedSystem = seedSystem ?? accrete.CreateBodies(sun.Mass,

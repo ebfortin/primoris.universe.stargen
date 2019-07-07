@@ -1,8 +1,9 @@
 namespace Primoris.Universe.Stargen
 {
-    using Data;
+	using Data;
+	using Primoris.Universe.Stargen.Physics;
 
-    public class SystemGenerationOptions
+	public class SystemGenerationOptions
     {
         public static SystemGenerationOptions DefaultOptions = new SystemGenerationOptions();
 

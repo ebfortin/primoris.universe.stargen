@@ -1,13 +1,14 @@
 namespace Primoris.Universe.Stargen.Display
 {
-    using Data;
-    using System;
-    using System.Collections.Generic;
-    using System.Drawing;
-    using System.Linq;
-    using System.Windows.Forms;
+	using Data;
+	using Primoris.Universe.Stargen.Physics;
+	using System;
+	using System.Collections.Generic;
+	using System.Drawing;
+	using System.Linq;
+	using System.Windows.Forms;
 
-    public class SystemOrbitMap : PictureBox
+	public class SystemOrbitMap : PictureBox
     {
         private class OrbitParameters
         {
@@ -28,28 +29,28 @@ namespace Primoris.Universe.Stargen.Display
                 color = Brushes.White;
                 switch (planet.Type)
                 {
-                    case PlanetType.GasGiant:
-                    case PlanetType.SubGasGiant:
-                    case PlanetType.SubSubGasGiant:
+                    case BodyType.GasGiant:
+                    case BodyType.SubGasGiant:
+                    case BodyType.SubSubGasGiant:
                         color = Brushes.Tan;
                         break;
-                    case PlanetType.Ice:
+                    case BodyType.Ice:
                         color = Brushes.LightSteelBlue;
                         break;
-                    case PlanetType.Barren:
-                    case PlanetType.Asteroids:
+                    case BodyType.Barren:
+                    case BodyType.Asteroids:
                         color = Brushes.SaddleBrown;
                         break;
-                    case PlanetType.Martian:
+                    case BodyType.Martian:
                         color = Brushes.Red;
                         break;
-                    case PlanetType.Terrestrial:
+                    case BodyType.Terrestrial:
                         color = Brushes.YellowGreen;
                         break;
-                    case PlanetType.Venusian:
+                    case BodyType.Venusian:
                         color = Brushes.Yellow;
                         break;
-                    case PlanetType.Water:
+                    case BodyType.Water:
                         color = Brushes.Blue;
                         break;
                 }

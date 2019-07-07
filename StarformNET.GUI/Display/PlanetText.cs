@@ -1,13 +1,14 @@
 
 namespace Primoris.Universe.Stargen.Display
 {
-    using System;
-    using System.Linq;
-    using System.Text;
-    using Data;
-    using System.Collections.Generic;
+	using System;
+	using System.Linq;
+	using System.Text;
+	using Data;
+	using System.Collections.Generic;
+	using Primoris.Universe.Stargen.Physics;
 
-    public static class PlanetText
+	public static class PlanetText
     {
         public static string GetSystemText(IEnumerable<Planet> planets)
         {
@@ -77,7 +78,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetBoilingPoint(Planet planet)
         {
-            if (planet.Type == PlanetType.GasGiant || planet.Type == PlanetType.SubGasGiant || planet.Type == PlanetType.SubSubGasGiant)
+            if (planet.Type == BodyType.GasGiant || planet.Type == BodyType.SubGasGiant || planet.Type == BodyType.SubSubGasGiant)
             {
                 return "-";
             }
@@ -99,13 +100,13 @@ namespace Primoris.Universe.Stargen.Display
             var sb = new StringBuilder();
             switch (planet.Type)
             {
-                case PlanetType.GasGiant:
+                case BodyType.GasGiant:
                     sb.Append("Gas Giant");
                     break;
-                case PlanetType.SubGasGiant:
+                case BodyType.SubGasGiant:
                     sb.Append("Small Gas Giant");
                     break;
-                case PlanetType.SubSubGasGiant:
+                case BodyType.SubSubGasGiant:
                     sb.Append("Gas Dwarf");
                     break;
                 default:
@@ -144,7 +145,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetSurfaceGravityG(Planet planet)
         {
-            if (planet.Type == PlanetType.GasGiant || planet.Type == PlanetType.SubGasGiant || planet.Type == PlanetType.SubSubGasGiant)
+            if (planet.Type == BodyType.GasGiant || planet.Type == BodyType.SubGasGiant || planet.Type == BodyType.SubSubGasGiant)
             {
                 return "Oh yeah";
             }
@@ -236,7 +237,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetSurfacePressureStringAtm(Planet planet)
         {
-            if (planet.Type == PlanetType.GasGiant || planet.Type == PlanetType.SubGasGiant || planet.Type == PlanetType.SubSubGasGiant)
+            if (planet.Type == BodyType.GasGiant || planet.Type == BodyType.SubGasGiant || planet.Type == BodyType.SubSubGasGiant)
             {
                 return "Uh, a lot";
             }
@@ -245,7 +246,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetAtmoStringPP(Planet planet)
         {
-            if (planet.Type == PlanetType.GasGiant || planet.Type == PlanetType.SubGasGiant || planet.Type == PlanetType.SubSubGasGiant)
+            if (planet.Type == BodyType.GasGiant || planet.Type == BodyType.SubGasGiant || planet.Type == BodyType.SubSubGasGiant)
             {
                 return "Yes";
             }
@@ -297,7 +298,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetAtmoString(Planet planet, double minFraction = 1.0)
         {
-            if (planet.Type == PlanetType.GasGiant || planet.Type == PlanetType.SubGasGiant || planet.Type == PlanetType.SubSubGasGiant)
+            if (planet.Type == BodyType.GasGiant || planet.Type == BodyType.SubGasGiant || planet.Type == BodyType.SubSubGasGiant)
             {
                 return "Yes";
             }

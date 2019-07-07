@@ -6,6 +6,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using Primoris.Universe.Stargen.Systems;
+using Primoris.Universe.Stargen.Physics;
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {

@@ -1,6 +1,6 @@
 namespace Primoris.Universe.Stargen.Data
 {
-    public enum PlanetType
+    public enum BodyType
     {
         Undefined,
         Barren,

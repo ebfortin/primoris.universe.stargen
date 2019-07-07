@@ -7,19 +7,19 @@ namespace Primoris.Universe.Stargen.Display
 
     public class PlanetSpriteSheet
     {
-        private static Dictionary<PlanetType, int> PlanetMapping = new Dictionary<PlanetType, int>()
+        private static Dictionary<BodyType, int> PlanetMapping = new Dictionary<BodyType, int>()
         {
-            { PlanetType.Asteroids,      2 },
-            { PlanetType.GasGiant,       6 },
-            { PlanetType.Ice,            5 },
-            { PlanetType.Martian,        7 },
-            { PlanetType.Barren,           2 },
-            { PlanetType.SubGasGiant,    6 },
-            { PlanetType.SubSubGasGiant, 6 },
-            { PlanetType.Terrestrial,    0 },
-            { PlanetType.Undefined,        8 },
-            { PlanetType.Venusian,       4 },
-            { PlanetType.Water,          3 }
+            { BodyType.Asteroids,      2 },
+            { BodyType.GasGiant,       6 },
+            { BodyType.Ice,            5 },
+            { BodyType.Martian,        7 },
+            { BodyType.Barren,           2 },
+            { BodyType.SubGasGiant,    6 },
+            { BodyType.SubSubGasGiant, 6 },
+            { BodyType.Terrestrial,    0 },
+            { BodyType.Undefined,        8 },
+            { BodyType.Venusian,       4 },
+            { BodyType.Water,          3 }
         };
 
         public Size SpriteSize { get; set; }
@@ -41,7 +41,7 @@ namespace Primoris.Universe.Stargen.Display
             SpriteSize = spriteSize;
         }
 
-        public Sprite GetSprite(PlanetType type)
+        public Sprite GetSprite(BodyType type)
         {
             var planetNum = Utilities.RandomInt(0, _planetTypes - 1);
             var planetRow = PlanetMapping[type];

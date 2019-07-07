@@ -4,14 +4,14 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using Primoris.Universe.Stargen.Physics;
 
 namespace Primoris.Universe.Stargen.Data
 {
 
-    // TODO abunde isn't used anywhere
-    // TODO break out abundance into a separate class for star/planet profiles
-    public class ChemType
+	// TODO abunde isn't used anywhere
+	// TODO break out abundance into a separate class for star/planet profiles
+	public class ChemType
     {
         public int    Num        { get; set; }
         public string Symbol     { get; set; }

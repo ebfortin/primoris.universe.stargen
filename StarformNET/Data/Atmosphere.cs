@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System;
 using System.Text;
-
+using Primoris.Universe.Stargen.Physics;
 
 namespace Primoris.Universe.Stargen.Data
 {
-    [Serializable]
+	[Serializable]
     public class Atmosphere
     {
 		public Planet Planet { get; internal set; }

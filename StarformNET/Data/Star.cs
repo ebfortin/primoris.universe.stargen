@@ -1,7 +1,7 @@
 ﻿using System;
 using Main = Primoris.Universe.Stargen;
 using System.Drawing;
-
+using Primoris.Universe.Stargen.Physics;
 
 namespace Primoris.Universe.Stargen.Data
 {

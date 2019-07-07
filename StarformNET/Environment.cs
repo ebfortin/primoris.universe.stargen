@@ -1,13 +1,14 @@
 using System;
 using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Physics;
 
 namespace Primoris.Universe.Stargen
 {
 
 
-    // TODO: Figure out a way to logically break this class up
+	// TODO: Figure out a way to logically break this class up
 	// TODO: Make it a Service and Fluent API support.
-    public static class Environment
+	public static class Environment
     {
         /// <summary>
         /// Returns the illumination of a body at its farthest point from a
@@ -191,7 +192,7 @@ namespace Primoris.Universe.Stargen
                 clouds <= 80.0 &&
                 seas >= 50.0 &&
                 seas <= 80.0 &&
-                planet.Type != PlanetType.Water &&
+                planet.Type != BodyType.Water &&
                 planet.Atmosphere.Breathability == Data.Breathability.Breathable;
         }
 

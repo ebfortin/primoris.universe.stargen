@@ -1,10 +1,11 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Primoris.Universe.Stargen.Physics;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
 
-    public class UnitConversionsTest
+	public class UnitConversionsTest
     {
         public static double DELTA = 0.01;
 

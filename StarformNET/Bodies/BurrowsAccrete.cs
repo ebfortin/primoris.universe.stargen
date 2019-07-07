@@ -1,10 +1,11 @@
 using System;
 using Primoris.Universe.Stargen.Data;
 using System.Collections.Generic;
+using Primoris.Universe.Stargen.Physics;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
-	public class OriginalAccrete : IBodyFormationAlgorithm
+	public class BurrowsAccrete : IBodyFormationAlgorithm
 	{
 		public double CloudEccentricity { get; set; }
 		public double GasDustRatio { get; set; }
@@ -19,7 +20,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		private BodySeed _planetHead;
 		private Generation _histHead;
 
-		public OriginalAccrete(double e, double gdr)
+		public BurrowsAccrete(double e, double gdr)
 		{
 			CloudEccentricity = e;
 			GasDustRatio = gdr;
