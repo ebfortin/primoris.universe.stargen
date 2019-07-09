@@ -1,8 +1,6 @@
 using System;
 using System.Text;
-using Primoris.Universe.Stargen.Bodies;
-using Primoris.Universe.Stargen.Data;
-using Primoris.Universe.Stargen.Physics;
+using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.Display
 {

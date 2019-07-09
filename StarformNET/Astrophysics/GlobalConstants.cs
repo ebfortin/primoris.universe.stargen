@@ -1,4 +1,4 @@
-namespace Primoris.Universe.Stargen.Physics
+namespace Primoris.Universe.Stargen.Astrophysics
 {
 	using System;
 

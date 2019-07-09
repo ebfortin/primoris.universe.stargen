@@ -3,10 +3,10 @@ using Primoris.Universe.Stargen.Bodies;
 using System.Linq;
 using System.Collections.Generic;
 using System;
-using Primoris.Universe.Stargen.Physics;
-using Primoris.Universe.Stargen.Data;
-using Environment = Primoris.Universe.Stargen.Physics.Environment;
-
+using Primoris.Universe.Stargen.Astrophysics;
+using Environment = Primoris.Universe.Stargen.Astrophysics.Environment;
+using Primoris.Universe.Stargen.Bodies.Burrows;
+using Primoris.Universe.Stargen.Astrophysics.Burrows;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
@@ -113,7 +113,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestSunIllumination()
             {
-				var phy = new BurrowsBodyPhysics();
+				var phy = new BodyPhysics();
 
                 var expectedValue = 1.0;
                 var sunLuminosity = 1.0;
@@ -148,7 +148,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestSunEarthHillSphere()
             {
-				var phy = new BurrowsBodyPhysics();
+				var phy = new BodyPhysics();
 
                 var earthSphereKM = 1496498;
                 var earthSphereAU = earthSphereKM / GlobalConstants.KM_PER_AU;
@@ -164,7 +164,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestSunMercuryHillSphere()
             {
-				var phy = new BurrowsBodyPhysics();
+				var phy = new BodyPhysics();
 
                 var mercurySphereKM = 220314;
                 var mercurySphereAU = mercurySphereKM / GlobalConstants.KM_PER_AU;
@@ -180,7 +180,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestSunVenusHillSphere()
             {
-				var phy = new BurrowsBodyPhysics();
+				var phy = new BodyPhysics();
 
                 var venusSphereKM = 1011028;
                 var venusSphereAU = venusSphereKM / GlobalConstants.KM_PER_AU;
@@ -196,7 +196,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestSunJupiterHillSphere()
             {
-				var phy = new BurrowsBodyPhysics();
+				var phy = new BodyPhysics();
 
                 var jupiterSphereKM = 53129256;
                 var jupiterSphereAU = jupiterSphereKM / GlobalConstants.KM_PER_AU;
@@ -228,7 +228,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestEarthMoonRocheLimit()
             {
-				var phy = new BurrowsBodyPhysics();
+				var phy = new BodyPhysics();
 
                 var earthMoonKM = 9492;
                 var earthMoonAU = earthMoonKM / GlobalConstants.KM_PER_AU;
@@ -244,7 +244,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestEarthAverageCometRocheLimit()
             {
-				var phy = new BurrowsBodyPhysics();
+				var phy = new BodyPhysics();
 
                 var earthAvgCometKM = 17887;
                 var earthAvgCometAU = earthAvgCometKM / GlobalConstants.KM_PER_AU;
@@ -260,7 +260,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestSunEarthRocheLimit()
             {
-				var phy = new BurrowsBodyPhysics();
+				var phy = new BodyPhysics();
 
                 var sunEarthKM = 556397;
                 var sunEarthAU = sunEarthKM / GlobalConstants.KM_PER_AU;
@@ -276,7 +276,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestSunMoonRocheLimit()
             {
-				var phy = new BurrowsBodyPhysics();
+				var phy = new BodyPhysics();
 
                 var sunMoonKM = 657161;
                 var sunMoonAU = sunMoonKM / GlobalConstants.KM_PER_AU;
@@ -292,7 +292,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestSunJupiterRocheLimit()
             {
-				var phy = new BurrowsBodyPhysics();
+				var phy = new BodyPhysics();
 
                 var sunJupiterKM = 894677;
                 var sunJupiterAU = sunJupiterKM / GlobalConstants.KM_PER_AU;
@@ -347,7 +347,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 
             private Body GetMockPlanet(Func<Gas[]> mockAtmoGen)
             {
-                var planet = new Body(new Star(), new Atmosphere(null, mockAtmoGen().ToList()));
+                var planet = new Planet(new Star(), new Atmosphere(null, mockAtmoGen().ToList()));
                 return planet;
             }
 

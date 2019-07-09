@@ -7,9 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using CsvHelper;
-using Primoris.Universe.Stargen.Physics;
 
-namespace Primoris.Universe.Stargen.Data
+namespace Primoris.Universe.Stargen.Astrophysics
 {
 	public class StellarType
 	{
@@ -57,10 +56,10 @@ namespace Primoris.Universe.Stargen.Data
 			LuminosityClass = lc;
 			SubType = subType;
 
-			var str = (Enum.GetName(typeof(SpectralClass), sc) + SubType.ToString() + (lc != LuminosityClass.O ? Enum.GetName(typeof(LuminosityClass), lc) : ""));
+			var str = Enum.GetName(typeof(SpectralClass), sc) + SubType.ToString() + (lc != LuminosityClass.O ? Enum.GetName(typeof(LuminosityClass), lc) : "");
 			var data = (from row in _types
 						where row.Type == str
-						select new { Temperature = row.Temperature, Mass = row.Mass, Radius = row.Radius, Luminosity = row.Luminosity, ColorRGB = row.ColorRGB }).FirstOrDefault();
+						select new { row.Temperature, row.Mass, row.Radius, row.Luminosity, row.ColorRGB }).FirstOrDefault();
 			Temperature = data.Temperature;
 			Mass = data.Mass;
 			Luminosity = data.Luminosity;
@@ -93,14 +92,14 @@ namespace Primoris.Universe.Stargen.Data
 		public void Change(double mass, double lum, double temp, double radius)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt((!double.IsNaN(lum) ? Math.Pow(lum - row.Luminosity, 2.0) : 0.0) + 
+						orderby Math.Sqrt((!double.IsNaN(lum) ? Math.Pow(lum - row.Luminosity, 2.0) : 0.0) +
 										  (!double.IsNaN(radius) ? Math.Pow(radius - row.Radius, 2.0) : 0.0) +
-									      (!double.IsNaN(mass) ? Math.Pow(mass - row.Mass, 2.0) : 0.0) +
+										  (!double.IsNaN(mass) ? Math.Pow(mass - row.Mass, 2.0) : 0.0) +
 										  (!double.IsNaN(temp) ? Math.Pow(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) : 0.0))
 						ascending
 						select row).FirstOrDefault();
 
-			StellarType st = StellarType.FromString(data.Type);
+			StellarType st = FromString(data.Type);
 			SpectralClass = st.SpectralClass;
 			LuminosityClass = st.LuminosityClass;
 			SubType = st.SubType;
@@ -117,7 +116,7 @@ namespace Primoris.Universe.Stargen.Data
 
 			Color = ConvertColor(data.ColorRGB);
 		}
-		
+
 		/// <summary>
 		/// Give a SpectralType given a star luminosity ratio to Earth's sun.
 		/// </summary>
@@ -129,13 +128,13 @@ namespace Primoris.Universe.Stargen.Data
 		/// <returns></returns>
 		public static StellarType FromLuminosityAndRadius(double lum, double radius = 1.0)
 		{
-			var data =	(from row in _types
-						orderby Math.Sqrt(Math.Pow(lum - row.Luminosity, 2.0) + 
-										  Math.Pow(radius - row.Radius, 2.0)) 
+			var data = (from row in _types
+						orderby Math.Sqrt(Math.Pow(lum - row.Luminosity, 2.0) +
+										  Math.Pow(radius - row.Radius, 2.0))
 						ascending
 						select row).FirstOrDefault();
 
-			StellarType st = StellarType.FromString(data.Type);
+			StellarType st = FromString(data.Type);
 			st.Luminosity = lum;
 			st.Radius = radius;
 			st.Color = ConvertColor(data.ColorRGB);
@@ -146,12 +145,12 @@ namespace Primoris.Universe.Stargen.Data
 		public static StellarType FromMassAndTemperature(double mass, double temp)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt(Math.Pow(mass - row.Mass, 2.0) + 
-						                  Math.Pow(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0)) 
+						orderby Math.Sqrt(Math.Pow(mass - row.Mass, 2.0) +
+										  Math.Pow(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0))
 						ascending
 						select row).FirstOrDefault();
 
-			StellarType st = StellarType.FromString(data.Type);
+			StellarType st = FromString(data.Type);
 			st.Mass = mass;
 			st.Temperature = temp;
 			st.Color = ConvertColor(data.ColorRGB);
@@ -172,12 +171,12 @@ namespace Primoris.Universe.Stargen.Data
 		public static StellarType FromMassAndRadius(double mass, double radius = 1.0)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt(Math.Pow(mass - row.Mass, 2.0) + 
-										  Math.Pow(radius - row.Radius, 2.0)) 
+						orderby Math.Sqrt(Math.Pow(mass - row.Mass, 2.0) +
+										  Math.Pow(radius - row.Radius, 2.0))
 						ascending
 						select row).FirstOrDefault();
 
-			StellarType st = StellarType.FromString(data.Type);
+			StellarType st = FromString(data.Type);
 			st.Mass = mass;
 			st.Radius = radius;
 			st.Color = ConvertColor(data.ColorRGB);
@@ -188,12 +187,12 @@ namespace Primoris.Universe.Stargen.Data
 		public static StellarType FromTemperatureAndLuminosity(double eff_temp, double luminosity = 0.0)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt(Math.Pow(eff_temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) + 
-									      Math.Pow(luminosity - row.Luminosity, 2.0))
+						orderby Math.Sqrt(Math.Pow(eff_temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) +
+										  Math.Pow(luminosity - row.Luminosity, 2.0))
 						ascending
 						select row).FirstOrDefault();
 
-			StellarType st = StellarType.FromString(data.Type);
+			StellarType st = FromString(data.Type);
 			st.Temperature = eff_temp;
 			st.Luminosity = luminosity;
 			st.Color = ConvertColor(data.ColorRGB);
@@ -204,13 +203,13 @@ namespace Primoris.Universe.Stargen.Data
 		private static Color ConvertColor(string comps)
 		{
 			var gs = Regex.Match(comps, @"(\d{3})(\d{3})(\d{3})");
-	
+
 			return Color.FromArgb(int.Parse(gs.Groups[1].Value), int.Parse(gs.Groups[2].Value), int.Parse(gs.Groups[3].Value));
 		}
 
 		public static StellarType FromString(string st)
 		{
-			if (String.IsNullOrEmpty(st))
+			if (string.IsNullOrEmpty(st))
 				return new StellarType(SpectralClass.Undefined, LuminosityClass.Undefined);
 
 			try
@@ -218,11 +217,11 @@ namespace Primoris.Universe.Stargen.Data
 				var mt = Regex.Match(st, @"(\D*)(\d*)(\D*)?");
 				SpectralClass sc = (SpectralClass)Enum.Parse(typeof(SpectralClass), mt.Groups[1].Value);
 				LuminosityClass lc;
-				if (!String.IsNullOrEmpty(mt.Groups[3].Value))
+				if (!string.IsNullOrEmpty(mt.Groups[3].Value))
 					lc = (LuminosityClass)Enum.Parse(typeof(LuminosityClass), mt.Groups[3].Value);
 				else
 					lc = LuminosityClass.O;
-				int subType = Int32.Parse(mt.Groups[2].Value);
+				int subType = int.Parse(mt.Groups[2].Value);
 
 				return new StellarType(sc, lc, subType);
 			}
@@ -234,9 +233,9 @@ namespace Primoris.Universe.Stargen.Data
 
 		public override string ToString()
 		{
-			return (Enum.GetName(typeof(SpectralClass), SpectralClass) + 
-					SubType.ToString() + 
-					(LuminosityClass != LuminosityClass.O ? Enum.GetName(typeof(LuminosityClass), LuminosityClass) : ""));
+			return Enum.GetName(typeof(SpectralClass), SpectralClass) +
+					SubType.ToString() +
+					(LuminosityClass != LuminosityClass.O ? Enum.GetName(typeof(LuminosityClass), LuminosityClass) : "");
 		}
 	}
 }

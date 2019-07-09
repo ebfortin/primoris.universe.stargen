@@ -1,9 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Primoris.Universe.Stargen;
-using Primoris.Universe.Stargen.Data;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
-using Primoris.Universe.Stargen.Physics;
+using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Bodies;
 
 namespace Primoris.Universe.Stargen.Display

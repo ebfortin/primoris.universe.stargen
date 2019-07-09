@@ -4,43 +4,42 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Primoris.Universe.Stargen.Physics;
 
-namespace Primoris.Universe.Stargen.Data
+namespace Primoris.Universe.Stargen.Astrophysics
 {
 
 	// TODO abunde isn't used anywhere
 	// TODO break out abundance into a separate class for star/planet profiles
 	public class ChemType
-    {
-        public int    Num        { get; set; }
-        public string Symbol     { get; set; }
-        public string DisplaySymbol { get; set; }
-        public string Name       { get; set; }
-        public double Weight     { get; set; }
-        public double Melt       { get; set; }
-        public double Boil       { get; set; }
-        public double Density    { get; set; }
-        public double Abunde     { get; set; }
-        public double Abunds     { get; set; }  // Solar system abundance
-        public double Reactivity { get; set; }
-        public double MaxIpp     { get; set; } // Max inspired partial pressure im millibars
+	{
+		public int Num { get; set; }
+		public string Symbol { get; set; }
+		public string DisplaySymbol { get; set; }
+		public string Name { get; set; }
+		public double Weight { get; set; }
+		public double Melt { get; set; }
+		public double Boil { get; set; }
+		public double Density { get; set; }
+		public double Abunde { get; set; }
+		public double Abunds { get; set; }  // Solar system abundance
+		public double Reactivity { get; set; }
+		public double MaxIpp { get; set; } // Max inspired partial pressure im millibars
 
-        public ChemType(int an, string sym, string htmlsym, string name, double w, double m, double b, double dens, double ae, double abs, double rea, double mipp)
-        {
-            Num = an;
-            Symbol = sym;
-            DisplaySymbol = htmlsym;
-            Name = name;
-            Weight = w;
-            Melt = m;
-            Boil = b;
-            Density = dens;
-            Abunde = ae;
-            Abunds = abs;
-            Reactivity = rea;
-            MaxIpp = mipp;
-        }
+		public ChemType(int an, string sym, string htmlsym, string name, double w, double m, double b, double dens, double ae, double abs, double rea, double mipp)
+		{
+			Num = an;
+			Symbol = sym;
+			DisplaySymbol = htmlsym;
+			Name = name;
+			Weight = w;
+			Melt = m;
+			Boil = b;
+			Density = dens;
+			Abunde = ae;
+			Abunds = abs;
+			Reactivity = rea;
+			MaxIpp = mipp;
+		}
 
 		public static ChemType[] Load()
 		{
@@ -98,5 +97,5 @@ namespace Primoris.Universe.Stargen.Data
 			}
 		}
 
-    }
+	}
 }

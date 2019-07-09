@@ -1,5 +1,5 @@
 using Primoris.Universe.Stargen.Bodies;
-using Primoris.Universe.Stargen.Physics;
+using Primoris.Universe.Stargen.Astrophysics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

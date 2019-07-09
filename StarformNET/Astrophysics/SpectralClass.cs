@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Primoris.Universe.Stargen.Data
+namespace Primoris.Universe.Stargen.Astrophysics
 {
 	public enum SpectralClass
 	{
 		Undefined,
-		O, 
-		B, 
-		A, 
-		F, 
-		G, 
-		K, 
-		M, 
-		L, 
-		T, 
+		O,
+		B,
+		A,
+		F,
+		G,
+		K,
+		M,
+		L,
+		T,
 		Y,
 		H,
 		E,

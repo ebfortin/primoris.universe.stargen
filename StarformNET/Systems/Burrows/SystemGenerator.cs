@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Bodies;
-using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Bodies.Burrows;
 
-
-namespace Primoris.Universe.Stargen.Systems
+namespace Primoris.Universe.Stargen.Systems.Burrows
 {
 
 
-	public class OriginalGenerator
+	public class SystemGenerator
 	{
 		public static StellarGroup GenerateStellarGroup(int seed, int numSystems, SystemGenerationOptions genOptions = null)
 		{
@@ -29,7 +29,7 @@ namespace Primoris.Universe.Stargen.Systems
 			sun = sun ?? new Star();
 			var useRandomTilt = seedSystem == null;
 
-			var accrete = new BurrowsAccrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);
+			var accrete = new Accrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);
 			double outer_planet_limit = GetOuterLimit(sun);
 			double outer_dust_limit = GetStellarDustLimit(sun.Mass);
 			seedSystem = seedSystem ?? accrete.CreateBodies(sun.Mass,
@@ -50,14 +50,14 @@ namespace Primoris.Universe.Stargen.Systems
 		{
 			var planets = new List<Body>();
 			var i = 0;
-			foreach(var seed in seeds)
+			foreach (var seed in seeds)
 			{
 				var planetNo = i + 1; // start counting planets at 1
 				i += 1;
 
 				string planet_id = planetNo.ToString();
 
-				var planet = new Body(seed, sun, planetNo, useRandomTilt, planet_id, genOptions);
+				var planet = new Planet(seed, sun, planetNo, useRandomTilt, planet_id, genOptions);
 				planets.Add(planet);
 			}
 

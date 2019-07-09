@@ -1,6 +1,6 @@
 namespace Primoris.Universe.Stargen
 {
-	using Primoris.Universe.Stargen.Physics;
+	using Primoris.Universe.Stargen.Astrophysics;
 	using System;
 
 	public static class Utilities

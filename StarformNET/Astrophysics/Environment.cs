@@ -1,7 +1,7 @@
 using System;
 using Primoris.Universe.Stargen.Bodies;
 
-namespace Primoris.Universe.Stargen.Physics
+namespace Primoris.Universe.Stargen.Astrophysics
 {
 
 
@@ -123,144 +123,7 @@ namespace Primoris.Universe.Stargen.Physics
             return (mass / volume);
         }
 
-        /// <summary>
-        /// Returns a planet's period in Earth days
-        /// </summary>
-        /// <param name="separation">Separation in units of AU</param>
-        /// <param name="smallMass">Units of solar masses</param>
-        /// <param name="largeMass">Units of solar masses</param>
-        /// <returns>Period in Earth days</returns>
-        public static double Period(double separation, double smallMass, double largeMass)
-        {
-            double period_in_years;
 
-            period_in_years = Math.Sqrt(Utilities.Pow3(separation) / (smallMass + largeMass));
-            return (period_in_years * GlobalConstants.DAYS_IN_A_YEAR);
-        }
-
-        /// <summary>
-        /// Provides an approximation of angular velocity for non-tidally decelerated
-        /// planets.
-        /// </summary>
-        /// <param name="massSM">Mass of the body in solar masses</param>
-        /// <param name="radiusKM">Radius of the body in km</param>
-        /// <param name="isGasGiant">Is the body a gas giant?</param>
-        /// <returns>Angular velocity in rad/sec</returns>
-        public static double BaseAngularVelocity(double massSM, double radiusKM, bool isGasGiant)
-        {
-            // Fogg eq. 12
-
-            var planetaryMassInGrams = massSM * GlobalConstants.SOLAR_MASS_IN_GRAMS;
-            var equatorialRadiusInCM = radiusKM * GlobalConstants.CM_PER_KM;
-            var k2 = isGasGiant ? 0.24 : 0.33;
-            
-            return Math.Sqrt(GlobalConstants.J * (planetaryMassInGrams) /
-                             ((k2 / 2.0) * Utilities.Pow2(equatorialRadiusInCM)));
-        }
-
-        /// <summary>
-        /// Provides an approximation of braking due to tidal forces as a ratio to the
-        /// effect on Earth.
-        /// </summary>
-        /// <param name="densityGCC">Density of the body in grams/cm3</param>
-        /// <param name="massSM">Mass of the body in solar masses</param>
-        /// <param name="radiusKM">Radius of the body in KM</param>
-        /// <param name="semiMajorAxisAU">Semi-major axis of the body's orbit in AU</param>
-        /// <param name="starMassSM">Mass of the parent star in solar masses</param>
-        /// <returns></returns>
-        public static double ChangeInAngularVelocity(double densityGCC, double massSM, double radiusKM, double semiMajorAxisAU, double starMassSM)
-        {
-            // Fogg eq. 13 
-
-            var planetaryMassInGrams = massSM * GlobalConstants.SOLAR_MASS_IN_GRAMS;
-            var equatorialRadiusInCM = radiusKM * GlobalConstants.CM_PER_KM;
-
-            return GlobalConstants.CHANGE_IN_EARTH_ANG_VEL * 
-                   (densityGCC / GlobalConstants.EARTH_DENSITY) *
-                   (equatorialRadiusInCM / GlobalConstants.EARTH_RADIUS) *
-                   (GlobalConstants.EARTH_MASS_IN_GRAMS / planetaryMassInGrams) *
-                   Math.Pow(starMassSM, 2.0) *
-                   (1.0 / Math.Pow(semiMajorAxisAU, 6.0));
-        }
-
-        /// <summary>
-        /// Returns an approximation of a planet's angular velocity in radians/sec
-        /// </summary>
-        /// <param name="massSM">Mass of the planet in solar masses</param>
-        /// <param name="radiusKM">Radius of the planet in km</param>
-        /// <param name="densityGCC">Density of the planet in grams/cm3</param>
-        /// <param name="semiMajorAxisAU">Semi-major axis of the planet's orbit
-        /// in AU</param>
-        /// <param name="isGasGiant">Is the planet a gas giant?</param>
-        /// <param name="starMassSM">Mass of the parent star in solar
-        /// masses</param>
-        /// <param name="starAgeYears">Age of the parent star in years</param>
-        /// <returns>Angular velocity in radians/sec</returns>
-        public static double AngularVelocity(double massSM, double radiusKM,
-            double densityGCC, double semiMajorAxisAU, bool isGasGiant,
-            double starMassSM, double starAgeYears)
-        {
-            var baseAngularVelocity = BaseAngularVelocity(massSM, radiusKM, isGasGiant);
-            var changeInAngularVelocity = ChangeInAngularVelocity(
-                densityGCC, massSM, radiusKM, semiMajorAxisAU, starMassSM);
-            return baseAngularVelocity + (changeInAngularVelocity *
-                                                         starAgeYears);
-        }
-
-        /// <summary>
-        /// Returns an approximation of a planet's angular velocity in radians/sec
-        /// </summary>
-        /// <param name="planet">The planet to calculate angular velocity
-        /// for</param>
-        /// <returns>Angular velocity in radians/sec</returns>
-        public static double AngularVelocity(Body planet)
-        {
-            return AngularVelocity(planet.MassSM,
-                planet.Radius, planet.DensityGCC, planet.SemiMajorAxisAU,
-                planet.IsGasGiant, planet.Star.Mass, planet.Star.Age);
-        }
-
-        /// <summary>
-        /// Returns the length of a planet's day in hours.
-        /// </summary>
-        /// <param name="angularVelocity">The planet's angular velocity in radians/sec</param>
-        /// <param name="orbitalPeriodDays">The planet's orbital period in days</param>
-        /// <param name="ecc">The eccentricity of the planet's orbit</param>
-        /// <returns>Length of day in hours</returns>
-        public static double DayLength(double angularVelocity, double orbitalPeriodDays, double ecc)
-        {
-            // Fogg's information for this routine came from Dole "Habitable Planets
-            // for Man", Blaisdell Publishing Company, NY, 1964.  From this, he came
-            // up with his eq.12, which is the equation for the 'base_angular_velocity'
-            // below.  He then used an equation for the change in angular velocity per
-            // time (dw/dt) from P. Goldreich and S. Soter's paper "Q in the Solar
-            // System" in Icarus, vol 5, pp.375-389 (1966).	 Using as a comparison the
-            // change in angular velocity for the Earth, Fogg has come up with an
-            // approximation for our new planet (his eq.13) and take that into account.
-            // This is used to find 'change_in_angular_velocity' below.
-
-            var stopped = false;
-            var dayInHours = GlobalConstants.RADIANS_PER_ROTATION / (GlobalConstants.SECONDS_PER_HOUR * angularVelocity);
-            if (angularVelocity <= 0.0)
-            {
-                stopped = true;
-                dayInHours = double.MaxValue;
-            }
-
-            var yearInHours = orbitalPeriodDays * 24.0;
-            if (dayInHours >= yearInHours || stopped)
-            {
-                if (ecc > 0.1)
-                {
-                    var spinResonanceFactor = (1.0 - ecc) / (1.0 + ecc);
-                    return spinResonanceFactor * yearInHours;
-                }
-
-                return yearInHours;
-            }
-
-            return dayInHours;
-        }
 
         /// <summary>
         /// Checks if a planet's rotation is in resonance with its orbit
@@ -287,9 +150,8 @@ namespace Primoris.Universe.Stargen.Physics
         /// <param name="semiMajorAxisAU">Orbital radius in units of AU</param>
         public static double Inclination(double semiMajorAxisAU)
         {
-            var inclination = (int)(Math.Pow(semiMajorAxisAU, 0.2) * 
-                                    Utilities.About(GlobalConstants.EARTH_AXIAL_TILT, 0.4));
-            return inclination % 360;
+            var inclination = ((int)(Math.Pow(semiMajorAxisAU, 0.2) * Utilities.About(GlobalConstants.EARTH_AXIAL_TILT, 0.4)) % 360);
+            return inclination;
         }
 
         /// <summary>

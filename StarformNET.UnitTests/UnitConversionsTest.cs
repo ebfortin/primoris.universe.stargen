@@ -1,6 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Primoris.Universe.Stargen.Physics;
+using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {

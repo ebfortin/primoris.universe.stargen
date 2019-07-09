@@ -1,6 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Primoris.Universe.Stargen;
-using Primoris.Universe.Stargen.Data;
 using Primoris.Universe.Stargen.Bodies;
 using System.Collections.Generic;
 using System;
@@ -8,8 +7,11 @@ using System.Linq;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using Environment = Primoris.Universe.Stargen.Physics;
+using Environment = Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Systems;
+using Primoris.Universe.Stargen.Bodies.Burrows;
+using Primoris.Universe.Stargen.Systems.Burrows;
+using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
@@ -35,7 +37,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				stream.Close();
 
 				Utilities.InitRandomSeed(0);
-				var newSystem = OriginalGenerator.GenerateStellarSystem("test").Planets;
+				var newSystem = SystemGenerator.GenerateStellarSystem("test").Planets;
 				Assert.AreEqual(savedSystem.Count(), newSystem.Count(), "Incorrect number of planets");
 				for (var i = 0; i < savedSystem.Count(); i++)
 				{
@@ -56,7 +58,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				stream.Close();
 
 				Utilities.InitRandomSeed(1);
-				var newSystem = OriginalGenerator.GenerateStellarSystem("test").Planets;
+				var newSystem = SystemGenerator.GenerateStellarSystem("test").Planets;
 				var atleastOneDifferent = false;
 				if(savedSystem.Count() != newSystem.Count())
 				{
@@ -90,14 +92,14 @@ namespace Primoris.Universe.Stargen.UnitTests
 
 			private Body GetTestPlanetAtmosphere()
 			{
-				var planet = new Body(GetTestStar(), 0.723332, 0.0067, 2.8, 2802.0, 225.0, 0.000002447, 2.41E-10, 6051.8, 92000.0, 737.0, 737.0, 737.0, 0.9);
+				var planet = new Planet(GetTestStar(), 0.723332, 0.0067, 2.8, 2802.0, 225.0, 0.000002447, 2.41E-10, 6051.8, 92000.0, 737.0, 737.0, 737.0, 0.9);
 
 				return planet;
 			}
 
 			private Body GetTestPlanetNoAtmosphere()
 			{
-				var planet = new Body(GetTestStar());
+				var planet = new Planet(GetTestStar());
 				return planet;
 			}
 
@@ -105,7 +107,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 			[TestMethod]
 			public void TestEmptyPlanet()
 			{
-				var planet = new Body(GetTestStar());
+				var planet = new Planet(GetTestStar());
 
 				Assert.AreEqual(0, planet.Atmosphere.Composition.Count);
 			}

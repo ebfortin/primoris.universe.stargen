@@ -5,8 +5,9 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using Primoris.Universe.Stargen.Systems;
-using Primoris.Universe.Stargen.Physics;
+using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Bodies;
+using Primoris.Universe.Stargen.Systems.Burrows;
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {
@@ -73,7 +74,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 		{
             var sun = GenerateStar();
 
-            var sys = OriginalGenerator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun : sun);
+            var sys = SystemGenerator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun : sun);
             if (String.IsNullOrEmpty(CsvOutputPath))
             {
                 WriteObject(sun);

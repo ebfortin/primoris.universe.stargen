@@ -6,7 +6,8 @@ using System.IO;
 using Primoris.Universe.Stargen.Display;
 using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Systems;
-using Primoris.Universe.Stargen.Data;
+using Primoris.Universe.Stargen.Systems.Burrows;
+using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen
 {
@@ -111,7 +112,7 @@ namespace Primoris.Universe.Stargen
         {
             Utilities.InitRandomSeed((int)_seedSelector.Value);
             var curIdx = _systemListBox.SelectedIndex;
-            var newSystem = OriginalGenerator.GenerateStellarSystem(_system.Name, GetSelectedOptions());
+            var newSystem = SystemGenerator.GenerateStellarSystem(_system.Name, GetSelectedOptions());
             _group.Systems[curIdx] = newSystem;
             _systemListBox.Items[curIdx] = newSystem;
             SetSystem(newSystem);
@@ -136,7 +137,7 @@ namespace Primoris.Universe.Stargen
         {
             _systemListBox.Items.Clear();
             var options = GetSelectedOptions();
-            _group = OriginalGenerator.GenerateStellarGroup((int)_seedSelector.Value, (int)_countSelector.Value, options);
+            _group = SystemGenerator.GenerateStellarGroup((int)_seedSelector.Value, (int)_countSelector.Value, options);
             foreach (var system in _group.Systems)
             {
                 _systemListBox.Items.Add(system);

@@ -3,13 +3,11 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Management.Automation;
 using Primoris.Universe.Stargen;
-using Primoris.Universe.Stargen.Bodies;
-using Primoris.Universe.Stargen.Data;
 
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
-
+using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {

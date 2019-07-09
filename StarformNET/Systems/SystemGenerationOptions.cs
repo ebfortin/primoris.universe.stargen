@@ -1,5 +1,4 @@
-using Primoris.Universe.Stargen.Data;
-using Primoris.Universe.Stargen.Physics;
+using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.Systems
 {

@@ -1,8 +1,8 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Bodies;
-using Primoris.Universe.Stargen.Data;
 
 namespace Primoris.Universe.Stargen.Systems
 {
