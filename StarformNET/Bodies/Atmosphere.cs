@@ -10,7 +10,7 @@ namespace Primoris.Universe.Stargen.Bodies
 	[Serializable]
 	public class Atmosphere
 	{
-		public Body Planet { get; internal set; }
+		public SatelliteBody Planet { get; internal set; }
 
 		public double SurfacePressure { get; private set; }
 
@@ -20,7 +20,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		public IList<Gas> PoisonousGases { get; private set; } = new List<Gas>();
 
-		public Atmosphere(Body planet)
+		public Atmosphere(SatelliteBody planet)
 		{
 			Planet = planet;
 
@@ -31,7 +31,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			Breathability = CalculateBreathability();
 		}
 
-		public Atmosphere(Body planet, IList<Gas> gases)
+		public Atmosphere(SatelliteBody planet, IList<Gas> gases)
 		{
 			Planet = planet;
 
@@ -44,7 +44,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			Breathability = CalculateBreathability();
 		}
 
-		public Atmosphere(Body planet, double surfPressure)
+		public Atmosphere(SatelliteBody planet, double surfPressure)
 		{
 			Planet = planet;
 			SurfacePressure = surfPressure;
@@ -53,7 +53,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			Breathability = CalculateBreathability();
 		}
 
-		public Atmosphere(Body planet, ChemType[] gasTable)
+		public Atmosphere(SatelliteBody planet, ChemType[] gasTable)
 		{
 			Planet = planet;
 			SurfacePressure = Environment.Pressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceGravityG);
@@ -114,7 +114,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			CalculateGases(Planet, gasTable);
 		}
 
-		private void CalculateGases(Body planet, ChemType[] gasTable = null)
+		private void CalculateGases(SatelliteBody planet, ChemType[] gasTable = null)
 		{
 			gasTable ??= ChemType.Load();
 
@@ -180,7 +180,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		}
 
-		private void CheckForSpecialRules(out double abund, out double react, double pressure, Body planet, ChemType gas)
+		private void CheckForSpecialRules(out double abund, out double react, double pressure, SatelliteBody planet, ChemType gas)
 		{
 			var sun = planet.Star;
 			var pres2 = 1.0;

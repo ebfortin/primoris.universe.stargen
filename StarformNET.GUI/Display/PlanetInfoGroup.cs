@@ -7,7 +7,7 @@ namespace Primoris.Universe.Stargen.Display
 
 	public class PlanetInfoGroup : InfoGroup
     {
-        public void SetPlanet(Body planet)
+        public void SetPlanet(SatelliteBody planet)
         {
             var labels = new List<string>()
             {

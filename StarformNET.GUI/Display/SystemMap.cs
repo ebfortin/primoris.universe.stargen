@@ -16,14 +16,14 @@ namespace Primoris.Universe.Stargen.Display
         public int PlanetPadding { get; set; }
 
         private List<Sprite> _planetSprites = new List<Sprite>();
-        private IEnumerable<Body> _planets;
+        private IEnumerable<SatelliteBody> _planets;
         public int SelectedPlanetIndex = -1;
         private Pen _selectionPen = new Pen(Color.White, 1);
         private Pen _focusedSelectionPen = new Pen(Color.Red, 1);
 
         public event EventHandler<EventArgs> PlanetClicked;
 
-        public void SetNewSystem(IEnumerable<Body> planets)
+        public void SetNewSystem(IEnumerable<SatelliteBody> planets)
         {
             _planets = planets;
             _planetSprites.Clear();

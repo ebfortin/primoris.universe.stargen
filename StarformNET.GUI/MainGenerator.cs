@@ -93,7 +93,7 @@ namespace Primoris.Universe.Stargen
             _systemMap.SetNewSystem(_system.Planets);
             _planetSelector.Items.Clear();
 
-            foreach (Body planet in _system.Planets)
+            foreach (SatelliteBody planet in _system.Planets)
             {
                 _planetSelector.Items.Add(String.Format("Planet {0}", planet.Position));
             }

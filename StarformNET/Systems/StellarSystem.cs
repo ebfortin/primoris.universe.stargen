@@ -13,7 +13,7 @@ namespace Primoris.Universe.Stargen.Systems
 	{
 		public string Name { get; set; }
 		public Star Star { get; set; }
-		public IEnumerable<Body> Planets { get; set; }
+		public IEnumerable<SatelliteBody> Planets { get; set; }
 		public SystemGenerationOptions Options { get; set; }
 
 		public override string ToString()

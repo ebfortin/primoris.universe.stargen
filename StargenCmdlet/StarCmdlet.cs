@@ -34,9 +34,9 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			Map(m => m.Age);
 			Map(m => m.Life);
 			Map(m => m.EcosphereRadiusAU);
-			Map(m => m.Luminosity);
-			Map(m => m.Mass);
-			Map(m => m.Radius);
+			Map(m => m.LuminositySM);
+			Map(m => m.MassSM);
+			Map(m => m.RadiusSM);
 			Map(m => m.Temperature);
 			Map(m => m.SemiMajorAxisAU);
 			Map(m => m.Eccentricity);

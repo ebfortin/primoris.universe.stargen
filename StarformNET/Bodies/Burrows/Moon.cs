@@ -10,9 +10,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
 	public class Moon : Planet
 	{
-		public Moon(BodySeed seed,
+		public Moon(Seed seed,
 					   Star star,
-					   Body parentBody,
+					   SatelliteBody parentBody,
 					   int num,
 					   bool useRandomTilt,
 					   string planetID,
@@ -26,7 +26,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			var generatedMoon = this;
 
 			double roche_limit = 2.44 * parentBody.Radius * Math.Pow(parentBody.DensityGCC / generatedMoon.DensityGCC, 1.0 / 3.0);
-			double hill_sphere = parentBody.SemiMajorAxisAU * GlobalConstants.KM_PER_AU * Math.Pow(parentBody.MassSM / (3.0 * star.Mass), 1.0 / 3.0);
+			double hill_sphere = parentBody.SemiMajorAxisAU * GlobalConstants.KM_PER_AU * Math.Pow(parentBody.MassSM / (3.0 * star.MassSM), 1.0 / 3.0);
 
 			if (roche_limit * 3.0 < hill_sphere)
 			{

@@ -13,7 +13,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 	// TODO orbit zone is supposedly no longer used anywhere. Check references and possibly remove.
 
 	[Serializable]
-	public class Planet : Body
+	public class Planet : SatelliteBody
 	{
 		private static readonly IBodyPhysics BurrowsPhysics = new BodyPhysics();
 
@@ -51,7 +51,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		{ }
 
 
-		public Planet(BodySeed seed,
+		public Planet(Seed seed,
 					   Star star,
 					   int num,
 					   bool useRandomTilt,
@@ -140,12 +140,12 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			IceCoverFraction = 0.0;
 		}
 
-		protected override void Generate(BodySeed seed, int planetNo, Star sun, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
+		protected override void Generate(Seed seed, int planetNo, Star sun, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
 		{
 			var planet = this;
 
-			planet.OrbitZone = Physics.GetOrbitalZone(sun.Luminosity, SemiMajorAxisAU);
-			planet.OrbitalPeriod = Physics.GetPeriod(SemiMajorAxisAU, MassSM, sun.Mass);
+			planet.OrbitZone = Physics.GetOrbitalZone(sun.LuminositySM, SemiMajorAxisAU);
+			planet.OrbitalPeriod = Physics.GetPeriod(SemiMajorAxisAU, MassSM, sun.MassSM);
 			if (useRandomTilt)
 			{
 				planet.AxialTilt = Environment.Inclination(SemiMajorAxisAU);
@@ -190,7 +190,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				VolatileGasInventory = Physics.GetVolatileGasInventory(MassSM,
 												   EscapeVelocity,
 												   RMSVelocityCMSec,
-												   sun.Mass,
+												   sun.MassSM,
 												   GasMassSM,
 												   OrbitZone,
 												   HasGreenhouseEffect,
@@ -202,13 +202,13 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 																  DensityGCC,
 																  SemiMajorAxisAU,
 																  Physics.TestIsGasGiant(MassSM, GasMassSM, MolecularWeightRetained),
-																  sun.Mass,
+																  sun.MassSM,
 																  sun.Age);
 			planet.DayLength = Physics.GetDayLength(planet.AngularVelocityRadSec, planet.OrbitalPeriod, planet.Eccentricity);
 			planet.HasResonantPeriod = Physics.TestHasResonantPeriod(planet.AngularVelocityRadSec, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
 			planet.EscapeVelocityCMSec = Physics.GetEscapeVelocity(planet.MassSM, planet.Radius);
 
-			planet.HillSphere = Physics.GetHillSphere(sun.Mass, planet.MassSM, planet.SemiMajorAxisAU);
+			planet.HillSphere = Physics.GetHillSphere(sun.MassSM, planet.MassSM, planet.SemiMajorAxisAU);
 
 			if (!Physics.TestIsGasGiant(MassSM, GasMassSM, MolecularWeightRetained))
 			{
@@ -240,17 +240,17 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 		}
 
-		protected override IEnumerable<Body> GenerateSatellites(BodySeed seed,
+		protected override IEnumerable<SatelliteBody> GenerateSatellites(Seed seed,
 					   Star star,
-					   Body parentBody,
+					   SatelliteBody parentBody,
 					   bool useRandomTilt,
 					   SystemGenerationOptions genOptions)
 		{
 			var planet = this;
 
 			// Generate moons
-			var sat = new List<Body>();
-			var curMoon = seed.FirstSatellite;
+			var sat = new List<SatelliteBody>();
+			var curMoon = seed;
 			var n = 0;
 			if (curMoon != null)
 			{
@@ -349,7 +349,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				planet.HasGreenhouseEffect = false;
 
 				planet.VolatileGasInventory = Environment.VolatileInventory(planet.MassSM,
-					planet.EscapeVelocityCMSec, planet.RMSVelocityCMSec, planet.Star.Mass,
+					planet.EscapeVelocityCMSec, planet.RMSVelocityCMSec, planet.Star.MassSM,
 					planet.OrbitZone, planet.HasGreenhouseEffect, planet.GasMassSM / planet.MassSM > 0.000001);
 				//planet.Atmosphere.SurfacePressure = Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
 

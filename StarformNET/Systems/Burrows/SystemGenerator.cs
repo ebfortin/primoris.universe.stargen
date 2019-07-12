@@ -23,7 +23,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			return group;
 		}
 
-		public static StellarSystem GenerateStellarSystem(string systemName, SystemGenerationOptions genOptions = null, Star sun = null, IEnumerable<BodySeed> seedSystem = null)
+		public static StellarSystem GenerateStellarSystem(string systemName, SystemGenerationOptions genOptions = null, Star sun = null, IEnumerable<Seed> seedSystem = null)
 		{
 			genOptions = genOptions ?? SystemGenerationOptions.DefaultOptions;
 			sun = sun ?? new Star();
@@ -31,9 +31,9 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 
 			var accrete = new Accrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);
 			double outer_planet_limit = GetOuterLimit(sun);
-			double outer_dust_limit = GetStellarDustLimit(sun.Mass);
-			seedSystem = seedSystem ?? accrete.CreateBodies(sun.Mass,
-				sun.Luminosity, 0.0, outer_dust_limit, outer_planet_limit,
+			double outer_dust_limit = GetStellarDustLimit(sun.MassSM);
+			seedSystem = seedSystem ?? accrete.CreateBodies(sun.MassSM,
+				sun.LuminositySM, 0.0, outer_dust_limit, outer_planet_limit,
 				genOptions.DustDensityCoeff);
 
 			var planets = GeneratePlanets(sun, seedSystem, useRandomTilt, genOptions);
@@ -46,9 +46,9 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			};
 		}
 
-		private static ICollection<Body> GeneratePlanets(Star sun, IEnumerable<BodySeed> seeds, bool useRandomTilt, SystemGenerationOptions genOptions)
+		private static ICollection<SatelliteBody> GeneratePlanets(Star sun, IEnumerable<Seed> seeds, bool useRandomTilt, SystemGenerationOptions genOptions)
 		{
-			var planets = new List<Body>();
+			var planets = new List<SatelliteBody>();
 			var i = 0;
 			foreach (var seed in seeds)
 			{
@@ -79,7 +79,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			// The following is Holman & Wiegert's equation 1 from
 			// Long-Term Stability of Planets in Binary Systems
 			// The Astronomical Journal, 117:621-628, Jan 1999
-			double m1 = star.Mass;
+			double m1 = star.MassSM;
 			double m2 = star.BinaryMass;
 			double mu = m2 / (m1 + m2);
 			double e = star.SemiMajorAxisAU;

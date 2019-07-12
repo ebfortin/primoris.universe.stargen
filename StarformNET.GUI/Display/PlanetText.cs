@@ -11,7 +11,7 @@ namespace Primoris.Universe.Stargen.Display
 
 	public static class PlanetText
     {
-        public static string GetSystemText(IEnumerable<Body> planets)
+        public static string GetSystemText(IEnumerable<SatelliteBody> planets)
         {
             var sb = new StringBuilder();
             var sun = planets.ElementAt(0).Star;
@@ -26,7 +26,7 @@ namespace Primoris.Universe.Stargen.Display
             }
             return sb.ToString();
         }
-        public static string GetPlanetText(Body planet)
+        public static string GetPlanetText(SatelliteBody planet)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("{0} {1}", GetPlanetNumber(planet), GetPlanetTypeText(planet));
@@ -72,12 +72,12 @@ namespace Primoris.Universe.Stargen.Display
             return sb.ToString();
         }
 
-        public static string GetDensity(Body planet)
+        public static string GetDensity(SatelliteBody planet)
         {
             return String.Format("{0:0.00} g/cm3", planet.DensityGCC);
         }
 
-        public static string GetBoilingPoint(Body planet)
+        public static string GetBoilingPoint(SatelliteBody planet)
         {
             if (planet.Type == BodyType.GasGiant || planet.Type == BodyType.SubGasGiant || planet.Type == BodyType.SubSubGasGiant)
             {
@@ -86,17 +86,17 @@ namespace Primoris.Universe.Stargen.Display
             return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.BoilingPointWater));
         }
 
-        public static string GetGreenhouseRise(Body planet)
+        public static string GetGreenhouseRise(SatelliteBody planet)
         {
             return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.GreenhouseRiseTemperature));
         }
 
-        public static string GetEscapeVelocity(Body planet)
+        public static string GetEscapeVelocity(SatelliteBody planet)
         {
             return String.Format("{0:0.00} km/sec", UnitConversions.CMToKM(planet.EscapeVelocityCMSec));
         }
 
-        public static string GetPlanetTypeText(Body planet)
+        public static string GetPlanetTypeText(SatelliteBody planet)
         {
             var sb = new StringBuilder();
             switch (planet.Type)
@@ -144,7 +144,7 @@ namespace Primoris.Universe.Stargen.Display
             return sb.ToString();
         }
 
-        public static string GetSurfaceGravityG(Body planet)
+        public static string GetSurfaceGravityG(SatelliteBody planet)
         {
             if (planet.Type == BodyType.GasGiant || planet.Type == BodyType.SubGasGiant || planet.Type == BodyType.SubSubGasGiant)
             {
@@ -153,42 +153,42 @@ namespace Primoris.Universe.Stargen.Display
             return String.Format("{0:0.00} G", planet.SurfaceGravityG);
         }
 
-        public static string GetHydrosphere(Body planet)
+        public static string GetHydrosphere(SatelliteBody planet)
         {
             return String.Format("{0:0.0}%", planet.WaterCoverFraction * 100);
         }
 
-        public static string GetIceCover(Body planet)
+        public static string GetIceCover(SatelliteBody planet)
         {
             return String.Format("{0:0.0}%", planet.IceCoverFraction * 100);
         }
 
-        public static string GetCloudCover(Body planet)
+        public static string GetCloudCover(SatelliteBody planet)
         {
             return String.Format("{0:0.0}%", planet.CloudCoverFraction * 100);
         }
 
-        public static string GetDayTemp(Body planet)
+        public static string GetDayTemp(SatelliteBody planet)
         {
             return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.DaytimeTemperature));
         }
 
-        public static string GetNightTemp(Body planet)
+        public static string GetNightTemp(SatelliteBody planet)
         {
             return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.NighttimeTemperature));
         }
 
-        public static string GetExoTemp(Body planet)
+        public static string GetExoTemp(SatelliteBody planet)
         {
             return String.Format("{0:0.0} K", planet.ExosphereTemperature);
         }
 
-        public static string GetEstimatedHillSphereKM(Body planet)
+        public static string GetEstimatedHillSphereKM(SatelliteBody planet)
         {
             return String.Format("{0:n0} km", planet.HillSphere);
         }
 
-        public static string GetLengthofDayHours(Body planet)
+        public static string GetLengthofDayHours(SatelliteBody planet)
         {
             if (planet.DayLength > 24 * 7)
             {
@@ -197,7 +197,7 @@ namespace Primoris.Universe.Stargen.Display
             return String.Format("{0:0.0} hours", planet.DayLength);
         }
 
-        public static string GetOrbitalPeriodDay(Body planet)
+        public static string GetOrbitalPeriodDay(SatelliteBody planet)
         {
             if (planet.OrbitalPeriod > 365 * 1.5)
             {
@@ -206,37 +206,37 @@ namespace Primoris.Universe.Stargen.Display
             return String.Format("{0:0.0} days", planet.OrbitalPeriod);
         }
 
-        public static string GetOrbitalEccentricity(Body planet)
+        public static string GetOrbitalEccentricity(SatelliteBody planet)
         {
             return String.Format("{0:0.00}", planet.Eccentricity);
         }
 
-        public static string GetOrbitalDistanceAU(Body planet)
+        public static string GetOrbitalDistanceAU(SatelliteBody planet)
         {
             return String.Format("{0:0.00} AU", planet.SemiMajorAxisAU);
         }
 
-        public static string GetPlanetNumber(Body planet)
+        public static string GetPlanetNumber(SatelliteBody planet)
         {
             return String.Format("{0}.", planet.Position);
         }
 
-        public static string GetRadiusKM(Body planet)
+        public static string GetRadiusKM(SatelliteBody planet)
         {
             return String.Format("{0:0} km", planet.Radius);
         }
 
-        public static string GetRadiusER(Body planet)
+        public static string GetRadiusER(SatelliteBody planet)
         {
             return String.Format("{0:0.00} ER", planet.Radius / GlobalConstants.KM_EARTH_RADIUS);
         }
 
-        public static string GetMassStringEM(Body planet)
+        public static string GetMassStringEM(SatelliteBody planet)
         {
             return String.Format("{0:0.00} EM", UnitConversions.SolarMassesToEarthMasses(planet.MassSM));
         }
 
-        public static string GetSurfacePressureStringAtm(Body planet)
+        public static string GetSurfacePressureStringAtm(SatelliteBody planet)
         {
             if (planet.Type == BodyType.GasGiant || planet.Type == BodyType.SubGasGiant || planet.Type == BodyType.SubSubGasGiant)
             {
@@ -245,7 +245,7 @@ namespace Primoris.Universe.Stargen.Display
             return String.Format("{0:0.000} atm", UnitConversions.MillibarsToAtm(planet.Atmosphere.SurfacePressure));
         }
 
-        public static string GetAtmoStringPP(Body planet)
+        public static string GetAtmoStringPP(SatelliteBody planet)
         {
             if (planet.Type == BodyType.GasGiant || planet.Type == BodyType.SubGasGiant || planet.Type == BodyType.SubSubGasGiant)
             {
@@ -274,7 +274,7 @@ namespace Primoris.Universe.Stargen.Display
             return str;
         }
 
-        public static string GetPoisonString(Body planet)
+        public static string GetPoisonString(SatelliteBody planet)
         {
             var str = "";
             var orderedGases = planet.Atmosphere.PoisonousGases.OrderByDescending(g => g.SurfacePressure).ToList();
@@ -297,7 +297,7 @@ namespace Primoris.Universe.Stargen.Display
             return str;
         }
 
-        public static string GetAtmoString(Body planet, double minFraction = 1.0)
+        public static string GetAtmoString(SatelliteBody planet, double minFraction = 1.0)
         {
             if (planet.Type == BodyType.GasGiant || planet.Type == BodyType.SubGasGiant || planet.Type == BodyType.SubSubGasGiant)
             {

@@ -87,7 +87,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
         /// <summary>
         /// Returns true if the planet is tidally locked to its parent body.
         /// </summary>
-        public static bool IsTidallyLocked(Body planet)
+        public static bool IsTidallyLocked(SatelliteBody planet)
         {
             return (int) planet.DayLength == (int) (planet.OrbitalPeriod * 24);
         }
@@ -623,7 +623,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
         /// <summary>
         /// Calculates the minimum molecular weight retained by a planet
         /// </summary>
-        public static double MinMolecularWeight(Body planet)
+        public static double MinMolecularWeight(SatelliteBody planet)
         {
             var surfGrav = planet.SurfaceGravityG;
             var mass = planet.MassSM;

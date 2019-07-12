@@ -20,7 +20,7 @@ namespace Primoris.Universe.Stargen.Display
             public float size;
             public Brush color;
 
-            public OrbitParameters(Body planet, float angle)
+            public OrbitParameters(SatelliteBody planet, float angle)
             {
                 a = Math.Sqrt(planet.SemiMajorAxisAU);
                 e = planet.Eccentricity;
@@ -91,7 +91,7 @@ namespace Primoris.Universe.Stargen.Display
             Refresh();
         }
 
-        public void SetSystem(IEnumerable<Body> system)
+        public void SetSystem(IEnumerable<SatelliteBody> system)
         {
             _orbits.Clear();
             foreach (var planet in system)

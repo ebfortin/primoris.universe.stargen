@@ -8,7 +8,7 @@ namespace Primoris.Universe.Stargen.Display
 
 	public class SystemInfoGroup : InfoGroup
     {
-        public void SetSystem(IEnumerable<Body> planets)
+        public void SetSystem(IEnumerable<SatelliteBody> planets)
         {
             if (planets == null || planets.ElementAt(0) == null)
             {

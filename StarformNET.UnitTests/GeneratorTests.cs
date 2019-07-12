@@ -41,7 +41,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				Assert.AreEqual(savedSystem.Count(), newSystem.Count(), "Incorrect number of planets");
 				for (var i = 0; i < savedSystem.Count(); i++)
 				{
-					Assert.IsTrue(savedSystem.SequenceEqual<Body>(newSystem), String.Format("Planet {0} not equal", i));
+					Assert.IsTrue(savedSystem.SequenceEqual<SatelliteBody>(newSystem), String.Format("Planet {0} not equal", i));
 				}
 			}
 
@@ -66,7 +66,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				}
 				else
 				{
-					atleastOneDifferent = savedSystem.SequenceEqual<Body>(newSystem);
+					atleastOneDifferent = savedSystem.SequenceEqual<SatelliteBody>(newSystem);
 				}
 				/*for (var i = 0; i < savedSystem.Count; i++)
 				{
@@ -90,14 +90,14 @@ namespace Primoris.Universe.Stargen.UnitTests
 				return new Star(1.0, 1.0, 1e10);
 			}
 
-			private Body GetTestPlanetAtmosphere()
+			private SatelliteBody GetTestPlanetAtmosphere()
 			{
 				var planet = new Planet(GetTestStar(), 0.723332, 0.0067, 2.8, 2802.0, 225.0, 0.000002447, 2.41E-10, 6051.8, 92000.0, 737.0, 737.0, 737.0, 0.9);
 
 				return planet;
 			}
 
-			private Body GetTestPlanetNoAtmosphere()
+			private SatelliteBody GetTestPlanetNoAtmosphere()
 			{
 				var planet = new Planet(GetTestStar());
 				return planet;

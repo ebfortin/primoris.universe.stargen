@@ -1,5 +1,6 @@
 ﻿using System;
 using Main = Primoris.Universe.Stargen;
+using Primoris.Universe.Stargen.Bodies;
 using System.Drawing;
 
 namespace Primoris.Universe.Stargen.Astrophysics
@@ -8,7 +9,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 	// UGLY Not comfortable with binary systems just having a second mass value
 
 	[Serializable]
-	public class Star
+	public class Star : Body
 	{
 		public const double MinSunAge = 1.0E9;
 		public const double MaxSunAge = 6.0E9;
@@ -33,7 +34,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			StellarType = StellarType.FromLuminosityAndRadius(lum, 1.0);
 
 			//EcosphereRadiusAU = Math.Sqrt(lum);
-			Life = 1.0E10 * (Mass / Luminosity);
+			Life = 1.0E10 * (MassSM / LuminositySM);
 
 			if (double.IsNaN(age))
 				Age = Utilities.RandomNumber(MinSunAge, Life < MaxSunAge ? Life : MaxSunAge);
@@ -60,15 +61,13 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			get
 			{
 				var st = StellarType.FromString(StellarType.ToString());
-				return Math.Sqrt(Math.Pow(Luminosity - st.Luminosity, 2.0) +
-								 Math.Pow(Radius - st.Radius, 2.0) +
-								 Math.Pow(Mass - st.Mass, 2.0) +
+				return Math.Sqrt(Math.Pow(LuminositySM - st.Luminosity, 2.0) +
+								 Math.Pow(RadiusSM - st.Radius, 2.0) +
+								 Math.Pow(MassSM - st.Mass, 2.0) +
 								 Math.Pow(Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE - st.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0));
 
 			}
 		}
-
-		public string Name { get; set; }
 
 		/// <summary>
 		/// Age of the star in years.
@@ -85,7 +84,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// ye olden science speak for circumstellar habitable zone) is
 		/// centered on. Given in AU. 
 		/// </summary>
-		public double EcosphereRadiusAU { get => Math.Sqrt(Luminosity); }
+		public double EcosphereRadiusAU { get => Math.Sqrt(LuminositySM); }
 
 		public double EcosphereRadius { get => EcosphereRadiusAU * GlobalConstants.ASTRONOMICAL_UNIT_KM; }
 
@@ -93,15 +92,15 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// Luminosity of the star in solar luminosity units (L<sub>☉</sub>).
 		/// The luminosity of the sun is 1.0.
 		/// </summary>
-		public double Luminosity { get => StellarType.Luminosity; }
+		public double LuminositySM { get => StellarType.Luminosity; }
 
 		/// <summary>
 		/// Mass of the star in solar mass units (M<sub>☉</sub>). The mass of
 		/// the sun is 1.0.
 		/// </summary>
-		public double Mass { get => StellarType.Mass; }
+		public override double MassSM { get => StellarType.Mass; protected set => throw new NotImplementedException(); }
 
-		public double Radius { get => StellarType.Radius; }
+		public double RadiusSM { get => StellarType.Radius; }
 
 		public double Temperature { get => StellarType.Temperature; }
 

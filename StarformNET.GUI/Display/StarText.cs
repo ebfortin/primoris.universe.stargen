@@ -50,7 +50,7 @@ namespace Primoris.Universe.Stargen.Display
         /// </summary>
         public static string GetLuminosityRel(Star star, bool showUnits=true)
         {
-            var lum = String.Format("{0:0.00}", star.Luminosity);
+            var lum = String.Format("{0:0.00}", star.LuminositySM);
             var units = showUnits ? " Solar Luminosity" : "";
             return lum + units;
         }
@@ -61,7 +61,7 @@ namespace Primoris.Universe.Stargen.Display
         /// </summary>
         public static string GetLuminosityPercent(Star star, bool showUnits=true)
         {
-            var lum = String.Format("{0:0.}", star.Luminosity * 100);
+            var lum = String.Format("{0:0.}", star.LuminositySM * 100);
             var units = showUnits ? "% Sol" : "";
             return lum + units;
         }
@@ -72,7 +72,7 @@ namespace Primoris.Universe.Stargen.Display
         /// </summary>
         public static string GetMassRel(Star star, bool showUnits=true)
         {
-            var mass = String.Format("{0:0.00}", star.Mass);
+            var mass = String.Format("{0:0.00}", star.MassSM);
             var units = showUnits ? " Solar Masses" : "";
             return mass + units;
         }
@@ -83,7 +83,7 @@ namespace Primoris.Universe.Stargen.Display
         /// </summary>
         public static string GetMassPercent(Star star, bool showUnits = true)
         {
-            var mass = String.Format("{0:0.}", star.Mass * 100);
+            var mass = String.Format("{0:0.}", star.MassSM * 100);
             var units = showUnits ? "% Sol" : "";
             return mass + units;
         }

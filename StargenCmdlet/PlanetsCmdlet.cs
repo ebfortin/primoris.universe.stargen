@@ -11,7 +11,7 @@ using Primoris.Universe.Stargen.Systems.Burrows;
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {
-	internal class PlanetMap : ClassMap<Body>
+	internal class PlanetMap : ClassMap<SatelliteBody>
 	{
 		public PlanetMap()
 		{
@@ -89,9 +89,9 @@ namespace Primoris.Universe.Stargen.Cmdlets
 				var w = new StreamWriter(f);
 				var cw = new CsvWriter(w, conf);
 
-				cw.WriteHeader<Body>();
+				cw.WriteHeader<SatelliteBody>();
 				cw.NextRecord();
-				cw.WriteRecords<Body>(sys.Planets);
+				cw.WriteRecords<SatelliteBody>(sys.Planets);
 				cw.Flush();
 
 				w.Close();
