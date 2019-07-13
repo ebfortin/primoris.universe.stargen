@@ -1,10 +1,11 @@
-namespace Primoris.Universe.Stargen.Bodies
+namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
-	public class DustRecord
+	internal class DustRecord
 	{
 		public double InnerEdge;
 		public double OuterEdge;
 		public bool DustPresent;
 		public bool GasPresent;
+		public DustRecord NextBand = null;
 	}
 }

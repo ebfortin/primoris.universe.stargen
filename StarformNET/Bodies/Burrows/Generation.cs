@@ -1,6 +1,6 @@
-namespace Primoris.Universe.Stargen.Bodies
+namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
-	public class Generation
+	internal class Generation
 	{
 		public DustRecord Dusts { get; set; }
 		public Seed Bodies { get; set; }
