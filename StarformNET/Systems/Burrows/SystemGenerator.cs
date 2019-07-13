@@ -32,7 +32,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			var accrete = new Accrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);
 			double outer_planet_limit = GetOuterLimit(sun);
 			double outer_dust_limit = GetStellarDustLimit(sun.MassSM);
-			seedSystem = seedSystem ?? accrete.CreateBodies(sun.MassSM,
+			seedSystem = seedSystem ?? accrete.CreateSeeds(sun.MassSM,
 				sun.LuminositySM, 0.0, outer_dust_limit, outer_planet_limit,
 				genOptions.DustDensityCoeff);
 

@@ -6,6 +6,5 @@ namespace Primoris.Universe.Stargen.Bodies
 		public double OuterEdge;
 		public bool DustPresent;
 		public bool GasPresent;
-		public DustRecord NextBand;
 	}
 }

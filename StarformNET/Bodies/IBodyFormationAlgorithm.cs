@@ -7,7 +7,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		double CloudEccentricity { get; set; }
 		double GasDustRatio { get; set; }
 
-		IEnumerable<Seed> CreateBodies(double stellarMassRatio,
+		IEnumerable<Seed> CreateSeeds(double stellarMassRatio,
 								double stellarLumRatio,
 								double innerDust,
 								double outerDust,

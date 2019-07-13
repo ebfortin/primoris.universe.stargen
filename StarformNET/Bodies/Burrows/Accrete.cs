@@ -17,6 +17,11 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			}
 		}
 
+		private class InnerDustRecord : DustRecord
+		{
+			internal InnerDustRecord NextBand = null;
+		}
+
 		public double CloudEccentricity { get; set; }
 		public double GasDustRatio { get; set; }
 
@@ -26,7 +31,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		private double _reducedMass;
 		private double _dustDensity;
 		private double _cloudEccentricity;
-		private DustRecord _dustHead;
+		private InnerDustRecord _dustHead;
 		private InnerSeed _planetHead;
 		private Generation _histHead;
 
@@ -48,7 +53,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		/// <param name="outerPlanetLimit"></param>
 		/// <param name="dustDensityCoeff"></param>
 		/// <returns></returns>
-		public IEnumerable<Seed> CreateBodies(double stellarMassRatio,
+		public IEnumerable<Seed> CreateSeeds(double stellarMassRatio,
 											 double stellarLumRatio,
 											 double innerDust,
 											 double outerDust,
@@ -122,7 +127,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			_histHead = new Generation();
 
 			_planetHead = null;
-			_dustHead = new DustRecord();
+			_dustHead = new InnerDustRecord();
 			_dustHead.NextBand = null;
 			_dustHead.OuterEdge = outer_limit_of_dust;
 			_dustHead.InnerEdge = inner_limit_of_dust;
@@ -158,7 +163,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 		private bool DustAvailable(double inside_range, double outside_range)
 		{
-			DustRecord current_dust_band;
+			InnerDustRecord current_dust_band;
 			bool dust_here;
 
 			current_dust_band = _dustHead;
@@ -187,9 +192,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		private void UpdateDustLanes(double min, double max, double mass, double crit_mass, double body_inner_bound, double body_outer_bound)
 		{
 			bool gas;
-			DustRecord node1 = null;
-			DustRecord node2 = null;
-			DustRecord node3 = null;
+			InnerDustRecord node1 = null;
+			InnerDustRecord node2 = null;
+			InnerDustRecord node3 = null;
 
 			_dustLeft = false;
 			if (mass > crit_mass)
@@ -206,7 +211,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				if (node1.InnerEdge < min && node1.OuterEdge > max)
 				{
-					node2 = new DustRecord();
+					node2 = new InnerDustRecord();
 					node2.InnerEdge = min;
 					node2.OuterEdge = max;
 					if (node1.GasPresent == true)
@@ -218,7 +223,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 						node2.GasPresent = false;
 					}
 					node2.DustPresent = false;
-					node3 = new DustRecord();
+					node3 = new InnerDustRecord();
 					node3.InnerEdge = max;
 					node3.OuterEdge = node1.OuterEdge;
 					node3.GasPresent = node1.GasPresent;
@@ -231,7 +236,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				}
 				else if (node1.InnerEdge < max && node1.OuterEdge > max)
 				{
-					node2 = new DustRecord();
+					node2 = new InnerDustRecord();
 					node2.NextBand = node1.NextBand;
 					node2.DustPresent = node1.DustPresent;
 					node2.GasPresent = node1.GasPresent;
@@ -252,7 +257,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				}
 				else if (node1.InnerEdge < min && node1.OuterEdge > min)
 				{
-					node2 = new DustRecord();
+					node2 = new InnerDustRecord();
 					node2.NextBand = node1.NextBand;
 					node2.DustPresent = false;
 					if (node1.GasPresent == true)
@@ -307,7 +312,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			}
 		}
 
-		private double CollectDust(double last_mass, ref double new_dust, ref double new_gas, double a, double e, double crit_mass, ref DustRecord dust_band)
+		private double CollectDust(double last_mass, ref double new_dust, ref double new_gas, double a, double e, double crit_mass, ref InnerDustRecord dust_band)
 		{
 			double temp = last_mass / (1.0 + last_mass);
 			_reducedMass = Math.Pow(temp, 1.0 / 4.0);
