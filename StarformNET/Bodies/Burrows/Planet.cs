@@ -246,13 +246,13 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					   bool useRandomTilt,
 					   SystemGenerationOptions genOptions)
 		{
-			var planet = this;
+			var planet = parentBody;
 
 			// Generate moons
 			var sat = new List<SatelliteBody>();
-			var curMoon = seed;
+			//var curMoon = seed;
 			var n = 0;
-			if (curMoon != null)
+			/*if (curMoon != null)
 			{
 				while (curMoon != null)
 				{
@@ -270,6 +270,23 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 						sat.Add(generatedMoon);
 					}
 					curMoon = curMoon.NextBody;
+				}
+			}*/
+
+			foreach(var curMoon in seed.Satellites)
+			{
+				if (curMoon.Mass * GlobalConstants.SUN_MASS_IN_EARTH_MASSES > .000001)
+				{
+					curMoon.SemiMajorAxisAU = planet.SemiMajorAxisAU;
+					curMoon.Eccentricity = planet.Eccentricity;
+
+					n++;
+
+					string moon_id = string.Format("{0}.{1}", parentBody.Position, n);
+
+					var generatedMoon = new Moon(curMoon, star, planet, n, useRandomTilt, moon_id, genOptions);
+
+					sat.Add(generatedMoon);
 				}
 			}
 

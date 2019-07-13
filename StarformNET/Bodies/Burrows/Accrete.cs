@@ -4,8 +4,19 @@ using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
+
 	public class Accrete : IBodyFormationAlgorithm
 	{
+		private class InnerSeed : Seed
+		{
+			internal InnerSeed NextBody { get; set; } = null;
+			internal InnerSeed FirstSatellite { get; set; } = null;
+
+			public InnerSeed(double a, double e, double mass, double dMass, double gMass) : base(a, e, mass, dMass, gMass)
+			{
+			}
+		}
+
 		public double CloudEccentricity { get; set; }
 		public double GasDustRatio { get; set; }
 
@@ -16,8 +27,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		private double _dustDensity;
 		private double _cloudEccentricity;
 		private DustRecord _dustHead;
-		private Seed _planetHead;
+		private InnerSeed _planetHead;
 		private Generation _histHead;
+
 
 		public Accrete(double e, double gdr)
 		{
@@ -84,13 +96,24 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			}
 
+			return ProcessSeeds(_planetHead);
+		}
+
+		private IEnumerable<Seed> ProcessSeeds(InnerSeed nextSeed)
+		{
 			var seedList = new List<Seed>();
-			var next = _planetHead;
+			var next = nextSeed;
+
 			while (next != null)
 			{
 				seedList.Add(next);
+				if (next.FirstSatellite != null)
+				{
+					next.Satellites = ProcessSeeds(next.FirstSatellite);
+				}
 				next = next.NextBody;
 			}
+
 			return seedList;
 		}
 
@@ -388,14 +411,14 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			UpdateDustLanes(_rInner, _rOuter, seed_mass, crit_mass, body_inner_bound, body_outer_bound);
 		}
 
-		private bool DoMoons(Seed planet, double mass, double critMass, double dustMass, double gasMass)
+		private bool DoMoons(InnerSeed planet, double mass, double critMass, double dustMass, double gasMass)
 		{
 			bool finished = false;
 			double existingMass = 0.0;
 
 			if (planet.FirstSatellite != null)
 			{
-				for (Seed m = planet.FirstSatellite; m != null; m = m.NextBody)
+				for (InnerSeed m = planet.FirstSatellite; m != null; m = m.NextBody)
 				{
 					existingMass += m.Mass;
 				}
@@ -405,7 +428,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				if (mass * GlobalConstants.SUN_MASS_IN_EARTH_MASSES < 2.5 && mass * GlobalConstants.SUN_MASS_IN_EARTH_MASSES > .0001 && existingMass < planet.Mass * .05)
 				{
-					Seed moon = new Seed(0, 0, mass, dustMass, gasMass);
+					InnerSeed moon = new InnerSeed(0, 0, mass, dustMass, gasMass);
 
 					if (moon.DustMass + moon.GasMass > planet.DustMass + planet.GasMass)
 					{
@@ -478,9 +501,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 									 bool doMoons)
 		{
 			// First we try to find an existing planet with an over-lapping orbit.
-			Seed thePlanet = null;
-			Seed nextPlanet = null;
-			Seed prevPlanet = null;
+			InnerSeed thePlanet = null;
+			InnerSeed nextPlanet = null;
+			InnerSeed prevPlanet = null;
 			var finished = false;
 			for (thePlanet = _planetHead; thePlanet != null; thePlanet = thePlanet.NextBody)
 			{
@@ -575,7 +598,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			// Planetesimals didn't collide. Make it a planet.
 			if (!finished)
 			{
-				thePlanet = new Seed(a, e, mass, dustMass, gasMass);
+				thePlanet = new InnerSeed(a, e, mass, dustMass, gasMass);
 
 				if (mass >= critMass)
 				{

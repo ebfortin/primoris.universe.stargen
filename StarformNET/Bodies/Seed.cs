@@ -1,10 +1,16 @@
+using System;
+using System.Collections.Generic;
+
+
 namespace Primoris.Universe.Stargen.Bodies
 {
 	// TODO: Transform to collection and enumerators. 
 	public class Seed
 	{
-		public Seed NextBody { get; set; } = null;
-		public Seed FirstSatellite { get; set; } = null;
+		//public Seed NextBody { get; set; } = null;
+		//public Seed FirstSatellite { get; set; } = null;
+
+		public IEnumerable<Seed> Satellites { get; set; } = new Seed[0];
 
 		public double SemiMajorAxisAU { get; set; }
 		public double Eccentricity { get; set; }

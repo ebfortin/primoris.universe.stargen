@@ -353,7 +353,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			GasMassSM = seed.GasMass;
 
 			Generate(seed, num, star, useRandomTilt, planetID, genOptions);
-			Satellites = GenerateSatellites(seed.FirstSatellite, Star, this, useRandomTilt, genOptions);
+			Satellites = GenerateSatellites(seed, Star, this, useRandomTilt, genOptions);
 
 			Check();
 		}
