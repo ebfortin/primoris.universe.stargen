@@ -142,6 +142,7 @@ namespace Primoris.Universe.Stargen.Bodies
 					double abund, react;
 					CheckForSpecialRules(out abund, out react, pressure, planet, gasTable[i]);
 
+					// TODO: Switch Environment.RMSVelocity for a particular gas to IBodyPhysics.
 					double vrms = Environment.RMSVelocity(gasTable[i].Weight, planet.ExosphereTemperature);
 					double pvrms = Math.Pow(1 / (1 + vrms / planet.EscapeVelocityCMSec), sun.Age / 1e9);
 
