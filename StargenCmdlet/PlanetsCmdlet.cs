@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Management.Automation;
 using System.IO;
 using CsvHelper;
@@ -70,12 +71,21 @@ namespace Primoris.Universe.Stargen.Cmdlets
 		[Parameter]
 		public double CloudEccentricity { get; set; } = GlobalConstants.CLOUD_ECCENTRICITY;
 
+		[Parameter]
+		public bool OnlyHabitableSystem { get; set; } = false;
+
 		protected override void ProcessRecord()
 		{
             var sun = GenerateStar();
+			bool findsys;
+			StellarSystem sys;
+			do
+			{
+				sys = SystemGenerator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun: sun);
+				findsys = (from p in sys.Planets where p.IsHabitable select p).Count() > 0;
+			} while (!findsys && OnlyHabitableSystem);
 
-            var sys = SystemGenerator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun : sun);
-            if (String.IsNullOrEmpty(CsvOutputPath))
+			if (String.IsNullOrEmpty(CsvOutputPath))
             {
                 WriteObject(sun);
                 WriteObject(sys.Planets);

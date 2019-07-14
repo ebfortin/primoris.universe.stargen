@@ -31,11 +31,11 @@ namespace Primoris.Universe.Stargen.Bodies
 			Breathability = CalculateBreathability();
 		}
 
-		public Atmosphere(SatelliteBody planet, IList<Gas> gases)
+		public Atmosphere(SatelliteBody planet, IEnumerable<Gas> gases)
 		{
 			Planet = planet;
 
-			Composition = gases;
+			Composition = new List<Gas>(gases);
 			foreach (var gas in Composition)
 			{
 				SurfacePressure += gas.SurfacePressure;
@@ -56,7 +56,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		public Atmosphere(SatelliteBody planet, ChemType[] gasTable)
 		{
 			Planet = planet;
-			SurfacePressure = Environment.Pressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceGravityG);
+			SurfacePressure = planet.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceGravityG);
 			CalculateGases(planet, gasTable);
 
 			Breathability = CalculateBreathability();

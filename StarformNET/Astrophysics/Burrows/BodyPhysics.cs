@@ -51,10 +51,23 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			var baseAngularVelocity = GetBaseAngularVelocity(massSM, radiusKM, isGasGiant);
 			var changeInAngularVelocity = GetChangeInAngularVelocity(
 				densityGCC, massSM, radiusKM, semiMajorAxisAU, starMassSM);
-			return baseAngularVelocity + changeInAngularVelocity *
-														 starAgeYears;
+			return baseAngularVelocity + changeInAngularVelocity * starAgeYears;
 		}
 
+
+		/// <remarks>
+		/// Originally this temperature was clipped at the Star surface temperature, ie it doesn't make sense for the
+		/// exosphere temperature to be significally higher than the Star temperature. But it turns out that doing so
+		/// make the generator creating only Barren and Gas Giant planets. This will have to be investigated and corrected.
+		/// Validation with StarformNET shows that the exo temp can go really high, sometimes on the 30k Kelvin.
+		/// 
+		/// TODO: Make sure Exosphere Temperature makes sense and understand why it needs to be verrry high for the generator to
+		/// create habitable planets.
+		/// </remarks>
+		/// <param name="semiMajorAxisAu"></param>
+		/// <param name="ecosphereRadiusAU"></param>
+		/// <param name="sunTemperature"></param>
+		/// <returns></returns>
 		public double GetExosphereTemperature(double semiMajorAxisAu,
 										double ecosphereRadiusAU,
 										double sunTemperature)
@@ -64,10 +77,10 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			exoTemp = GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(semiMajorAxisAu / ecosphereRadiusAU);
 			// Exosphere temperature can't be realisticly higher than the surface temperature of the sun. We therefore clip at sun.Temperature.
 			// TODO: Make transition instead of brute clipping.
-			exoTemp = exoTemp > sunTemperature ? sunTemperature : exoTemp;
+			//exoTemp = exoTemp > sunTemperature ? sunTemperature : exoTemp;
 			// Exosphere can't be realisticly lower than the CMB radiation temperature, which is 2.7K. 
 			// TODO: Make transition instead of brute clipping.
-			exoTemp = exoTemp < GlobalConstants.VACCUM_TEMPERATURE ? GlobalConstants.VACCUM_TEMPERATURE : exoTemp;
+			//exoTemp = exoTemp < GlobalConstants.VACCUM_TEMPERATURE ? GlobalConstants.VACCUM_TEMPERATURE : exoTemp;
 
 			return exoTemp;
 		}
@@ -77,7 +90,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			return Environment.RMSVelocity(GlobalConstants.MOL_NITROGEN, exoTemp);
 		}
 
-		public double GetRadius(double massSM,
+		public double GetCoreRadius(double massSM,
 						  int orbitZone,
 						  bool giant)
 		{
@@ -192,8 +205,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 												   double sunMass,
 												   double gasMassSM,
 												   int orbitZone,
-												   bool hasGreenhouse,
-												   bool hasAccretedGas)
+												   bool hasGreenhouse)
 		{
 			return Environment.VolatileInventory(
 				massSM, escapeVelocity, rmsVelocity, sunMass,
@@ -258,9 +270,9 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 
 		public virtual double GetHillSphere(double bigMass,
 									  double smallMassSM,
-									  double semiMajorAxisSM)
+									  double semiMajorAxisAU)
 		{
-			return semiMajorAxisSM * Math.Pow(smallMassSM / (3 * bigMass), 1.0 / 3.0) * GlobalConstants.KM_PER_AU;
+			return semiMajorAxisAU * Math.Pow(smallMassSM / (3 * bigMass), 1.0 / 3.0) * GlobalConstants.KM_PER_AU;
 		}
 
 		public virtual double GetSurfacePressure(double volatileGasInventory,

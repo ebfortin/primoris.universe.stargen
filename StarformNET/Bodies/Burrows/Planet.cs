@@ -111,7 +111,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				}
 			}
 
-			SurfaceGravityG = Environment.Gravity(surfaceAccelerationCMSec2);
+			//SurfaceGravityG = Environment.Gravity(surfaceAccelerationCMSec2);
 		}
 
 		protected override void AdjustPropertiesForGasBody()
@@ -123,20 +123,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			SurfaceTemperature = GlobalConstants.NOT_APPLICABLE;
 			GreenhouseRiseTemperature = 0;
 			Albedo = Utilities.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1);
-			WaterCoverFraction = 1.0;
-			CloudCoverFraction = 1.0;
-			IceCoverFraction = 0.0;
-
-			HasGreenhouseEffect = false;
-			VolatileGasInventory = GlobalConstants.NOT_APPLICABLE;
-
-			BoilingPointWater = GlobalConstants.NOT_APPLICABLE;
-
-			SurfaceTemperature = GlobalConstants.NOT_APPLICABLE;
-			GreenhouseRiseTemperature = 0;
-			Albedo = Utilities.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1);
-			WaterCoverFraction = 1.0;
-			CloudCoverFraction = 1.0;
+			WaterCoverFraction = 0.0;
+			CloudCoverFraction = 0.0;
 			IceCoverFraction = 0.0;
 		}
 
@@ -153,7 +141,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			planet.ExosphereTemperature = Physics.GetExosphereTemperature(SemiMajorAxisAU, sun.EcosphereRadiusAU, sun.Temperature);
 			planet.RMSVelocityCMSec = Physics.GetRMSVelocityCMSec(ExosphereTemperature);
-			planet.CoreRadius = Physics.GetRadius(DustMassSM, OrbitZone, true);
+			planet.CoreRadius = Physics.GetCoreRadius(DustMassSM, OrbitZone, false);
 
 			// Calculate the radius as a gas giant, to verify it will retain gas.
 			// Then if mass > Earth, it's at least 5% gas and retains He, it's
@@ -176,25 +164,17 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			}
 			else // If not, it's rocky.
 			{
-				Radius = Physics.GetRadius(MassSM, OrbitZone, false);
+				Radius = Physics.GetCoreRadius(MassSM, OrbitZone, false);
 				DensityGCC = Physics.GetDensityFromBody(MassSM, Radius);
 
-				//SurfaceAccelerationCMSec2 = Environment.Acceleration(MassSM, Radius);
-				//SurfaceGravityG = Environment.Gravity(SurfaceAccelerationCMSec2);
+				// Radius has changed, we need to adjust Surfa
+				SurfaceAccelerationCMSec2 = Environment.Acceleration(MassSM, Radius);
+				SurfaceGravityG = Environment.Gravity(SurfaceAccelerationCMSec2);
 
 				AdjustPropertiesForRockyBody();
 
 				MolecularWeightRetained = Physics.GetMolecularWeightRetained(SurfaceGravityG, MassSM, Radius, ExosphereTemperature, sun.Age);
-
 				HasGreenhouseEffect = Physics.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxisAU);
-				VolatileGasInventory = Physics.GetVolatileGasInventory(MassSM,
-												   EscapeVelocity,
-												   RMSVelocityCMSec,
-												   sun.MassSM,
-												   GasMassSM,
-												   OrbitZone,
-												   HasGreenhouseEffect,
-												   GasMassSM / MassSM > 0.000001);
 			}
 
 			planet.AngularVelocityRadSec = Physics.GetAngularVelocity(MassSM,
@@ -207,7 +187,13 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			planet.DayLength = Physics.GetDayLength(planet.AngularVelocityRadSec, planet.OrbitalPeriod, planet.Eccentricity);
 			planet.HasResonantPeriod = Physics.TestHasResonantPeriod(planet.AngularVelocityRadSec, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
 			planet.EscapeVelocityCMSec = Physics.GetEscapeVelocity(planet.MassSM, planet.Radius);
-
+			planet.VolatileGasInventory = Physics.GetVolatileGasInventory(MassSM,
+																	   EscapeVelocityCMSec,
+																	   RMSVelocityCMSec,
+																	   sun.MassSM,
+																	   GasMassSM,
+																	   OrbitZone,
+																	   HasGreenhouseEffect);
 			planet.HillSphere = Physics.GetHillSphere(sun.MassSM, planet.MassSM, planet.SemiMajorAxisAU);
 
 			if (!Physics.TestIsGasGiant(MassSM, GasMassSM, MolecularWeightRetained))
@@ -225,18 +211,17 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 				// Generate complete atmosphere.
 				Atmosphere = new Atmosphere(planet, genOptions.GasTable);
-
-				Type = Physics.GetBodyType(MassSM,
-						 GasMassSM,
-						 MolecularWeightRetained,
-						 Atmosphere.SurfacePressure,
-						 WaterCoverFraction,
-						 IceCoverFraction,
-						 MaxTemperature,
-						 BoilingPointWater,
-						 SurfaceTemperature);
 			}
 
+			Type = Physics.GetBodyType(MassSM,
+				 GasMassSM,
+				 MolecularWeightRetained,
+				 Atmosphere != null ? Atmosphere.SurfacePressure : 0.0,
+				 WaterCoverFraction,
+				 IceCoverFraction,
+				 MaxTemperature,
+				 BoilingPointWater,
+				 SurfaceTemperature);
 
 		}
 

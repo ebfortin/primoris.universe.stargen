@@ -22,6 +22,6 @@ namespace Primoris.Universe.Stargen.Systems
 		public double CloudEccentricity { get; set; }
 		public double GasDensityRatio { get; set; }
 
-		public ChemType[] GasTable = new ChemType[0];
+		public ChemType[] GasTable { get; private set; } = new ChemType[0];
 	}
 }

@@ -30,13 +30,13 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			if (roche_limit * 3.0 < hill_sphere)
 			{
-				generatedMoon.MoonSemiMajorAxisAU = Utilities.RandomNumber(roche_limit * 1.5, hill_sphere / 2.0) / GlobalConstants.KM_PER_AU;
-				generatedMoon.MoonEccentricity = Utilities.RandomEccentricity();
+				generatedMoon.SemiMajorAxisAU = Utilities.RandomNumber(roche_limit * 1.5, hill_sphere / 2.0) / GlobalConstants.KM_PER_AU;
+				generatedMoon.Eccentricity = Utilities.RandomEccentricity();
 			}
 			else
 			{
-				generatedMoon.MoonSemiMajorAxisAU = 0;
-				generatedMoon.MoonEccentricity = 0;
+				generatedMoon.SemiMajorAxisAU = 0;
+				generatedMoon.Eccentricity = 0;
 			}
 		}
 

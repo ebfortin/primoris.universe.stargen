@@ -98,7 +98,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 					   double maxTemperature,
 					   double boilingPointWater,
 					   double surfaceTemperature);
-		double GetRadius(double massSM,
+		double GetCoreRadius(double massSM,
 				   int orbitZone,
 				   bool giant);
 		double GetRMSVelocityCMSec(double exoTemp);
@@ -111,8 +111,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 								 double sunMass,
 								 double gasMassSM,
 								 int orbitZone,
-								 bool hasGreenhouse,
-								 bool hasAccretedGas);
+								 bool hasGreenhouse);
 		bool TestHasGreenhouseEffect(double ecosphereRadius,
 							   double semiAxisMajorAU);
 

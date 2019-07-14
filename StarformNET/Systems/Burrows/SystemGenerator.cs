@@ -25,8 +25,8 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 
 		public static StellarSystem GenerateStellarSystem(string systemName, SystemGenerationOptions genOptions = null, Star sun = null, IEnumerable<Seed> seedSystem = null)
 		{
-			genOptions = genOptions ?? SystemGenerationOptions.DefaultOptions;
-			sun = sun ?? new Star();
+			genOptions ??= new SystemGenerationOptions();
+			sun ??= new Star();
 			var useRandomTilt = seedSystem == null;
 
 			var accrete = new Accrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);

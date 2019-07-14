@@ -9,5 +9,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		public string Name { get; protected set; }
 
 		public abstract double MassSM { get; protected set; }
+
+		// TODO: Add Satellites here instead of in Star. Will also be used for moons of a planet.
 	}
 }
