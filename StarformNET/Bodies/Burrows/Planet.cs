@@ -293,7 +293,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			//var n2Life = GasLife(GlobalConstants.MOL_NITROGEN, planet);
 			//var nLife = GasLife(GlobalConstants.ATOMIC_NITROGEN, planet);
 
-			CalculateSurfaceTemperature(true, 0, 0, 0, 0, 0, 0);
+			CalculateSurfaceTemperature(true, 0, 0, 0, 0, 0, surfpres);
 
 			for (var count = 0; count <= 25; count++)
 			{
@@ -314,6 +314,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 		/// <summary>
 		/// The temperature of the planet calculated in degrees Kelvin
+		/// TODO: Eliminate calls to Environment and replace with calls to Physics.
 		/// </summary>
 		/// <param name="planet"></param>
 		/// <param name="first"></param>
