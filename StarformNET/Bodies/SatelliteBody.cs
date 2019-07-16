@@ -15,7 +15,7 @@ namespace Primoris.Universe.Stargen.Bodies
 	[Serializable]
 	public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 	{
-		public IBodyPhysics Physics { get; set; }
+		public IScienceAstrophysics Physics { get; set; }
 
 		public int Position { get; protected set; }
 		//private readonly double SemiAxisMajorAU;
@@ -268,7 +268,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		#endregion
 
-		public SatelliteBody(IBodyPhysics phys, Star sun, Atmosphere atmos)
+		public SatelliteBody(IScienceAstrophysics phys, Star sun, Atmosphere atmos)
 		{
 			Physics = phys;
 
@@ -278,7 +278,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		}
 
-		public SatelliteBody(IBodyPhysics phys,
+		public SatelliteBody(IScienceAstrophysics phys,
 					  Star sun,
 					  double semiMajorAxisAU,
 					  double eccentricity,
@@ -331,7 +331,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		/// <param name="phys"></param>
 		/// <param name="star"></param>
-		public SatelliteBody(IBodyPhysics phys, Star star)
+		public SatelliteBody(IScienceAstrophysics phys, Star star)
 		{
 			Physics = phys;
 
@@ -340,7 +340,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		}
 
 
-		public SatelliteBody(IBodyPhysics phys, Seed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
+		public SatelliteBody(IScienceAstrophysics phys, Seed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
 		{
 			Physics = phys;
 

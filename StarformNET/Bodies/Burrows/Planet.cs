@@ -15,7 +15,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 	[Serializable]
 	public class Planet : SatelliteBody
 	{
-		private static readonly IBodyPhysics BurrowsPhysics = new BodyPhysics();
+		private static readonly IScienceAstrophysics BurrowsPhysics = new BodyPhysics();
 
 
 		public Planet(Star sun, Atmosphere atmos) : base(BurrowsPhysics, sun, atmos) { }

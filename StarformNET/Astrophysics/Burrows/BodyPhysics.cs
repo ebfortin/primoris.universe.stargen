@@ -5,7 +5,7 @@ using Primoris.Universe.Stargen.Bodies;
 
 namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 {
-	public class BodyPhysics : IBodyPhysics
+	public class BodyPhysics : IScienceAstrophysics
 	{
 		public double GetBaseAngularVelocity(double massSM,
 									   double radiusKM,
