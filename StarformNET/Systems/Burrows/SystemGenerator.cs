@@ -36,6 +36,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 				sun.LuminositySM, 0.0, outer_dust_limit, outer_planet_limit,
 				genOptions.DustDensityCoeff);
 
+			// Todo: swing that to Star.
 			var planets = GeneratePlanets(sun, seedSystem, useRandomTilt, genOptions);
 			return new StellarSystem()
 			{

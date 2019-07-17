@@ -10,6 +10,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		public abstract double MassSM { get; protected set; }
 
-		// TODO: Add Satellites here instead of in Star. Will also be used for moons of a planet.
+		// TODO: Make it used by Star. Right now Planets reside in StellarSystem. 
+		public IEnumerable<SatelliteBody> Satellites { get; protected set; }
 	}
 }

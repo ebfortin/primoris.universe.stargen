@@ -155,7 +155,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		#region Satellites data
 
-		public IEnumerable<SatelliteBody> Satellites { get; protected set; }
+		//public IEnumerable<SatelliteBody> Satellites { get; protected set; }
 
 		public double MoonSemiMajorAxisAU { get; protected set; }
 
