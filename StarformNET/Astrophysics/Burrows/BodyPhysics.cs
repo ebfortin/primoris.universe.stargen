@@ -193,12 +193,46 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			return massSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES > 1.0 && gasMassSM / massSM > 0.05 && molecularWeightRetained <= 4.0;
 		}
 
+		/// <summary>
+		/// Old grnhouse:  
+		///	Note that if the orbital radius of the planet is greater than or equal
+		///	to R_inner, 99% of it's volatiles are assumed to have been deposited in
+		///	surface reservoirs (otherwise, it suffers from the greenhouse effect).
+		///
+		///	if ((orb_radius < r_greenhouse) && (zone == 1)) 
+		///
+		///	The new definition is based on the inital surface temperature and what
+		///	state water is in. If it's too hot, the water will never condense out
+		///	of the atmosphere, rain down and form an ocean. The albedo used here
+		///	was chosen so that the boundary is about the same as the old method	
+		///	Neither zone, nor r_greenhouse are used in this version				JLB
+		///
+		/// TODO Reevaluate this method since it apparently only considers water vapor as a greenhouse gas. 
+		/// GL
+		/// </summary>
+		/// <param name="ecosphereRadius"></param>
+		/// <param name="semiAxisMajorAU"></param>
+		/// <returns></returns>
 		public bool TestHasGreenhouseEffect(double ecosphereRadius,
 									  double semiAxisMajorAU)
 		{
-			return Environment.Greenhouse(ecosphereRadius, semiAxisMajorAU);
+			var temp = GetEffectiveTemperature(ecosphereRadius, semiAxisMajorAU, GlobalConstants.GREENHOUSE_TRIGGER_ALBEDO);
+			return temp > GlobalConstants.FREEZING_POINT_OF_WATER;
 		}
 
+		/// <summary>
+		/// Calculates the inventory of volatiles in a planet's atmosphere
+		/// as a result of outgassing. This value is used to calculate 
+		/// the planet's surface pressure. Implements Fogg's eq. 17.
+		/// </summary>
+		/// <param name="mass">Planet mass in solar masses</param>
+		/// <param name="escapeVelocity">Planet escape velocity in cm/sec</param>
+		/// <param name="rmsVelocity">Planet RMS velocity in cm/sec</param>
+		/// <param name="stellarMass">Mass of the planet's star in solar masses</param>
+		/// <param name="zone">Planet's "zone" in the system</param>
+		/// <param name="hasGreenhouseEffect">True if the planet is experiencing
+		/// a runaway greenhouse effect</param>
+		/// <param name="hasAccretedGas">True if the planet has accreted any</param>
 		public double GetVolatileGasInventory(double massSM,
 												   double escapeVelocity,
 												   double rmsVelocity,
@@ -207,9 +241,39 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 												   int orbitZone,
 												   bool hasGreenhouse)
 		{
-			return Environment.VolatileInventory(
-				massSM, escapeVelocity, rmsVelocity, sunMass,
-				orbitZone, hasGreenhouse, gasMassSM / massSM > 0.000001);
+			var hasAccretedGas = gasMassSM / massSM > 0.000001;
+
+			// This implements Fogg's eq.17.  The 'inventory' returned is unitless.
+
+			var velocityRatio = escapeVelocity / rmsVelocity;
+			if (velocityRatio >= GlobalConstants.GAS_RETENTION_THRESHOLD)
+			{
+				double proportionConst;
+				switch (orbitZone)
+				{
+					case 1:
+						proportionConst = 100000.0;    /* 100 . 140 JLB */
+						break;
+					case 2:
+						proportionConst = 75000.0;
+						break;
+					case 3:
+						proportionConst = 250.0;
+						break;
+					default:
+						proportionConst = 0.0;
+						break;
+				}
+				var earthUnits = massSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES;
+				var volInv = Utilities.About((proportionConst * earthUnits) / sunMass, 0.2);
+				if (hasGreenhouse || hasAccretedGas)
+				{
+					return volInv;
+				}
+				return volInv / 100.0; /* 100 . 140 JLB */
+			}
+
+			return 0.0;
 		}
 
 		public virtual double GetMolecularWeightRetained(double surfGrav,
@@ -275,11 +339,28 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			return semiMajorAxisAU * Math.Pow(smallMassSM / (3 * bigMass), 1.0 / 3.0) * GlobalConstants.KM_PER_AU;
 		}
 
+		/// <summary>
+		/// Returns pressure in units of millibars. This implements Fogg's eq.18.
+		/// </summary>
+		/// <remarks¨>
+		/// JLB: Aparently this assumed that earth pressure = 1000mb. I've added a
+		///	fudge factor (EARTH_SURF_PRES_IN_MILLIBARS / 1000.) to correct for that.
+		/// </remarks>
+		/// <param name="volatileGasInventory"></param>
+		/// <param name="equatorialRadius">Radius in km</param>
+		/// <param name="gravity">Gravity in units of Earth gravities</param>
+		/// <returns>Pressure in millibars (mb)</returns>
 		public virtual double GetSurfacePressure(double volatileGasInventory,
 										   double radius,
 										   double surfaceGravity)
 		{
-			return Environment.Pressure(volatileGasInventory, radius, surfaceGravity);
+			//  JLB: Aparently this assumed that earth pressure = 1000mb. I've added a
+			//	fudge factor (EARTH_SURF_PRES_IN_MILLIBARS / 1000.) to correct for that
+
+			var equatorialRadius = GlobalConstants.KM_EARTH_RADIUS / radius;
+			return (volatileGasInventory * surfaceGravity *
+					(GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS / 1000.0) /
+					Utilities.Pow2(equatorialRadius));     
 		}
 
 		/// <remakrs>
@@ -342,11 +423,18 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			return Math.Sqrt(2.0 * GlobalConstants.GRAV_CONSTANT * massInGrams / radiusinCM);
 		}
 
+		/// <summary>
+		/// Returns the boiling point of water using Fogg's eq.21.
+		/// </summary>
+		/// <param name="surfacePressure">Atmospheric pressure in millibars (mb)</param>
+		/// <returns>Boiling point of water in Kelvin.</returns>
 		public virtual double GetBoilingPointWater(double surfpres)
 		{
+			var surfacePressureInBars = surfpres / GlobalConstants.MILLIBARS_PER_BAR;
+
 			return Math.Abs(surfpres) < 0.001
 					? 0.0
-					: Environment.BoilingPoint(surfpres);
+					: (1.0 / ((Math.Log(surfacePressureInBars) / -5050.5) + (1.0 / 373.0)));
 		}
 
 		public BodyType GetBodyType(double massSM,
@@ -517,6 +605,238 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 
 			period_in_years = Math.Sqrt(Utilities.Pow3(separation) / (smallMass + largeMass));
 			return period_in_years * GlobalConstants.DAYS_IN_A_YEAR;
+		}
+
+		/// <summary>
+		/// This is Fogg's eq.19.
+		/// </summary>
+		/// <param name="ecosphereRadius"></param>
+		/// <param name="orbitalRadius"></param>
+		/// <param name="albedo"></param>
+		/// <returns></returns>
+		public double GetEffectiveTemperature(double ecosphereRadius, double orbitalRadius, double albedo)
+		{
+			// This is Fogg's eq.19.
+			return Math.Sqrt(ecosphereRadius / orbitalRadius)
+				  * Utilities.Pow1_4((1.0 - albedo) / (1.0 - GlobalConstants.EARTH_ALBEDO))
+				  * GlobalConstants.EARTH_EFFECTIVE_TEMP;
+		}
+
+		/// <summary>
+		/// This is Fogg's eq.20, and is also Hart's eq.20 in his "Evolution of
+		///	Earth's Atmosphere" article.  The effective temperature given is in
+		///	units of Kelvin, as is the rise in temperature produced by the
+		///	greenhouse effect, which is returned.
+		/// </summary>
+		/// <param name="opticalDepth"></param>
+		/// <param name="effectiveTemp"></param>
+		/// <param name="surfPressure"></param>
+		/// <returns></returns>
+		public double GetGreenhouseTemperatureRise(double opticalDepth, double effectiveTemp, double surfPressure)
+		{
+			var convectionFactor = GlobalConstants.EARTH_CONVECTION_FACTOR * Math.Pow(surfPressure / GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS, 0.25);
+			var rise = (Utilities.Pow1_4(1.0 + 0.75 * opticalDepth) - 1.0) *
+							   effectiveTemp * convectionFactor;
+
+			if (rise < 0.0) rise = 0.0;
+
+			return rise;
+		}
+
+		public double GetOpacity(double molecularWeight, double surfPressure)
+		{
+			var opticalDepth = 0.0;
+			if ((molecularWeight >= 0.0) && (molecularWeight < 10.0))
+			{
+				opticalDepth = opticalDepth + 3.0;
+			}
+
+			if ((molecularWeight >= 10.0) && (molecularWeight < 20.0))
+			{
+				opticalDepth = opticalDepth + 2.34;
+			}
+
+			if ((molecularWeight >= 20.0) && (molecularWeight < 30.0))
+			{
+				opticalDepth = opticalDepth + 1.0;
+			}
+
+			if ((molecularWeight >= 30.0) && (molecularWeight < 45.0))
+			{
+				opticalDepth = opticalDepth + 0.15;
+			}
+
+			if ((molecularWeight >= 45.0) && (molecularWeight < 100.0))
+			{
+				opticalDepth = opticalDepth + 0.05;
+			}
+
+			if (surfPressure >= (70.0 * GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS))
+			{
+				opticalDepth = opticalDepth * 8.333;
+			}
+			else if (surfPressure >= (50.0 * GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS))
+			{
+				opticalDepth = opticalDepth * 6.666;
+			}
+			else if (surfPressure >= (30.0 * GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS))
+			{
+				opticalDepth = opticalDepth * 3.333;
+			}
+			else if (surfPressure >= (10.0 * GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS))
+			{
+				opticalDepth = opticalDepth * 2.0;
+			}
+			else if (surfPressure >= (5.0 * GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS))
+			{
+				opticalDepth = opticalDepth * 1.5;
+			}
+
+			return opticalDepth;
+		}
+
+		/// <summary>
+		/// This function is Fogg's eq.22.
+		/// </summary>
+		/// <param name="volatileGasInventory"></param>
+		/// <param name="planetRadius"></param>
+		/// <returns></returns>
+		public double GetWaterFraction(double volatileGasInventory, double planetRadius)
+		{
+			var temp = (0.71 * volatileGasInventory / 1000.0)
+					 * Utilities.Pow2(GlobalConstants.KM_EARTH_RADIUS / planetRadius);
+			return temp >= 1.0 ? 1.0 : temp;
+		}
+
+		/// <summary>
+		///  Given the surface temperature of a planet (in Kelvin), this function
+		///	 returns the fraction of cloud cover available.	 This is Fogg's eq.23.
+		///	 See Hart in "Icarus" (vol 33, pp23 - 39, 1978) for an explanation.
+		///	 This equation is Hart's eq.3.	
+		///	 I have modified it slightly using constants and relationships from
+		///	 Glass's book "Introduction to Planetary Geology", p.46.
+		///	 The 'CLOUD_COVERAGE_FACTOR' is the amount of surface area on Earth	
+		///	 covered by one Kg. of cloud.
+		/// </summary>
+		/// <param name="surfaceTemp"></param>
+		/// <param name="smallestMWRetained"></param>
+		/// <param name="equatorialRadius"></param>
+		/// <param name="hydroFraction"></param>
+		/// <returns></returns>
+		public double GetCloudFraction(double surfaceTemp, double smallestMWRetained, double equatorialRadius, double hydroFraction)
+		{
+			if (smallestMWRetained > GlobalConstants.WATER_VAPOR)
+			{
+				return 0.0;
+			}
+
+			var surfArea = 4.0 * Math.PI * Utilities.Pow2(equatorialRadius);
+			var hydroMass = hydroFraction * surfArea * GlobalConstants.EARTH_WATER_MASS_PER_AREA;
+			var waterVaporKg = (0.00000001 * hydroMass) *
+								Math.Exp(GlobalConstants.Q2_36 * (surfaceTemp - GlobalConstants.EARTH_AVERAGE_KELVIN));
+			var fraction = GlobalConstants.CLOUD_COVERAGE_FACTOR * waterVaporKg / surfArea;
+			return fraction >= 1.0 ? 1.0 : fraction;
+		}
+
+		/// <summary>
+		/// This is Fogg's eq.24. See Hart[24] in Icarus vol.33, p.28 for an explanation.
+		/// I have changed a constant from 70 to 90 in order to bring it more in	
+		/// line with the fraction of the Earth's surface covered with ice, which	
+		/// is approximatly .016 (=1.6%).
+		/// </summary>
+		/// <param name="hydroFraction"></param>
+		/// <param name="surfTemp"></param>
+		/// <returns></returns>
+		public double GetIceFraction(double hydroFraction, double surfTemp)
+		{
+			if (surfTemp > 328.0)
+			{
+				surfTemp = 328.0;
+			}
+			var temp = Math.Pow(((328.0 - surfTemp) / 90.0), 5.0);
+			if (temp > (1.5 * hydroFraction))
+			{
+				temp = (1.5 * hydroFraction);
+			}
+
+			return temp >= 1.0 ? 1.0 : temp;
+		}
+
+		/// <summary>
+		/// The surface temperature passed in is in units of Kelvin.
+		/// The cloud adjustment is the fraction of cloud cover obscuring each
+		/// of the three major components of albedo that lie below the clouds.
+		/// </summary>
+		/// <param name="waterFraction"></param>
+		/// <param name="cloudFraction"></param>
+		/// <param name="iceFraction"></param>
+		/// <param name="surfPressure"></param>
+		/// <returns></returns>
+		public double GetAlbedo(double waterFraction, double cloudFraction, double iceFraction, double surfPressure)
+		{
+			double rock_fraction, cloud_adjustment, components, cloud_part,
+			rock_part, water_part, ice_part;
+
+			rock_fraction = 1.0 - waterFraction - iceFraction;
+			components = 0.0;
+			if (waterFraction > 0.0)
+			{
+				components = components + 1.0;
+			}
+			if (iceFraction > 0.0)
+			{
+				components = components + 1.0;
+			}
+			if (rock_fraction > 0.0)
+			{
+				components = components + 1.0;
+			}
+
+			cloud_adjustment = cloudFraction / components;
+
+			if (rock_fraction >= cloud_adjustment)
+			{
+				rock_fraction = rock_fraction - cloud_adjustment;
+			}
+			else
+			{
+				rock_fraction = 0.0;
+			}
+
+			if (waterFraction > cloud_adjustment)
+			{
+				waterFraction = waterFraction - cloud_adjustment;
+			}
+			else
+			{
+				waterFraction = 0.0;
+			}
+
+			if (iceFraction > cloud_adjustment)
+			{
+				iceFraction = iceFraction - cloud_adjustment;
+			}
+			else
+			{
+				iceFraction = 0.0;
+			}
+
+			cloud_part = cloudFraction * GlobalConstants.CLOUD_ALBEDO;     /* about(...,0.2); */
+
+			if (surfPressure == 0.0)
+			{
+				rock_part = rock_fraction * GlobalConstants.ROCKY_AIRLESS_ALBEDO;   /* about(...,0.3); */
+				ice_part = iceFraction * GlobalConstants.AIRLESS_ICE_ALBEDO;       /* about(...,0.4); */
+				water_part = 0;
+			}
+			else
+			{
+				rock_part = rock_fraction * GlobalConstants.ROCKY_ALBEDO;   /* about(...,0.1); */
+				water_part = waterFraction * GlobalConstants.WATER_ALBEDO; /* about(...,0.2); */
+				ice_part = iceFraction * GlobalConstants.ICE_ALBEDO;       /* about(...,0.1); */
+			}
+
+			return cloud_part + rock_part + water_part + ice_part;
 		}
 	}
 

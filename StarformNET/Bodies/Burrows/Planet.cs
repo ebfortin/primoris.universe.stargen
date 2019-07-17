@@ -337,11 +337,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				planet.Albedo = GlobalConstants.EARTH_ALBEDO;
 
-				effectiveTemp = Environment.EffTemp(planet.Star.EcosphereRadiusAU, planet.SemiMajorAxisAU, planet.Albedo);
-				greenhouseTemp = Environment.GreenRise(Environment.Opacity(planet.MolecularWeightRetained,
-														 surfpres),
-												 effectiveTemp,
-												 surfpres);
+				effectiveTemp = Physics.GetEffectiveTemperature(planet.Star.EcosphereRadiusAU, planet.SemiMajorAxisAU, planet.Albedo);
+				greenhouseTemp = Physics.GetGreenhouseTemperatureRise(Physics.GetOpacity(planet.MolecularWeightRetained, surfpres), effectiveTemp, surfpres);
 				planet.SurfaceTemperature = effectiveTemp + greenhouseTemp;
 
 				SetTempRange(surfpres);
@@ -351,27 +348,27 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				planet.HasGreenhouseEffect = false;
 
-				planet.VolatileGasInventory = Environment.VolatileInventory(planet.MassSM,
-					planet.EscapeVelocityCMSec, planet.RMSVelocityCMSec, planet.Star.MassSM,
-					planet.OrbitZone, planet.HasGreenhouseEffect, planet.GasMassSM / planet.MassSM > 0.000001);
+				planet.VolatileGasInventory = Physics.GetVolatileGasInventory(planet.MassSM,
+					planet.EscapeVelocityCMSec, planet.RMSVelocityCMSec, planet.Star.MassSM, planet.GasMassSM,
+					planet.OrbitZone, planet.HasGreenhouseEffect);
 				//planet.Atmosphere.SurfacePressure = Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
 
-				planet.BoilingPointWater = Environment.BoilingPoint(surfpres);
+				planet.BoilingPointWater = Physics.GetBoilingPointWater(surfpres);
 			}
 
-			waterRaw = planet.WaterCoverFraction = Environment.HydroFraction(planet.VolatileGasInventory, planet.Radius);
-			cloudsRaw = planet.CloudCoverFraction = Environment.CloudFraction(planet.SurfaceTemperature,
+			waterRaw = planet.WaterCoverFraction = Physics.GetWaterFraction(planet.VolatileGasInventory, planet.Radius);
+			cloudsRaw = planet.CloudCoverFraction = Physics.GetCloudFraction(planet.SurfaceTemperature,
 													 planet.MolecularWeightRetained,
 													 planet.Radius,
 													 planet.WaterCoverFraction);
-			planet.IceCoverFraction = Environment.IceFraction(planet.WaterCoverFraction, planet.SurfaceTemperature);
+			planet.IceCoverFraction = Physics.GetIceFraction(planet.WaterCoverFraction, planet.SurfaceTemperature);
 
 			if (planet.HasGreenhouseEffect && surfpres > 0.0)
 			{
 				planet.CloudCoverFraction = 1.0;
 			}
 
-			if (planet.DaytimeTemperature >= planet.BoilingPointWater && !first && !(Environment.IsTidallyLocked(planet) || planet.HasResonantPeriod))
+			if (planet.DaytimeTemperature >= planet.BoilingPointWater && !first && !(Physics.TestIsTidallyLocked(planet.DayLength, planet.OrbitalPeriod) || planet.HasResonantPeriod))
 			{
 				planet.WaterCoverFraction = 0.0;
 				boilOff = true;
@@ -391,11 +388,11 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				planet.WaterCoverFraction = 0.0;
 			}
 
-			planet.Albedo = Environment.PlanetAlbedo(planet.WaterCoverFraction, planet.CloudCoverFraction, planet.IceCoverFraction, surfpres);
+			planet.Albedo = Physics.GetAlbedo(planet.WaterCoverFraction, planet.CloudCoverFraction, planet.IceCoverFraction, surfpres);
 
-			effectiveTemp = Environment.EffTemp(planet.Star.EcosphereRadiusAU, planet.SemiMajorAxisAU, planet.Albedo);
-			greenhouseTemp = Environment.GreenRise(
-				Environment.Opacity(planet.MolecularWeightRetained, surfpres),
+			effectiveTemp = Physics.GetEffectiveTemperature(planet.Star.EcosphereRadiusAU, planet.SemiMajorAxisAU, planet.Albedo);
+			greenhouseTemp = Physics.GetGreenhouseTemperatureRise(
+				Physics.GetOpacity(planet.MolecularWeightRetained, surfpres),
 				effectiveTemp, surfpres);
 			planet.SurfaceTemperature = effectiveTemp + greenhouseTemp;
 

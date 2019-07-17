@@ -6,6 +6,52 @@ namespace Primoris.Universe.Stargen.Astrophysics
 	{
 		BodyType GetBodyType(double massSM, double gasMassSM, double molecularWeightRetained, double surfacePressure, double waterCoverFraction, double iceCoverFraction, double maxTemperature, double boilingPointWater, double surfaceTemperature);
 		double GetCoreRadius(double massSM, int orbitZone, bool giant);
+
+		/// <summary>
+		/// Returns the dimensionless quantity of optical depth, which is useful in determing the amount
+		/// of greenhouse effect on a planet.
+		/// </summary>
+		/// <param name="molecularWeight"></param>
+		/// <param name="surfPressure"></param>
+		/// <returns></returns>
+		public double GetOpacity(double molecularWeight, double surfPressure);
+
+
+		/// <summary>
+		/// Given the volatile gas inventory and
+		/// planetary radius of a planet (in Km), this function returns the
+		/// fraction of the planet covered with water.	
+		/// </summary>
+		/// <param name="volatileGasInventory"></param>
+		/// <param name="planetRadius">Radius in km</param>
+		/// <returns>Fraction of the planet covered in water</returns>
+		public double GetWaterFraction(double volatileGasInventory, double planetRadius);
+
+		/// <summary>
+		/// Returns the fraction of cloud cover available.
+		/// </summary>
+		/// <remarks>
+		/// 
+		/// </remarks>
+		public double GetCloudFraction(double surfaceTemp, double smallestMWRetained, double equatorialRadius, double hydroFraction);
+
+		/// <summary>
+		/// Given the surface temperature of a planet (in Kelvin), this function
+		///	returns the fraction of the planet's surface covered by ice.
+		/// </summary>
+		/// <returns>Fraction of the planet's surface covered in ice</returns>
+		public double GetIceFraction(double hydroFraction, double surfTemp);
+
+		/// <summary>
+		/// Calculates the albedo of a planetary body.
+		/// </summary>
+		/// <param name="waterFraction">Fraction of surface covered by water.</param>
+		/// <param name="cloudFraction">Fraction of planet covered by clouds.</param>
+		/// <param name="iceFraction">Fraction of planet covered by ice.</param>
+		/// <param name="surfPressure">Surface pressure in mb.</param>
+		/// <returns>Average overall albedo of the body.</returns>
+		public double GetAlbedo(double waterFraction, double cloudFraction, double iceFraction, double surfPressure);
+
 		bool TestHasGreenhouseEffect(double ecosphereRadius, double semiAxisMajorAU);
 
 		/// <summary>
