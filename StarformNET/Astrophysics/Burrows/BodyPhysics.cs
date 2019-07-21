@@ -2,56 +2,73 @@
 using System.Collections.Generic;
 using System.Text;
 using Primoris.Universe.Stargen.Bodies;
+using UnitsNet;
+
 
 namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 {
-	public class BodyPhysics : IScienceAstrophysics
+	public class BodyPhysics : IScienceAstrophysics, IScienceDynamics, IScienceThermodynamics, ISciencePhysics, IScienceAstronomy, ISciencePlanetology
 	{
-		public double GetBaseAngularVelocity(double massSM,
-									   double radiusKM,
+		public IScienceAstronomy Astronomy => this;
+
+		public IScienceDynamics Dynamics => this;
+
+		public ISciencePhysics Physics => this;
+
+		public ISciencePlanetology Planetology => this;
+
+		public IScienceThermodynamics Thermodynamics => this;
+
+		/// <summary>
+		/// Fogg eq. 12
+		/// </summary>
+		/// <param name="massSM"></param>
+		/// <param name="radiusKM"></param>
+		/// <param name="isGasGiant"></param>
+		/// <returns></returns>
+		public RotationalSpeed GetBaseAngularVelocity(Mass massSM,
+									   Length radiusKM,
 									   bool isGasGiant)
 		{
-			// Fogg eq. 12
-
-			var planetaryMassInGrams = massSM * GlobalConstants.SOLAR_MASS_IN_GRAMS;
-			var equatorialRadiusInCM = radiusKM * GlobalConstants.CM_PER_KM;
+			var planetaryMassInGrams = massSM.Grams; //* GlobalConstants.SOLAR_MASS_IN_GRAMS;
+			var equatorialRadiusInCM = radiusKM.Centimeters; //* GlobalConstants.CM_PER_KM;
 			var k2 = isGasGiant ? 0.24 : 0.33;
 
-			return Math.Sqrt(GlobalConstants.J * planetaryMassInGrams /
-							 (k2 / 2.0 * Utilities.Pow2(equatorialRadiusInCM)));
+			return RotationalSpeed.FromRadiansPerSecond(Math.Sqrt(GlobalConstants.J * planetaryMassInGrams /
+							 (k2 / 2.0 * Utilities.Pow2(equatorialRadiusInCM))));
 		}
 
-		public double GetChangeInAngularVelocity(double densityGCC,
-										   double massSM,
-										   double radiusKM,
-										   double semiMajorAxisAU,
-										   double starMassSM)
+		public RotationalSpeed GetChangeInAngularVelocity(Density densityGCC,
+										   Mass massSM,
+										   Length radiusKM,
+										   Length semiMajorAxisAU,
+										   Mass starMassSM)
 		{
 			// Fogg eq. 13 
 
-			var planetaryMassInGrams = massSM * GlobalConstants.SOLAR_MASS_IN_GRAMS;
-			var equatorialRadiusInCM = radiusKM * GlobalConstants.CM_PER_KM;
+			var planetaryMassInGrams = massSM.Grams; // * GlobalConstants.SOLAR_MASS_IN_GRAMS;
+			var equatorialRadiusInCM = radiusKM.Centimeters; // * GlobalConstants.CM_PER_KM;
 
-			return GlobalConstants.CHANGE_IN_EARTH_ANG_VEL *
-				   (densityGCC / GlobalConstants.EARTH_DENSITY) *
+			return RotationalSpeed.FromRadiansPerSecond(GlobalConstants.CHANGE_IN_EARTH_ANG_VEL *
+				   (densityGCC.GramsPerCubicCentimeter / GlobalConstants.EARTH_DENSITY) *
 				   (equatorialRadiusInCM / GlobalConstants.EARTH_RADIUS) *
 				   (GlobalConstants.EARTH_MASS_IN_GRAMS / planetaryMassInGrams) *
-				   Math.Pow(starMassSM, 2.0) *
-				   (1.0 / Math.Pow(semiMajorAxisAU, 6.0));
+				   Math.Pow(starMassSM.SolarMasses, 2.0) *
+				   (1.0 / Math.Pow(semiMajorAxisAU.AstronomicalUnits, 6.0)));
 		}
 
-		public virtual double GetAngularVelocity(double massSM,
-								   double radiusKM,
-								   double densityGCC,
-								   double semiMajorAxisAU,
+		public RotationalSpeed GetAngularVelocity(Mass massSM,
+								   Length radiusKM,
+								   Density densityGCC,
+								   Length semiMajorAxisAU,
 								   bool isGasGiant,
-								   double starMassSM,
-								   double starAgeYears)
+								   Mass starMassSM,
+								   Duration starAgeYears)
 		{
 			var baseAngularVelocity = GetBaseAngularVelocity(massSM, radiusKM, isGasGiant);
 			var changeInAngularVelocity = GetChangeInAngularVelocity(
 				densityGCC, massSM, radiusKM, semiMajorAxisAU, starMassSM);
-			return baseAngularVelocity + changeInAngularVelocity * starAgeYears;
+			return baseAngularVelocity + changeInAngularVelocity * starAgeYears.Years365;
 		}
 
 
@@ -68,13 +85,11 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="ecosphereRadiusAU"></param>
 		/// <param name="sunTemperature"></param>
 		/// <returns></returns>
-		public double GetExosphereTemperature(double semiMajorAxisAu,
-										double ecosphereRadiusAU,
-										double sunTemperature)
+		public Temperature GetExosphereTemperature(Length semiMajorAxisAu,
+										Length ecosphereRadiusAU,
+										Temperature sunTemperature)
 		{
-			double exoTemp = 0.0;
-
-			exoTemp = GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(semiMajorAxisAu / ecosphereRadiusAU);
+			var exoTemp = GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(semiMajorAxisAu / ecosphereRadiusAU);
 			// Exosphere temperature can't be realisticly higher than the surface temperature of the sun. We therefore clip at sun.Temperature.
 			// TODO: Make transition instead of brute clipping.
 			//exoTemp = exoTemp > sunTemperature ? sunTemperature : exoTemp;
@@ -82,15 +97,37 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			// TODO: Make transition instead of brute clipping.
 			//exoTemp = exoTemp < GlobalConstants.VACCUM_TEMPERATURE ? GlobalConstants.VACCUM_TEMPERATURE : exoTemp;
 
-			return exoTemp;
+			return Temperature.FromKelvins(exoTemp);
 		}
 
-		public double GetRMSVelocityCMSec(double exoTemp)
+		/// <summary>
+		/// This is Fogg's eq.16.  The molecular weight (usually assumed to be N2)
+		/// is used as the basis of the Root Mean Square (RMS) velocity of the
+		/// molecule or atom.
+		/// https://en.wikipedia.org/wiki/Root-mean-square_speed
+		/// </summary>
+		/// <param name="exoTemp"></param>
+		/// <returns></returns>
+		public Speed GetRMSVelocity(Mass molecularWeight, Temperature exoTemp)
 		{
-			return Environment.RMSVelocity(GlobalConstants.MOL_NITROGEN, exoTemp);
+			//return Environment.RMSVelocity(GlobalConstants.MOL_NITROGEN, exoTemp);
+
+			return Speed.FromMetersPerSecond(Math.Sqrt((3.0 * GlobalConstants.MOLAR_GAS_CONST * exoTemp.Kelvins) / molecularWeight.Grams) * GlobalConstants.CM_PER_METER);
 		}
 
-		public double GetCoreRadius(double massSM,
+		/// <summary>
+		/// This formula is listed as eq.9 in Fogg's article, although some typos
+		/// crop up in that eq.  See "The Internal Constitution of Planets", by
+		/// Dr. D. S. Kothari, Mon. Not. of the Royal Astronomical Society, vol 96
+		/// pp.833-843, 1936 for the derivation.  Specifically, this is Kothari's
+		/// eq.23, which appears on page 840.
+		/// http://articles.adsabs.harvard.edu//full/1936MNRAS..96..833K/0000840.000.html
+		/// </summary>
+		/// <param name="massSM"></param>
+		/// <param name="orbitZone"></param>
+		/// <param name="giant"></param>
+		/// <returns></returns>
+		public Length GetCoreRadius(Mass massSM,
 						  int orbitZone,
 						  bool giant)
 		{
@@ -151,46 +188,51 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 
 			temp2 = GlobalConstants.A2_20 * Math.Pow(atomic_weight, 4.0 / 3.0) *
 					Math.Pow(GlobalConstants.SOLAR_MASS_IN_GRAMS, 2.0 / 3.0);
-			temp2 = temp2 * Math.Pow(massSM, 2.0 / 3.0);
+			temp2 = temp2 * Math.Pow(massSM.SolarMasses, 2.0 / 3.0);
 			temp2 = temp2 / (GlobalConstants.A1_20 * Utilities.Pow2(atomic_num));
 			temp2 = 1.0 + temp2;
 			temp = temp / temp2;
-			temp = temp * Math.Pow(massSM, 1.0 / 3.0) / GlobalConstants.CM_PER_KM;
+			temp = temp * Math.Pow(massSM.SolarMasses, 1.0 / 3.0) / GlobalConstants.CM_PER_KM;
 
 			temp /= GlobalConstants.JIMS_FUDGE; /* Make Earth = actual earth */
 
-			return temp;
+			return Length.FromKilometers(temp);
 		}
 
-		public double GetDensityFromStar(double massSM,
-								   double semiMajorAxisAU,
-								   double ecosphereRadiusAU,
+		public Density GetDensityFromStar(Mass massSM,
+								   Length semiMajorAxisAU,
+								   Length ecosphereRadiusAU,
 								   bool isGasGiant)
 		{
-			double density = Math.Pow(massSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES, 1.0 / 8.0);
+			double density = Math.Pow(massSM.SolarMasses * GlobalConstants.SUN_MASS_IN_EARTH_MASSES, 1.0 / 8.0);
 			density *= Utilities.Pow1_4(ecosphereRadiusAU / semiMajorAxisAU);
 
 			if (isGasGiant)
 			{
-				return density * 1.2;
+				return Density.FromGramsPerCubicCentimeter(density * 1.2);
 			}
 			else
 			{
-				return density * 5.5;
+				return Density.FromGramsPerCubicCentimeter(density * 5.5);
 			}
 		}
 
-		public double GetDensityFromBody(double massSM,
-								   double radius)
+		public Density GetDensityFromBody(Mass massSM,
+								   Length radius)
 		{
-			return Environment.VolumeDensity(massSM, radius);
+			//return Environment.VolumeDensity(massSM, radius);
+
+			var mass = massSM.SolarMasses * GlobalConstants.SOLAR_MASS_IN_GRAMS;
+			var equatRadius = radius.Kilometers * GlobalConstants.CM_PER_KM;
+			double volume = (4.0 * Math.PI * Utilities.Pow3(equatRadius)) / 3.0;
+			return Density.FromGramsPerCubicCentimeter(mass / volume);
 		}
 
-		public bool TestIsGasGiant(double massSM,
-							 double gasMassSM,
-							 double molecularWeightRetained)
+		public bool TestIsGasGiant(Mass massSM,
+							 Mass gasMassSM,
+							 Mass molecularWeightRetained)
 		{
-			return massSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES > 1.0 && gasMassSM / massSM > 0.05 && molecularWeightRetained <= 4.0;
+			return massSM.SolarMasses * GlobalConstants.SUN_MASS_IN_EARTH_MASSES > 1.0 && gasMassSM.SolarMasses / massSM.SolarMasses > 0.05 && molecularWeightRetained.Grams <= 4.0;
 		}
 
 		/// <summary>
@@ -213,11 +255,11 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="ecosphereRadius"></param>
 		/// <param name="semiAxisMajorAU"></param>
 		/// <returns></returns>
-		public bool TestHasGreenhouseEffect(double ecosphereRadius,
-									  double semiAxisMajorAU)
+		public bool TestHasGreenhouseEffect(Length ecosphereRadius,
+									  Length semiAxisMajorAU)
 		{
-			var temp = GetEffectiveTemperature(ecosphereRadius, semiAxisMajorAU, GlobalConstants.GREENHOUSE_TRIGGER_ALBEDO);
-			return temp > GlobalConstants.FREEZING_POINT_OF_WATER;
+			var temp = GetEffectiveTemperature(ecosphereRadius, semiAxisMajorAU, Ratio.FromDecimalFractions(GlobalConstants.GREENHOUSE_TRIGGER_ALBEDO));
+			return temp.Kelvins > GlobalConstants.FREEZING_POINT_OF_WATER;
 		}
 
 		/// <summary>
@@ -233,11 +275,11 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="hasGreenhouseEffect">True if the planet is experiencing
 		/// a runaway greenhouse effect</param>
 		/// <param name="hasAccretedGas">True if the planet has accreted any</param>
-		public double GetVolatileGasInventory(double massSM,
-												   double escapeVelocity,
-												   double rmsVelocity,
-												   double sunMass,
-												   double gasMassSM,
+		public Ratio GetVolatileGasInventory(Mass massSM,
+												   Speed escapeVelocity,
+												   Speed rmsVelocity,
+												   Mass sunMass,
+												   Mass gasMassSM,
 												   int orbitZone,
 												   bool hasGreenhouse)
 		{
@@ -268,26 +310,26 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				var volInv = Utilities.About((proportionConst * earthUnits) / sunMass, 0.2);
 				if (hasGreenhouse || hasAccretedGas)
 				{
-					return volInv;
+					return Ratio.FromDecimalFractions(volInv);
 				}
-				return volInv / 100.0; /* 100 . 140 JLB */
+				return Ratio.FromDecimalFractions(volInv / 100.0); /* 100 . 140 JLB */
 			}
 
-			return 0.0;
+			return Ratio.FromDecimalFractions(0.0);
 		}
 
-		public virtual double GetMolecularWeightRetained(double surfGrav,
-												   double mass,
-												   double radius,
-												   double exosphereTemp,
-												   double sunAge)
+		public Mass GetMolecularWeightRetained(Acceleration surfGrav,
+												   Mass mass,
+												   Length radius,
+												   Temperature exosphereTemp,
+												   Duration sunAge)
 		{
 			var temp = exosphereTemp;
 
-			var guess1 = Environment.MoleculeLimit(mass, radius, temp);
+			var guess1 = GetInitialMolecularWeightRetained(mass, radius, temp);
 			var guess2 = guess1;
 
-			var life = Environment.GasLife(guess1, exosphereTemp, surfGrav, radius);
+			var life = GetGasLife(guess1, exosphereTemp, surfGrav, radius);
 
 			var loops = 0;
 
@@ -298,7 +340,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				while (life > target && loops++ < 25)
 				{
 					guess1 = guess1 / 2.0;
-					life = Environment.GasLife(guess1, exosphereTemp, surfGrav, radius);
+					life = GetGasLife(guess1, exosphereTemp, surfGrav, radius);
 				}
 			}
 			else
@@ -306,16 +348,16 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				while (life < target && loops++ < 25)
 				{
 					guess2 = guess2 * 2.0;
-					life = Environment.GasLife(guess2, exosphereTemp, surfGrav, radius);
+					life = GetGasLife(guess2, exosphereTemp, surfGrav, radius);
 				}
 			}
 
 			loops = 0;
 
-			while (guess2 - guess1 > 0.1 && loops++ < 25)
+			while (guess2.Grams - guess1.Grams > 0.1 && loops++ < 25)
 			{
 				var guess3 = (guess1 + guess2) / 2.0;
-				life = Environment.GasLife(guess3, exosphereTemp, surfGrav, radius);
+				life = GetGasLife(guess3, exosphereTemp, surfGrav, radius);
 
 				if (life < target)
 				{
@@ -327,16 +369,16 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				}
 			}
 
-			life = Environment.GasLife(guess2, exosphereTemp, surfGrav, radius);
+			//life = GetGasLife(guess2, exosphereTemp, surfGrav, radius);
 
 			return guess2;
 		}
 
-		public virtual double GetHillSphere(double bigMass,
-									  double smallMassSM,
-									  double semiMajorAxisAU)
+		public Length GetHillSphere(Mass bigMass,
+									  Mass smallMassSM,
+									  Length semiMajorAxisAU)
 		{
-			return semiMajorAxisAU * Math.Pow(smallMassSM / (3 * bigMass), 1.0 / 3.0) * GlobalConstants.KM_PER_AU;
+			return semiMajorAxisAU * Math.Pow(smallMassSM / (3 * bigMass), 1.0 / 3.0); //* GlobalConstants.KM_PER_AU;
 		}
 
 		/// <summary>
@@ -350,15 +392,15 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="equatorialRadius">Radius in km</param>
 		/// <param name="gravity">Gravity in units of Earth gravities</param>
 		/// <returns>Pressure in millibars (mb)</returns>
-		public virtual double GetSurfacePressure(double volatileGasInventory,
-										   double radius,
-										   double surfaceGravity)
+		public Pressure GetSurfacePressure(Ratio volatileGasInventory,
+										   Length radius,
+										   Acceleration surfaceGravity)
 		{
 			//  JLB: Aparently this assumed that earth pressure = 1000mb. I've added a
 			//	fudge factor (EARTH_SURF_PRES_IN_MILLIBARS / 1000.) to correct for that
 
-			var equatorialRadius = GlobalConstants.KM_EARTH_RADIUS / radius;
-			return (volatileGasInventory * surfaceGravity *
+			var equatorialRadius = GlobalConstants.KM_EARTH_RADIUS / radius.Kilometers;
+			return Pressure.FromMillibars(volatileGasInventory.Value * surfaceGravity.StandardGravity *
 					(GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS / 1000.0) /
 					Utilities.Pow2(equatorialRadius));     
 		}
@@ -374,53 +416,53 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// approximation for our new planet (his eq.13) and take that into account.
 		/// This is used to find 'change_in_angular_velocity' below.
 		/// </remarks>
-		public virtual double GetDayLength(double angularVelocityRadSec,
-									 double orbitalPeriod,
-									 double eccentricity)
+		public Duration GetDayLength(RotationalSpeed angularVelocityRadSec,
+									 Duration orbitalPeriod,
+									 Ratio eccentricity)
 		{
 			var stopped = false;
-			var dayInHours = GlobalConstants.RADIANS_PER_ROTATION / (GlobalConstants.SECONDS_PER_HOUR * angularVelocityRadSec);
-			if (angularVelocityRadSec <= 0.0)
+			var dayInHours = GlobalConstants.RADIANS_PER_ROTATION / (GlobalConstants.SECONDS_PER_HOUR * angularVelocityRadSec.RadiansPerSecond);
+			if (angularVelocityRadSec.RadiansPerSecond <= 0.0)
 			{
 				stopped = true;
 				dayInHours = double.MaxValue;
 			}
 
-			var yearInHours = orbitalPeriod * 24.0;
+			var yearInHours = orbitalPeriod.Days * 24.0;
 			if (dayInHours >= yearInHours || stopped)
 			{
-				if (eccentricity > 0.1)
+				if (eccentricity.Value > 0.1)
 				{
-					var spinResonanceFactor = (1.0 - eccentricity) / (1.0 + eccentricity);
-					return spinResonanceFactor * yearInHours;
+					var spinResonanceFactor = (1.0 - eccentricity.Value) / (1.0 + eccentricity.Value);
+					return Duration.FromHours(spinResonanceFactor * yearInHours);
 				}
 
-				return yearInHours;
+				return Duration.FromHours(yearInHours);
 			}
 
-			return dayInHours;
+			return Duration.FromHours(dayInHours);
 		}
 
-		public virtual bool TestHasResonantPeriod(double angularVelocityRadSec,
-											double dayLength,
-											double orbitalPeriod,
-											double eccentricity)
+		public bool TestHasResonantPeriod(RotationalSpeed angularVelocityRadSec,
+											Duration dayLength,
+											Duration orbitalPeriod,
+											Ratio eccentricity)
 		{
-			var yearInHours = orbitalPeriod * 24.0;
-			return (angularVelocityRadSec <= 0.0 || dayLength >= yearInHours)
-				   && eccentricity > 0.1;
+			var yearInHours = orbitalPeriod.Years365 * 24.0;
+			return (angularVelocityRadSec.RadiansPerSecond <= 0.0 || dayLength.Hours >= yearInHours)
+				   && eccentricity.Value > 0.1;
 		}
 
 		/// <remarks>
 		/// This function implements the escape velocity calculation. Note that
 		/// it appears that Fogg's eq.15 is incorrect.	
 		/// </remarks>
-		public virtual double GetEscapeVelocity(double massSM,
-										  double radius)
+		public Speed GetEscapeVelocity(Mass massSM,
+										  Length radius)
 		{
-			var massInGrams = massSM * GlobalConstants.SOLAR_MASS_IN_GRAMS;
-			var radiusinCM = radius * GlobalConstants.CM_PER_KM;
-			return Math.Sqrt(2.0 * GlobalConstants.GRAV_CONSTANT * massInGrams / radiusinCM);
+			//var massInGrams = massSM * GlobalConstants.SOLAR_MASS_IN_GRAMS;
+			//var radiusinCM = radius * GlobalConstants.CM_PER_KM;
+			return Speed.FromCentimetersPerSecond(Math.Sqrt(2.0 * GlobalConstants.GRAV_CONSTANT * massSM.Grams / radius.Centimeters));
 		}
 
 		/// <summary>
@@ -428,24 +470,24 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// </summary>
 		/// <param name="surfacePressure">Atmospheric pressure in millibars (mb)</param>
 		/// <returns>Boiling point of water in Kelvin.</returns>
-		public virtual double GetBoilingPointWater(double surfpres)
+		public Temperature GetBoilingPointWater(Pressure surfpres)
 		{
-			var surfacePressureInBars = surfpres / GlobalConstants.MILLIBARS_PER_BAR;
+			var surfacePressureInBars = surfpres.Bars; // / GlobalConstants.MILLIBARS_PER_BAR;
 
-			return Math.Abs(surfpres) < 0.001
+			return Temperature.FromKelvins(Math.Abs(surfpres.Millibars) < 0.001
 					? 0.0
-					: (1.0 / ((Math.Log(surfacePressureInBars) / -5050.5) + (1.0 / 373.0)));
+					: (1.0 / ((Math.Log(surfacePressureInBars) / -5050.5) + (1.0 / 373.0))));
 		}
 
-		public BodyType GetBodyType(double massSM,
-						   double gasMassSM,
-						   double molecularWeightRetained,
-						   double surfacePressure,
-						   double waterCoverFraction,
-						   double iceCoverFraction,
-						   double maxTemperature,
-						   double boilingPointWater,
-						   double surfaceTemperature)
+		public BodyType GetBodyType(Mass massSM,
+						   Mass gasMassSM,
+						   Mass molecularWeightRetained,
+						   Pressure surfacePressure,
+						   Ratio waterCoverFraction,
+						   Ratio iceCoverFraction,
+						   Temperature maxTemperature,
+						   Temperature boilingPointWater,
+						   Temperature surfaceTemperature)
 		{
 			if (TestIsGasGiant(massSM, gasMassSM, molecularWeightRetained))
 			{
@@ -453,7 +495,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				{
 					return BodyType.SubSubGasGiant;
 				}
-				else if (massSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES < 20.0)
+				else if (massSM.SolarMasses * GlobalConstants.SUN_MASS_IN_EARTH_MASSES < 20.0)
 				{
 					return BodyType.SubGasGiant;
 				}
@@ -464,9 +506,9 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			}
 
 			// Assign planet type
-			if (surfacePressure < 1.0)
+			if (surfacePressure.Millibars < 1.0)
 			{
-				if (massSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES < GlobalConstants.ASTEROID_MASS_LIMIT)
+				if (massSM.SolarMasses * GlobalConstants.SUN_MASS_IN_EARTH_MASSES < GlobalConstants.ASTEROID_MASS_LIMIT)
 				{
 					return BodyType.Asteroids;
 				}
@@ -475,7 +517,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 					return BodyType.Barren;
 				}
 			}
-			else if (surfacePressure > 6000.0 && molecularWeightRetained <= 2.0) // Retains Hydrogen
+			else if (surfacePressure.Millibars > 6000.0 && molecularWeightRetained.Grams <= 2.0) // Retains Hydrogen
 			{
 				return BodyType.SubSubGasGiant;
 			}
@@ -483,15 +525,15 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			{
 				// Atmospheres:
 				// TODO remove PlanetType enum entirely and replace it with a more flexible classification systme
-				if (waterCoverFraction >= 0.95) // >95% water
+				if (waterCoverFraction.Value >= 0.95) // >95% water
 				{
 					return BodyType.Water;
 				}
-				else if (iceCoverFraction >= 0.95) // >95% ice
+				else if (iceCoverFraction.Value >= 0.95) // >95% ice
 				{
 					return BodyType.Ice;
 				}
-				else if (waterCoverFraction > 0.05) // Terrestrial
+				else if (waterCoverFraction.Value > 0.05) // Terrestrial
 				{
 					return BodyType.Terrestrial;
 				}
@@ -504,11 +546,11 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 					return BodyType.Ice;
 					//planet.IceCoverFraction = 1.0;
 				}
-				else if (surfacePressure <= 250.0) // Thin air = Martian
+				else if (surfacePressure.Millibars <= 250.0) // Thin air = Martian
 				{
 					return BodyType.Martian;
 				}
-				else if (surfaceTemperature < GlobalConstants.FREEZING_POINT_OF_WATER)
+				else if (surfaceTemperature.Kelvins < GlobalConstants.FREEZING_POINT_OF_WATER)
 				{
 					return BodyType.Ice;
 				}
@@ -520,27 +562,27 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 
 		}
 
-		public bool TestIsTidallyLocked(double dayLength,
-								  double orbitalPeriod)
+		public bool TestIsTidallyLocked(Duration dayLength,
+								  Duration orbitalPeriod)
 		{
-			return (int)dayLength == (int)(orbitalPeriod * 24);
+			return (int)dayLength.Hours == (int)(orbitalPeriod.Hours);
 		}
 
-		public double GetMinimumIllumination(double a,
-									   double l)
+		public Ratio GetMinimumIllumination(Length a,
+									   Luminosity l)
 		{
-			return Utilities.Pow2(1.0 / a) * l;
+			return Ratio.FromDecimalFractions(Utilities.Pow2(1.0 / a.AstronomicalUnits) * l.SolarLuminosities);
 		}
 
-		public double GetRocheLimit(double bodyRadius,
-							  double bodyDensity,
-							  double satelliteDensity)
+		public Length GetRocheLimit(Length bodyRadius,
+							  Density bodyDensity,
+							  Density satelliteDensity)
 		{
 			return 1.26 * bodyRadius * Math.Pow(bodyDensity / satelliteDensity, 1.0 / 3.0) / 1000.0;
 		}
 
-		public bool TestIsHabitable(double dayLength,
-							  double orbitalPeriod,
+		public bool TestIsHabitable(Duration dayLength,
+							  Duration orbitalPeriod,
 							  Breathability breathability,
 							  bool hasResonantPeriod,
 							  bool isTidallyLocked)
@@ -550,25 +592,25 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				   !isTidallyLocked;
 		}
 
-		public bool TestIsEarthLike(double surfaceTemperature,
-							  double waterCoverFraction,
-							  double cloudCoverFraction,
-							  double iceCoverFraction,
-							  double surfacePressure,
-							  double surfaceGravityG,
+		public bool TestIsEarthLike(Temperature surfaceTemperature,
+							  Ratio waterCoverFraction,
+							  Ratio cloudCoverFraction,
+							  Ratio iceCoverFraction,
+							  Pressure surfacePressure,
+							  Acceleration surfaceGravityG,
 							  Breathability breathability,
 							  BodyType planetType)
 		{
-			double relTemp = surfaceTemperature - GlobalConstants.FREEZING_POINT_OF_WATER -
+			double relTemp = surfaceTemperature.Kelvins - GlobalConstants.FREEZING_POINT_OF_WATER -
 							 GlobalConstants.EARTH_AVERAGE_CELSIUS;
-			double seas = waterCoverFraction * 100.0;
-			double clouds = cloudCoverFraction * 100.0;
-			double pressure = surfacePressure / GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS;
-			double ice = iceCoverFraction * 100.0;
+			double seas = waterCoverFraction.Value * 100.0;
+			double clouds = cloudCoverFraction.Value * 100.0;
+			double pressure = surfacePressure.Millibars / GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS;
+			double ice = iceCoverFraction.Value * 100.0;
 
 			return
-				surfaceGravityG >= .8 &&
-				surfaceGravityG <= 1.2 &&
+				surfaceGravityG.StandardGravity >= .8 &&
+				surfaceGravityG.StandardGravity <= 1.2 &&
 				relTemp >= -2.0 &&
 				relTemp <= 3.0 &&
 				ice <= 10.0 &&
@@ -582,14 +624,13 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				breathability == Breathability.Breathable;
 		}
 
-		public int GetOrbitalZone(double luminosity,
-							double orbRadius)
+		public int GetOrbitalZone(Luminosity luminosity, Length orbRadius)
 		{
-			if (orbRadius < 4.0 * Math.Sqrt(luminosity))
+			if (orbRadius.Kilometers < 4.0 * Math.Sqrt(luminosity.SolarLuminosities))
 			{
 				return 1;
 			}
-			else if (orbRadius < 15.0 * Math.Sqrt(luminosity))
+			else if (orbRadius.Kilometers < 15.0 * Math.Sqrt(luminosity.SolarLuminosities))
 			{
 				return 2;
 			}
@@ -599,12 +640,12 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			}
 		}
 
-		public double GetPeriod(double separation, double smallMass, double largeMass)
+		public Duration GetPeriod(Length separation, Mass smallMass, Mass largeMass)
 		{
 			double period_in_years;
 
-			period_in_years = Math.Sqrt(Utilities.Pow3(separation) / (smallMass + largeMass));
-			return period_in_years * GlobalConstants.DAYS_IN_A_YEAR;
+			period_in_years = Math.Sqrt(Utilities.Pow3(separation.AstronomicalUnits) / (smallMass.SolarMasses + largeMass.SolarMasses));
+			return Duration.FromDays(period_in_years * GlobalConstants.DAYS_IN_A_YEAR);
 		}
 
 		/// <summary>
@@ -614,12 +655,12 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="orbitalRadius"></param>
 		/// <param name="albedo"></param>
 		/// <returns></returns>
-		public double GetEffectiveTemperature(double ecosphereRadius, double orbitalRadius, double albedo)
+		public Temperature GetEffectiveTemperature(Length ecosphereRadius, Length orbitalRadius, Ratio albedo)
 		{
 			// This is Fogg's eq.19.
-			return Math.Sqrt(ecosphereRadius / orbitalRadius)
-				  * Utilities.Pow1_4((1.0 - albedo) / (1.0 - GlobalConstants.EARTH_ALBEDO))
-				  * GlobalConstants.EARTH_EFFECTIVE_TEMP;
+			return Temperature.FromKelvins(Math.Sqrt(ecosphereRadius / orbitalRadius)
+				  * Utilities.Pow1_4((1.0 - albedo.Value) / (1.0 - GlobalConstants.EARTH_ALBEDO))
+				  * GlobalConstants.EARTH_EFFECTIVE_TEMP);
 		}
 
 		/// <summary>
@@ -627,24 +668,28 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		///	Earth's Atmosphere" article.  The effective temperature given is in
 		///	units of Kelvin, as is the rise in temperature produced by the
 		///	greenhouse effect, which is returned.
+		///	TODO: Validate opticalDepth units.
 		/// </summary>
 		/// <param name="opticalDepth"></param>
 		/// <param name="effectiveTemp"></param>
 		/// <param name="surfPressure"></param>
 		/// <returns></returns>
-		public double GetGreenhouseTemperatureRise(double opticalDepth, double effectiveTemp, double surfPressure)
+		public TemperatureDelta GetGreenhouseTemperatureRise(Ratio opticalDepth, Temperature effectiveTemp, Pressure surfPressure)
 		{
-			var convectionFactor = GlobalConstants.EARTH_CONVECTION_FACTOR * Math.Pow(surfPressure / GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS, 0.25);
-			var rise = (Utilities.Pow1_4(1.0 + 0.75 * opticalDepth) - 1.0) *
-							   effectiveTemp * convectionFactor;
+			var convectionFactor = GlobalConstants.EARTH_CONVECTION_FACTOR * Math.Pow(surfPressure.Millibars / GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS, 0.25);
+			var rise = (Utilities.Pow1_4(1.0 + 0.75 * opticalDepth.Value) - 1.0) *
+							   effectiveTemp.Kelvins * convectionFactor;
 
 			if (rise < 0.0) rise = 0.0;
 
-			return rise;
+			return TemperatureDelta.FromKelvins(rise);
 		}
 
-		public double GetOpacity(double molecularWeight, double surfPressure)
+		public Ratio GetOpacity(Mass molecularWeightParam, Pressure surfPressureParam)
 		{
+			var molecularWeight = molecularWeightParam.Grams;
+			var surfPressure = surfPressureParam.Millibars;
+
 			var opticalDepth = 0.0;
 			if ((molecularWeight >= 0.0) && (molecularWeight < 10.0))
 			{
@@ -692,7 +737,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				opticalDepth = opticalDepth * 1.5;
 			}
 
-			return opticalDepth;
+			return Ratio.FromDecimalFractions(opticalDepth);
 		}
 
 		/// <summary>
@@ -701,11 +746,11 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="volatileGasInventory"></param>
 		/// <param name="planetRadius"></param>
 		/// <returns></returns>
-		public double GetWaterFraction(double volatileGasInventory, double planetRadius)
+		public Ratio GetWaterFraction(Ratio volatileGasInventory, Length planetRadius)
 		{
-			var temp = (0.71 * volatileGasInventory / 1000.0)
-					 * Utilities.Pow2(GlobalConstants.KM_EARTH_RADIUS / planetRadius);
-			return temp >= 1.0 ? 1.0 : temp;
+			var temp = (0.71 * volatileGasInventory.Value / 1000.0)
+					 * Utilities.Pow2(GlobalConstants.KM_EARTH_RADIUS / planetRadius.Kilometers);
+			return Ratio.FromDecimalFractions(temp >= 1.0 ? 1.0 : temp);
 		}
 
 		/// <summary>
@@ -723,19 +768,19 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="equatorialRadius"></param>
 		/// <param name="hydroFraction"></param>
 		/// <returns></returns>
-		public double GetCloudFraction(double surfaceTemp, double smallestMWRetained, double equatorialRadius, double hydroFraction)
+		public Ratio GetCloudFraction(Temperature surfaceTemp, Mass smallestMWRetained, Length equatorialRadius, Ratio hydroFraction)
 		{
-			if (smallestMWRetained > GlobalConstants.WATER_VAPOR)
+			if (smallestMWRetained.Grams > GlobalConstants.WATER_VAPOR)
 			{
-				return 0.0;
+				return Ratio.FromDecimalFractions(0.0);
 			}
 
-			var surfArea = 4.0 * Math.PI * Utilities.Pow2(equatorialRadius);
-			var hydroMass = hydroFraction * surfArea * GlobalConstants.EARTH_WATER_MASS_PER_AREA;
+			var surfArea = 4.0 * Math.PI * Utilities.Pow2(equatorialRadius.Kilometers);
+			var hydroMass = hydroFraction.Value * surfArea * GlobalConstants.EARTH_WATER_MASS_PER_AREA;
 			var waterVaporKg = (0.00000001 * hydroMass) *
-								Math.Exp(GlobalConstants.Q2_36 * (surfaceTemp - GlobalConstants.EARTH_AVERAGE_KELVIN));
+								Math.Exp(GlobalConstants.Q2_36 * (surfaceTemp.Kelvins - GlobalConstants.EARTH_AVERAGE_KELVIN));
 			var fraction = GlobalConstants.CLOUD_COVERAGE_FACTOR * waterVaporKg / surfArea;
-			return fraction >= 1.0 ? 1.0 : fraction;
+			return Ratio.FromDecimalFractions(fraction >= 1.0 ? 1.0 : fraction);
 		}
 
 		/// <summary>
@@ -747,19 +792,21 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="hydroFraction"></param>
 		/// <param name="surfTemp"></param>
 		/// <returns></returns>
-		public double GetIceFraction(double hydroFraction, double surfTemp)
+		public Ratio GetIceFraction(Ratio hydroFraction, Temperature surfTempParam)
 		{
+			var surfTemp = surfTempParam.Kelvins;
+
 			if (surfTemp > 328.0)
 			{
 				surfTemp = 328.0;
 			}
 			var temp = Math.Pow(((328.0 - surfTemp) / 90.0), 5.0);
-			if (temp > (1.5 * hydroFraction))
+			if (temp > (1.5 * hydroFraction.Value))
 			{
-				temp = (1.5 * hydroFraction);
+				temp = (1.5 * hydroFraction.Value);
 			}
 
-			return temp >= 1.0 ? 1.0 : temp;
+			return Ratio.FromDecimalFractions(temp >= 1.0 ? 1.0 : temp);
 		}
 
 		/// <summary>
@@ -772,8 +819,12 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="iceFraction"></param>
 		/// <param name="surfPressure"></param>
 		/// <returns></returns>
-		public double GetAlbedo(double waterFraction, double cloudFraction, double iceFraction, double surfPressure)
+		public Ratio GetAlbedo(Ratio waterFractionParam, Ratio cloudFractionParam, Ratio iceFractionParam, Pressure surfPressure)
 		{
+			var waterFraction = waterFractionParam.Value;
+			var cloudFraction = cloudFractionParam.Value;
+			var iceFraction = iceFractionParam.Value;
+
 			double rock_fraction, cloud_adjustment, components, cloud_part,
 			rock_part, water_part, ice_part;
 
@@ -823,7 +874,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 
 			cloud_part = cloudFraction * GlobalConstants.CLOUD_ALBEDO;     /* about(...,0.2); */
 
-			if (surfPressure == 0.0)
+			if (surfPressure.Millibars == 0.0)
 			{
 				rock_part = rock_fraction * GlobalConstants.ROCKY_AIRLESS_ALBEDO;   /* about(...,0.3); */
 				ice_part = iceFraction * GlobalConstants.AIRLESS_ICE_ALBEDO;       /* about(...,0.4); */
@@ -836,7 +887,68 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				ice_part = iceFraction * GlobalConstants.ICE_ALBEDO;       /* about(...,0.1); */
 			}
 
-			return cloud_part + rock_part + water_part + ice_part;
+			return Ratio.FromDecimalFractions(cloud_part + rock_part + water_part + ice_part);
+		}
+
+		public Mass GetInitialMolecularWeightRetained(Mass mass, Length radius, Temperature exoTemp)
+		{
+			var escapeVelocity = GetEscapeVelocity(mass, radius);
+
+			return Mass.FromGrams((3.0 * GlobalConstants.MOLAR_GAS_CONST * exoTemp.Kelvins) /
+					(Utilities.Pow2((escapeVelocity.CentimetersPerSecond / GlobalConstants.GAS_RETENTION_THRESHOLD) / GlobalConstants.CM_PER_METER)));
+		}
+
+		/// <summary>
+		/// Taken from Dole p. 34. He cites Jeans (1916) & Jones (1923). 
+		/// </summary>
+		/// <param name="molecularWeight"></param>
+		/// <param name="exoTempKelvin"></param>
+		/// <param name="surfGravG"></param>
+		/// <param name="radiusKM"></param>
+		/// <returns></returns>
+		public Duration GetGasLife(Mass molecularWeight, Temperature exoTempKelvin, Acceleration surfGravG, Length radiusKM)
+		{
+			var v = GetRMSVelocity(molecularWeight, exoTempKelvin).MetersPerSecond;
+			var g = surfGravG.StandardGravity * GlobalConstants.EARTH_ACCELERATION;
+			var r = radiusKM.Kilometers * GlobalConstants.CM_PER_KM;
+			var t = (Utilities.Pow3(v) / (2.0 * Utilities.Pow2(g) * r)) * Math.Exp((3.0 * g * r) / Utilities.Pow2(v));
+			var years = t / (GlobalConstants.SECONDS_PER_HOUR * 24.0 * GlobalConstants.DAYS_IN_A_YEAR);
+
+			if (years > 2.0E10)
+			{
+				years = double.MaxValue;
+			}
+
+			return Duration.FromYears365(years);
+		}
+
+		/// <summary>
+		///  This formula is on Dole's p. 14 
+		/// </summary>
+		/// <param name="surf_pressure"></param>
+		/// <param name="gas_pressure"></param>
+		/// <returns></returns>
+		public Pressure GetInspiredPartialPressure(Pressure surf_pressure, Pressure gas_pressure)
+		{
+			var pH2O = (GlobalConstants.H20_ASSUMED_PRESSURE);
+			var fraction = gas_pressure / surf_pressure;
+
+			return Pressure.FromMillibars((surf_pressure.Millibars - pH2O) * fraction);
+		}
+
+		// TODO figure out how this function differs from EffTemp, write summary
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="ecosphereRadius"></param>
+		/// <param name="orbitalRadius"></param>
+		/// <param name="albedo"></param>
+		/// <returns></returns>
+		public Temperature GetEstimatedTemperature(Length ecosphereRadius, Length orbitalRadius, Ratio albedo)
+		{
+			return Temperature.FromKelvins(Math.Sqrt(ecosphereRadius / orbitalRadius)
+				  * Utilities.Pow1_4((1.0 - albedo.DecimalFractions) / (1.0 - GlobalConstants.EARTH_ALBEDO))
+				  * GlobalConstants.EARTH_AVERAGE_KELVIN);
 		}
 	}
 

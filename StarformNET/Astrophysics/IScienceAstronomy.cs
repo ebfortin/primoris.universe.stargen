@@ -1,4 +1,6 @@
-﻿namespace Primoris.Universe.Stargen.Astrophysics
+﻿using UnitsNet;
+
+namespace Primoris.Universe.Stargen.Astrophysics
 {
 	public interface IScienceAstronomy
 	{
@@ -9,7 +11,7 @@
 		/// <param name="orbitalPeriodDays">The planet's orbital period in days</param>
 		/// <param name="ecc">The eccentricity of the planet's orbit</param>
 		/// <returns>Length of day in hours</returns>
-		double GetDayLength(double angularVelocityRadSec, double orbitalPeriod, double eccentricity);
+		Duration GetDayLength(RotationalSpeed angularVelocityRadSec, Duration orbitalPeriod, Ratio eccentricity);
 
 		/// <summary>
 		/// The Hill sphere of an astronomical body is the region in which it dominates the attraction of satellites. 
@@ -20,9 +22,9 @@
 		/// <param name="massSM">Mass of the smaller object in solar mass ratio.</param>
 		/// <param name="semiMajorAxisAU">Major axis length in AU.</param>
 		/// <returns>Hill Sphere radius in AU.</returns>
-		double GetHillSphere(double sunMass, double massSM, double semiMajorAxisAU);
+		Length GetHillSphere(Mass sunMass, Mass massSM, Length semiMajorAxisAU);
 
-		double GetMinimumIllumination(double a, double l);
+		Ratio GetMinimumIllumination(Length a, Luminosity l);
 
 		/// <summary>
 		/// Orbital zone based on illumination.
@@ -33,7 +35,7 @@
 		/// <param name="luminosity">Luminosity of parent star in solar luminosity ratio.</param>
 		/// <param name="orbitalRadius">Orbit major axis length in AU.</param>
 		/// <returns>The orbital zones can be one of 1, 2 or 3.</returns>
-		int GetOrbitalZone(double luminosity, double orbitalRadius);
+		int GetOrbitalZone(Luminosity luminosity, Length orbitalRadius);
 
 		/// <summary>
 		/// Returns a planet's period in Earth days
@@ -42,6 +44,6 @@
 		/// <param name="smallMass">Small mass in Units of solar masses</param>
 		/// <param name="largeMass">Large mass in Units of solar masses</param>
 		/// <returns>Period in Earth days</returns>
-		double GetPeriod(double separation, double smallMass, double largeMass);
+		Duration GetPeriod(Length separation, Mass smallMass, Mass largeMass);
 	}
 }

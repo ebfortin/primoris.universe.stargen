@@ -22,11 +22,11 @@ namespace Primoris.Universe.Stargen.Display
 
             public OrbitParameters(SatelliteBody planet, float angle)
             {
-                a = Math.Sqrt(planet.SemiMajorAxisAU);
-                e = planet.Eccentricity;
+                a = Math.Sqrt(planet.SemiMajorAxis.AstronomicalUnits);
+                e = planet.Eccentricity.Value;
                 b = Utilities.GetSemiMinorAxis(a, e);
                 this.angle = angle;
-                size = (float)(planet.Radius / GlobalConstants.KM_EARTH_RADIUS);
+                size = (float)(planet.Radius.Kilometers / GlobalConstants.KM_EARTH_RADIUS);
                 color = Brushes.White;
                 switch (planet.Type)
                 {

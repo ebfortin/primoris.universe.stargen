@@ -4,6 +4,8 @@ using System.Text;
 using System.Linq;
 using Primoris.Universe.Stargen.Astrophysics;
 using Environment = Primoris.Universe.Stargen.Astrophysics.Environment;
+using UnitsNet;
+
 
 namespace Primoris.Universe.Stargen.Bodies
 {
@@ -12,7 +14,7 @@ namespace Primoris.Universe.Stargen.Bodies
 	{
 		public SatelliteBody Planet { get; internal set; }
 
-		public double SurfacePressure { get; private set; }
+		public Pressure SurfacePressure { get; private set; }
 
 		public Breathability Breathability { get; private set; }
 
@@ -26,7 +28,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 			Composition = new List<Gas>();
 			PoisonousGases = new List<Gas>();
-			SurfacePressure = 0.0;
+			SurfacePressure = Pressure.FromMillibars(0.0);
 
 			Breathability = CalculateBreathability();
 		}
@@ -44,7 +46,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			Breathability = CalculateBreathability();
 		}
 
-		public Atmosphere(SatelliteBody planet, double surfPressure)
+		public Atmosphere(SatelliteBody planet, Pressure surfPressure)
 		{
 			Planet = planet;
 			SurfacePressure = surfPressure;
@@ -56,7 +58,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		public Atmosphere(SatelliteBody planet, ChemType[] gasTable)
 		{
 			Planet = planet;
-			SurfacePressure = planet.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceGravityG);
+			SurfacePressure = planet.Astro.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
 			CalculateGases(planet, gasTable);
 
 			Breathability = CalculateBreathability();
@@ -88,7 +90,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			{
 				var gas = Composition[index];
 
-				var ipp = Environment.InspiredPartialPressure(SurfacePressure, Composition[index].SurfacePressure);
+				var ipp = planet.Astro.Physics.GetInspiredPartialPressure(SurfacePressure, Composition[index].SurfacePressure);
 				if (ipp > gas.GasType.MaxIpp)
 				{
 					poisonous = true;
@@ -98,7 +100,7 @@ namespace Primoris.Universe.Stargen.Bodies
 				// TODO why not just have a min_ipp for every gas, even if it's going to be zero for everything that's not oxygen?
 				if (gas.GasType.Num == GlobalConstants.AN_O)
 				{
-					oxygenOk = ipp >= GlobalConstants.MIN_O2_IPP && ipp <= GlobalConstants.MAX_O2_IPP;
+					oxygenOk = ipp.Millibars >= GlobalConstants.MIN_O2_IPP && ipp.Millibars <= GlobalConstants.MAX_O2_IPP;
 				}
 			}
 
@@ -121,30 +123,30 @@ namespace Primoris.Universe.Stargen.Bodies
 			var sun = planet.Star;
 			Composition = new List<Gas>();
 
-			if (!(SurfacePressure > 0))
+			if (!(SurfacePressure.Millibars > 0))
 			{
 				return;
 			}
 
 			double[] amount = new double[gasTable.Length];
 			double totamount = 0;
-			double pressure = SurfacePressure / GlobalConstants.MILLIBARS_PER_BAR;
+			double pressure = SurfacePressure.Bars;
 			int n = 0;
 
 			// Determine the relative abundance of each gas in the planet's atmosphere
 			for (var i = 0; i < gasTable.Length; i++)
 			{
-				double yp = gasTable[i].Boil / (373.0 * (Math.Log(pressure + 0.001) / -5050.5 + 1.0 / 373.0));
+				Temperature yp = Temperature.FromKelvins(gasTable[i].Boil.Kelvins / (373.0 * (Math.Log(pressure + 0.001) / -5050.5 + 1.0 / 373.0)));
 
 				// TODO move both of these conditions to separate methods
-				if (yp >= 0 && yp < planet.NighttimeTemperature && gasTable[i].Weight >= planet.MolecularWeightRetained)
+				if (yp.Kelvins >= 0 && yp < planet.NighttimeTemperature && gasTable[i].Weight >= planet.MolecularWeightRetained)
 				{
 					double abund, react;
 					CheckForSpecialRules(out abund, out react, pressure, planet, gasTable[i]);
 
 					// TODO: Switch Environment.RMSVelocity for a particular gas to IBodyPhysics.
-					double vrms = Environment.RMSVelocity(gasTable[i].Weight, planet.ExosphereTemperature);
-					double pvrms = Math.Pow(1 / (1 + vrms / planet.EscapeVelocityCMSec), sun.Age / 1e9);
+					Speed vrms = Planet.Astro.Physics.GetRMSVelocity(gasTable[i].Weight, planet.ExosphereTemperature);
+					double pvrms = Math.Pow(1 / (1 + vrms / planet.EscapeVelocity), sun.Age.Years365 / 1e9);
 
 					double fract = 1 - planet.MolecularWeightRetained / gasTable[i].Weight;
 
@@ -185,34 +187,34 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			var sun = planet.Star;
 			var pres2 = 1.0;
-			abund = gas.Abunds;
+			abund = gas.Abunds.Value;
 
 			if (gas.Symbol == "Ar")
 			{
-				react = .15 * sun.Age / 4e9;
+				react = .15 * sun.Age.Years365 / 4e9;
 			}
 			else if (gas.Symbol == "He")
 			{
-				abund = abund * (0.001 + planet.GasMassSM / planet.MassSM);
+				abund = abund * (0.001 + planet.GasMass / planet.Mass);
 				pres2 = 0.75 + pressure;
-				react = Math.Pow(1 / (1 + gas.Reactivity), sun.Age / 2e9 * pres2);
+				react = Math.Pow(1 / (1 + gas.Reactivity.Value), sun.Age.Years365 / 2e9 * pres2);
 			}
-			else if ((gas.Symbol == "O" || gas.Symbol == "O2") && sun.Age > 2e9 && planet.SurfaceTemperature > 270 && planet.SurfaceTemperature < 400)
+			else if ((gas.Symbol == "O" || gas.Symbol == "O2") && sun.Age.Years365 > 2e9 && planet.SurfaceTemperature.Kelvins > 270 && planet.SurfaceTemperature.Kelvins < 400)
 			{
 				// pres2 = (0.65 + pressure/2); // Breathable - M: .55-1.4
 				pres2 = 0.89 + pressure / 4;  // Breathable - M: .6 -1.8
-				react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.Age / 2e9, 0.25) * pres2);
+				react = Math.Pow(1 / (1 + gas.Reactivity.Value), Math.Pow(sun.Age.Years365 / 2e9, 0.25) * pres2);
 			}
-			else if (gas.Symbol == "CO2" && sun.Age > 2e9 && planet.SurfaceTemperature > 270 && planet.SurfaceTemperature < 400)
+			else if (gas.Symbol == "CO2" && sun.Age.Years365 > 2e9 && planet.SurfaceTemperature.Kelvins > 270 && planet.SurfaceTemperature.Kelvins < 400)
 			{
 				pres2 = 0.75 + pressure;
-				react = Math.Pow(1 / (1 + gas.Reactivity), Math.Pow(sun.Age / 2e9, 0.5) * pres2);
+				react = Math.Pow(1 / (1 + gas.Reactivity.Value), Math.Pow(sun.Age.Years365 / 2e9, 0.5) * pres2);
 				react *= 1.5;
 			}
 			else
 			{
 				pres2 = 0.75 + pressure;
-				react = Math.Pow(1 / (1 + gas.Reactivity), sun.Age / 2e9 * pres2);
+				react = Math.Pow(1 / (1 + gas.Reactivity.Value), sun.Age.Years365 / 2e9 * pres2);
 			}
 		}
 
@@ -220,7 +222,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			var sb = new StringBuilder();
 
-			if (SurfacePressure > 0.0)
+			if (SurfacePressure.Millibars > 0.0)
 			{
 				sb.Append(SurfacePressure);
 				sb.Append(" : ");

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnitsNet;
 
 
 namespace Primoris.Universe.Stargen.Bodies
@@ -12,16 +13,16 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		public IEnumerable<Seed> Satellites { get; set; } = new Seed[0];
 
-		public double SemiMajorAxisAU { get; set; }
-		public double Eccentricity { get; set; }
-		public double Mass { get; set; }
-		public double DustMass { get; set; }
-		public double GasMass { get; set; }
+		public Length SemiMajorAxis { get; set; }
+		public Ratio Eccentricity { get; set; }
+		public Mass Mass { get; set; }
+		public Mass DustMass { get; set; }
+		public Mass GasMass { get; set; }
 		public bool IsGasGiant { get; set; } = false;
 
-		public Seed(double a, double e, double mass, double dMass, double gMass)
+		public Seed(Length a, Ratio e, Mass mass, Mass dMass, Mass gMass)
 		{
-			SemiMajorAxisAU = a;
+			SemiMajorAxis = a;
 			Eccentricity = e;
 			Mass = mass;
 			DustMass = dMass;

@@ -12,6 +12,7 @@ using Primoris.Universe.Stargen.Systems;
 using Primoris.Universe.Stargen.Bodies.Burrows;
 using Primoris.Universe.Stargen.Systems.Burrows;
 using Primoris.Universe.Stargen.Astrophysics;
+using UnitsNet;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
@@ -87,12 +88,25 @@ namespace Primoris.Universe.Stargen.UnitTests
 
 			private Star GetTestStar()
 			{
-				return new Star(1.0, 1.0, 1e10);
+				return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10));
 			}
 
 			private SatelliteBody GetTestPlanetAtmosphere()
 			{
-				var planet = new Planet(GetTestStar(), 0.723332, 0.0067, 2.8, 2802.0, 225.0, 0.000002447, 2.41E-10, 6051.8, 92000.0, 737.0, 737.0, 737.0, 0.9);
+				var planet = new Planet(GetTestStar(),
+							Length.FromAstronomicalUnits(0.723332),
+							Ratio.FromDecimalFractions(0.0067),
+							Angle.FromDegrees(2.8),
+							Duration.FromHours(2802.0),
+							Duration.FromDays(225.0),
+							Mass.FromSolarMasses(0.000002447),
+							Mass.FromSolarMasses(2.41E-10),
+							Length.FromKilometers(6051.8),
+							Pressure.FromMillibars(92000.0),
+							Temperature.FromKelvins(737.0),
+							Temperature.FromKelvins(737.0),
+							Temperature.FromKelvins(737.0),
+							Acceleration.FromStandardGravity(0.9));
 
 				return planet;
 			}
@@ -147,7 +161,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 
                 foreach (var gas in planet.Atmosphere.Composition)
                 {
-                    Assert.AreEqual(expected[gas.GasType.Symbol], gas.SurfacePressure, DELTA);
+                    Assert.AreEqual(expected[gas.GasType.Symbol], gas.SurfacePressure.Millibars, DELTA);
                 }
             }
 

@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnitsNet;
+
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
@@ -16,14 +18,14 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		public string Symbol { get; set; }
 		public string DisplaySymbol { get; set; }
 		public string Name { get; set; }
-		public double Weight { get; set; }
-		public double Melt { get; set; }
-		public double Boil { get; set; }
-		public double Density { get; set; }
-		public double Abunde { get; set; }
-		public double Abunds { get; set; }  // Solar system abundance
-		public double Reactivity { get; set; }
-		public double MaxIpp { get; set; } // Max inspired partial pressure im millibars
+		public Mass Weight { get; set; }
+		public Temperature Melt { get; set; }
+		public Temperature Boil { get; set; }
+		public Density Density { get; set; }
+		public Ratio Abunde { get; set; }
+		public Ratio Abunds { get; set; }  // Solar system abundance
+		public Ratio Reactivity { get; set; }
+		public Pressure MaxIpp { get; set; } // Max inspired partial pressure im millibars
 
 		public ChemType(int an, string sym, string htmlsym, string name, double w, double m, double b, double dens, double ae, double abs, double rea, double mipp)
 		{
@@ -31,14 +33,14 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			Symbol = sym;
 			DisplaySymbol = htmlsym;
 			Name = name;
-			Weight = w;
-			Melt = m;
-			Boil = b;
-			Density = dens;
-			Abunde = ae;
-			Abunds = abs;
-			Reactivity = rea;
-			MaxIpp = mipp;
+			Weight = Mass.FromGrams(w);
+			Melt = Temperature.FromKelvins(m);
+			Boil = Temperature.FromKelvins(b);
+			Density = Density.FromGramsPerCubicCentimeter(dens);
+			Abunde = Ratio.FromDecimalFractions(ae);
+			Abunds = Ratio.FromDecimalFractions(abs);
+			Reactivity = Ratio.FromDecimalFractions(rea);
+			MaxIpp = Pressure.FromMillibars(mipp);
 		}
 
 		public static ChemType[] Load()

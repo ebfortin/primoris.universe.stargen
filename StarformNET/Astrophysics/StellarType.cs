@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using CsvHelper;
+using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
@@ -42,10 +43,10 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		public SpectralClass SpectralClass { get; private set; }
 		public int SubType { get; private set; }
 		public LuminosityClass LuminosityClass { get; private set; }
-		public double Temperature { get; private set; }
-		public double Mass { get; private set; }
-		public double Luminosity { get; private set; }
-		public double Radius { get; private set; }
+		public Temperature Temperature { get; private set; }
+		public Mass Mass { get; private set; }
+		public Luminosity Luminosity { get; private set; }
+		public Length Radius { get; private set; }
 		public Color Color { get; private set; }
 
 		private static List<StellarTypeRow> _types;
@@ -60,42 +61,42 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			var data = (from row in _types
 						where row.Type == str
 						select new { row.Temperature, row.Mass, row.Radius, row.Luminosity, row.ColorRGB }).FirstOrDefault();
-			Temperature = data.Temperature;
-			Mass = data.Mass;
-			Luminosity = data.Luminosity;
-			Radius = data.Radius;
+			Temperature = Temperature.FromKelvins(data.Temperature);
+			Mass = Mass.FromSolarMasses(data.Mass);
+			Luminosity = Luminosity.FromSolarLuminosities(data.Luminosity);
+			Radius = Length.FromKilometers(data.Radius * GlobalConstants.KM_SUN_RADIUS);
 			Color = ConvertColor(data.ColorRGB);
 		}
 
 		private StellarType() { }
 
-		public void ChangeLuminosity(double lum)
+		public void ChangeLuminosity(Luminosity lum)
 		{
 			Change(Mass, lum, Temperature, Radius);
 		}
 
-		public void ChangeMass(double mass)
+		public void ChangeMass(Mass mass)
 		{
 			Change(mass, Luminosity, Temperature, Radius);
 		}
 
-		public void ChangeTemperature(double temp)
+		public void ChangeTemperature(Temperature temp)
 		{
 			Change(Mass, Luminosity, temp, Radius);
 		}
 
-		public void ChangeRadius(double radius)
+		public void ChangeRadius(Length radius)
 		{
 			Change(Mass, Luminosity, Temperature, radius);
 		}
 
-		public void Change(double mass, double lum, double temp, double radius)
+		public void Change(Mass mass, Luminosity lum, Temperature temp, Length radius)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt((!double.IsNaN(lum) ? Math.Pow(lum - row.Luminosity, 2.0) : 0.0) +
-										  (!double.IsNaN(radius) ? Math.Pow(radius - row.Radius, 2.0) : 0.0) +
-										  (!double.IsNaN(mass) ? Math.Pow(mass - row.Mass, 2.0) : 0.0) +
-										  (!double.IsNaN(temp) ? Math.Pow(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) : 0.0))
+						orderby Math.Sqrt((!double.IsNaN(lum.Value) ? Math.Pow(lum.SolarLuminosities - row.Luminosity, 2.0) : 0.0) +
+										  (!double.IsNaN(radius.Value) ? Math.Pow(radius.SolarRadiuses - row.Radius, 2.0) : 0.0) +
+										  (!double.IsNaN(mass.Value) ? Math.Pow(mass.SolarMasses - row.Mass, 2.0) : 0.0) +
+										  (!double.IsNaN(temp.Value) ? Math.Pow(temp.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) : 0.0))
 						ascending
 						select row).FirstOrDefault();
 
@@ -104,15 +105,15 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			LuminosityClass = st.LuminosityClass;
 			SubType = st.SubType;
 
-			double m = st.Mass;
-			double l = st.Luminosity;
-			double t = st.Temperature;
-			double r = st.Radius;
+			double m = st.Mass.SolarMasses;
+			double l = st.Luminosity.SolarLuminosities;
+			double t = st.Temperature.Kelvins;
+			double r = st.Radius.SolarRadiuses;
 
-			Mass = !double.IsNaN(mass) ? mass : m;
-			Luminosity = !double.IsNaN(lum) ? lum : l;
-			Temperature = !double.IsNaN(temp) ? temp : t;
-			Radius = !double.IsNaN(radius) ? radius : r;
+			Mass = !double.IsNaN(mass.Value) ? mass : Mass.FromSolarMasses(m);
+			Luminosity = !double.IsNaN(lum.Value) ? lum : Luminosity.FromSolarLuminosities(l);
+			Temperature = !double.IsNaN(temp.Value) ? temp : Temperature.FromKelvins(t);
+			Radius = !double.IsNaN(radius.Value) ? radius : Length.FromSolarRadiuses(r);
 
 			Color = ConvertColor(data.ColorRGB);
 		}
@@ -126,11 +127,11 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <param name="lum">Luminosity ratio to Earth's sun.</param>
 		/// <param name="radius">Radius ratio to Earth's sun.</param>
 		/// <returns></returns>
-		public static StellarType FromLuminosityAndRadius(double lum, double radius = 1.0)
+		public static StellarType FromLuminosityAndRadius(Luminosity lum, Length radius)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt(Math.Pow(lum - row.Luminosity, 2.0) +
-										  Math.Pow(radius - row.Radius, 2.0))
+						orderby Math.Sqrt(Math.Pow(lum.SolarLuminosities - row.Luminosity, 2.0) +
+										  Math.Pow(radius.SolarRadiuses - row.Radius, 2.0))
 						ascending
 						select row).FirstOrDefault();
 
@@ -142,11 +143,11 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			return st;
 		}
 
-		public static StellarType FromMassAndTemperature(double mass, double temp)
+		public static StellarType FromMassAndTemperature(Mass mass, Temperature temp)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt(Math.Pow(mass - row.Mass, 2.0) +
-										  Math.Pow(temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0))
+						orderby Math.Sqrt(Math.Pow(mass.SolarMasses - row.Mass, 2.0) +
+										  Math.Pow(temp.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0))
 						ascending
 						select row).FirstOrDefault();
 
@@ -156,6 +157,11 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			st.Color = ConvertColor(data.ColorRGB);
 
 			return st;
+		}
+
+		public static StellarType FromMassAndRadius(Mass mass)
+		{
+			return FromMassAndRadius(mass, Length.FromSolarRadiuses(1.0));
 		}
 
 		/// <summary>
@@ -168,11 +174,11 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <param name="mass">Mass ratio to earth's sun.</param>
 		/// <param name="radius">Radius ratio to earth's sun.</param>
 		/// <returns></returns>
-		public static StellarType FromMassAndRadius(double mass, double radius = 1.0)
+		public static StellarType FromMassAndRadius(Mass mass, Length radius)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt(Math.Pow(mass - row.Mass, 2.0) +
-										  Math.Pow(radius - row.Radius, 2.0))
+						orderby Math.Sqrt(Math.Pow(mass.SolarMasses - row.Mass, 2.0) +
+										  Math.Pow(radius.SolarRadiuses - row.Radius, 2.0))
 						ascending
 						select row).FirstOrDefault();
 
@@ -184,11 +190,16 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			return st;
 		}
 
-		public static StellarType FromTemperatureAndLuminosity(double eff_temp, double luminosity = 0.0)
+		public static StellarType FromTemperatureAndLuminosity(Temperature eff_temp)
+		{
+			return FromTemperatureAndLuminosity(eff_temp, Luminosity.FromSolarLuminosities(0.0));
+		}
+
+		public static StellarType FromTemperatureAndLuminosity(Temperature eff_temp, Luminosity luminosity)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt(Math.Pow(eff_temp / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) +
-										  Math.Pow(luminosity - row.Luminosity, 2.0))
+						orderby Math.Sqrt(Math.Pow(eff_temp.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) +
+										  Math.Pow(luminosity.SolarLuminosities - row.Luminosity, 2.0))
 						ascending
 						select row).FirstOrDefault();
 

@@ -1,5 +1,6 @@
 using System;
 using Primoris.Universe.Stargen.Bodies;
+using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
@@ -60,8 +61,10 @@ namespace Primoris.Universe.Stargen.Astrophysics
         /// </summary>
         /// <param name="massRatio">Mass of the star</param>
         /// <returns>Luminosity ratio</returns>
-        public static double MassToLuminosity(double massRatio)
+        public static double MassToLuminosity(Mass massRatioParam)
         {
+			var massRatio = massRatioParam.SolarMasses;
+
 			if (massRatio <= 0.6224)
 			{
 				return 0.3815 * Math.Pow(massRatio, 2.5185);
@@ -87,10 +90,10 @@ namespace Primoris.Universe.Stargen.Astrophysics
         /// <summary>
         /// Returns true if the planet is tidally locked to its parent body.
         /// </summary>
-        public static bool IsTidallyLocked(SatelliteBody planet)
+        /*public static bool IsTidallyLocked(SatelliteBody planet)
         {
             return (int) planet.DayLength == (int) (planet.OrbitalPeriod * 24);
-        }
+        }*/
 
 
         /// <summary>
@@ -148,10 +151,10 @@ namespace Primoris.Universe.Stargen.Astrophysics
         /// Returns a randomized inclination in units of degrees
         /// </summary>
         /// <param name="semiMajorAxisAU">Orbital radius in units of AU</param>
-        public static double Inclination(double semiMajorAxisAU)
+        public static Angle Inclination(Length semiMajorAxis)
         {
-            var inclination = ((int)(Math.Pow(semiMajorAxisAU, 0.2) * Utilities.About(GlobalConstants.EARTH_AXIAL_TILT, 0.4)) % 360);
-            return inclination;
+            var inclination = ((int)(Math.Pow(semiMajorAxis.Kilometers / GlobalConstants.ASTRONOMICAL_UNIT_KM, 0.2) * Utilities.About(GlobalConstants.EARTH_AXIAL_TILT, 0.4)) % 360);
+            return Angle.FromDegrees(inclination);
         }
 
         /// <summary>
@@ -210,10 +213,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
         /// <param name="mass">Mass of the planet in solar masses</param>
         /// <param name="radius">Radius of the planet in km</param>
         /// <returns>Acceleration returned in units of cm/sec2</returns>
-        public static double Acceleration(double mass, double radius)
+        public static double GetAcceleration(double mass, double radius)
         {
-            return (GlobalConstants.GRAV_CONSTANT * (mass * GlobalConstants.SOLAR_MASS_IN_GRAMS) /
-                               Utilities.Pow2(radius * GlobalConstants.CM_PER_KM));
+            return (GlobalConstants.GRAV_CONSTANT * (mass * GlobalConstants.SOLAR_MASS_IN_GRAMS) / Utilities.Pow2(radius * GlobalConstants.CM_PER_KM));
         }
 
         /// <summary>
@@ -221,9 +223,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
         /// </summary>
         /// <param name="acceleration">Acceleration in units of cm/sec2</param>
         /// <returns>Gravity in units of Earth gravities</returns>
-        public static double Gravity(double acceleration)
+        public static double Gravity(Acceleration acceleration)
         {
-            return acceleration / GlobalConstants.EARTH_ACCELERATION;
+            return acceleration.CentimetersPerSecondSquared / GlobalConstants.EARTH_ACCELERATION;
         }
         
 
@@ -292,13 +294,13 @@ namespace Primoris.Universe.Stargen.Astrophysics
         /// <summary>
         /// Calculates the minimum molecular weight retained by a planet
         /// </summary>
-        public static double MinMolecularWeight(SatelliteBody planet)
+        /*public static double MinMolecularWeight(SatelliteBody planet)
         {
             var surfGrav = planet.SurfaceGravityG;
-            var mass = planet.MassSM;
-            var radius = planet.Radius;
-            var exosphereTemp = planet.ExosphereTemperature;
-            var temp = planet.ExosphereTemperature;
+            var mass = planet.Mass;
+            var radius = planet.Radius.Kilometers;
+            var exosphereTemp = planet.ExosphereTemperature.Kelvins;
+            var temp = planet.ExosphereTemperature.Kelvins;
             var target = 5.0E9;
 
             var guess1 = MoleculeLimit(mass, radius, temp);
@@ -310,7 +312,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
             if (planet.Star != null)
             {
-                target = planet.Star.Age;
+                target = planet.Star.Age.Years365;
             }
 
             if (life > target)
@@ -350,7 +352,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
             life = GasLife(guess2, exosphereTemp, surfGrav, radius);
 
             return guess2;
-        }
+        }*/
 
         /// <summary>
         /// Inspired partial pressure, taking into account humidification of the air in the nasal

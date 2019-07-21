@@ -4,7 +4,7 @@ using System.Text;
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Systems;
 using Environment = Primoris.Universe.Stargen.Astrophysics.Environment;
-
+using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
@@ -25,18 +25,18 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		{
 			var generatedMoon = this;
 
-			double roche_limit = 2.44 * parentBody.Radius * Math.Pow(parentBody.DensityGCC / generatedMoon.DensityGCC, 1.0 / 3.0);
-			double hill_sphere = parentBody.SemiMajorAxisAU * GlobalConstants.KM_PER_AU * Math.Pow(parentBody.MassSM / (3.0 * star.MassSM), 1.0 / 3.0);
+			Length roche_limit = 2.44 * parentBody.Radius * Math.Pow(parentBody.Density / generatedMoon.Density, 1.0 / 3.0);
+			Length hill_sphere = parentBody.SemiMajorAxis * Math.Pow(parentBody.Mass / (3.0 * star.Mass), 1.0 / 3.0);
 
 			if (roche_limit * 3.0 < hill_sphere)
 			{
-				generatedMoon.SemiMajorAxisAU = Utilities.RandomNumber(roche_limit * 1.5, hill_sphere / 2.0) / GlobalConstants.KM_PER_AU;
-				generatedMoon.Eccentricity = Utilities.RandomEccentricity();
+				generatedMoon.SemiMajorAxis = Length.FromKilometers(Utilities.RandomNumber(roche_limit.Kilometers * 1.5, hill_sphere.Kilometers / 2.0));
+				generatedMoon.Eccentricity = Ratio.FromDecimalFractions(Utilities.RandomEccentricity());
 			}
 			else
 			{
-				generatedMoon.SemiMajorAxisAU = 0;
-				generatedMoon.Eccentricity = 0;
+				generatedMoon.SemiMajorAxis = Length.FromAstronomicalUnits(0.0);
+				generatedMoon.Eccentricity = Ratio.FromDecimalFractions(0.0);
 			}
 		}
 

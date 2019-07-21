@@ -17,7 +17,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 		public PlanetMap()
 		{
 			Map(m => m.Atmosphere).Ignore();
-			Map(m => m.SemiMajorAxisAU);
+			Map(m => m.SemiMajorAxis);
 			Map(m => m.Eccentricity);
 			Map(m => m.AxialTilt);
 			Map(m => m.OrbitZone);
@@ -25,22 +25,21 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			Map(m => m.AngularVelocityRadSec);
 			Map(m => m.DayLength);
 			Map(m => m.HillSphere);
-			Map(m => m.MassSM);
-			Map(m => m.DustMassSM);
-			Map(m => m.GasMassSM);
-			Map(m => m.EscapeVelocityCMSec);
-			Map(m => m.SurfaceAccelerationCMSec2);
-			Map(m => m.SurfaceGravityG);
+			Map(m => m.Mass);
+			Map(m => m.DustMass);
+			Map(m => m.GasMass);
+			Map(m => m.EscapeVelocity);
+			Map(m => m.SurfaceAcceleration);
 			Map(m => m.CoreRadius);
 			Map(m => m.Radius);
-			Map(m => m.DensityGCC);
+			Map(m => m.Density);
 			Map(m => m.Type);
 			Map(m => m.IsTidallyLocked);
 			Map(m => m.IsEarthlike);
 			Map(m => m.IsHabitable);
 			Map(m => m.HasResonantPeriod);
 			Map(m => m.HasGreenhouseEffect);
-			Map(m => m.RMSVelocityCMSec);
+			Map(m => m.RMSVelocity);
 			Map(m => m.MolecularWeightRetained);
 			Map(m => m.VolatileGasInventory);
 			Map(m => m.BoilingPointWater);

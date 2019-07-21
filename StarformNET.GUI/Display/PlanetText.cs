@@ -74,7 +74,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetDensity(SatelliteBody planet)
         {
-            return String.Format("{0:0.00} g/cm3", planet.DensityGCC);
+            return String.Format("{0:0.00} g/cm3", planet.Density.GramsPerCubicCentimeter);
         }
 
         public static string GetBoilingPoint(SatelliteBody planet)
@@ -83,17 +83,17 @@ namespace Primoris.Universe.Stargen.Display
             {
                 return "-";
             }
-            return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.BoilingPointWater));
+            return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.BoilingPointWater.Kelvins));
         }
 
         public static string GetGreenhouseRise(SatelliteBody planet)
         {
-            return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.GreenhouseRiseTemperature));
+            return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.GreenhouseRiseTemperature.Kelvins));
         }
 
         public static string GetEscapeVelocity(SatelliteBody planet)
         {
-            return String.Format("{0:0.00} km/sec", UnitConversions.CMToKM(planet.EscapeVelocityCMSec));
+            return String.Format("{0:0.00} km/sec", UnitConversions.CMToKM(planet.EscapeVelocity.CentimetersPerSecond));
         }
 
         public static string GetPlanetTypeText(SatelliteBody planet)
@@ -122,7 +122,7 @@ namespace Primoris.Universe.Stargen.Display
             {
                 sb.Append(", Tidally Locked");
             }
-            if (planet.Atmosphere.SurfacePressure > 0 && planet.HasGreenhouseEffect)
+            if (planet.Atmosphere.SurfacePressure.Millibars > 0 && planet.HasGreenhouseEffect)
             {
                 sb.Append(", Runaway Greenhouse Effect");
             }
@@ -150,7 +150,7 @@ namespace Primoris.Universe.Stargen.Display
             {
                 return "Oh yeah";
             }
-            return String.Format("{0:0.00} G", planet.SurfaceGravityG);
+            return String.Format("{0:0.00} G", planet.SurfaceAcceleration.StandardGravity);
         }
 
         public static string GetHydrosphere(SatelliteBody planet)
@@ -170,12 +170,12 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetDayTemp(SatelliteBody planet)
         {
-            return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.DaytimeTemperature));
+            return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.DaytimeTemperature.Kelvins));
         }
 
         public static string GetNightTemp(SatelliteBody planet)
         {
-            return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.NighttimeTemperature));
+            return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.NighttimeTemperature.Kelvins));
         }
 
         public static string GetExoTemp(SatelliteBody planet)
@@ -190,7 +190,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetLengthofDayHours(SatelliteBody planet)
         {
-            if (planet.DayLength > 24 * 7)
+            if (planet.DayLength.Hours > 24 * 7)
             {
                 return string.Format("{0:0.0} days ({1:0.0} hours)", planet.DayLength / 24, planet.DayLength);
             }
@@ -199,7 +199,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetOrbitalPeriodDay(SatelliteBody planet)
         {
-            if (planet.OrbitalPeriod > 365 * 1.5)
+            if (planet.OrbitalPeriod.Days > 365 * 1.5)
             {
                 return String.Format("{0:0.00} ({0:0.0} days)", planet.OrbitalPeriod / 365, planet.OrbitalPeriod);
             }
@@ -213,7 +213,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetOrbitalDistanceAU(SatelliteBody planet)
         {
-            return String.Format("{0:0.00} AU", planet.SemiMajorAxisAU);
+            return String.Format("{0:0.00} AU", planet.SemiMajorAxis.AstronomicalUnits);
         }
 
         public static string GetPlanetNumber(SatelliteBody planet)
@@ -233,7 +233,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetMassStringEM(SatelliteBody planet)
         {
-            return String.Format("{0:0.00} EM", UnitConversions.SolarMassesToEarthMasses(planet.MassSM));
+            return String.Format("{0:0.00} EM", UnitConversions.SolarMassesToEarthMasses(planet.Mass.SolarMasses));
         }
 
         public static string GetSurfacePressureStringAtm(SatelliteBody planet)
@@ -242,7 +242,7 @@ namespace Primoris.Universe.Stargen.Display
             {
                 return "Uh, a lot";
             }
-            return String.Format("{0:0.000} atm", UnitConversions.MillibarsToAtm(planet.Atmosphere.SurfacePressure));
+            return String.Format("{0:0.000} atm", UnitConversions.MillibarsToAtm(planet.Atmosphere.SurfacePressure.Millibars));
         }
 
         public static string GetAtmoStringPP(SatelliteBody planet)
@@ -280,13 +280,13 @@ namespace Primoris.Universe.Stargen.Display
             var orderedGases = planet.Atmosphere.PoisonousGases.OrderByDescending(g => g.SurfacePressure).ToList();
             for (var i = 0; i < orderedGases.Count; i++)
             {
-                if (orderedGases[i].SurfacePressure > 1)
+                if (orderedGases[i].SurfacePressure.Millibars > 1)
                 {
                     str += String.Format("{0:0.0000}mb {1}", orderedGases[i].SurfacePressure, orderedGases[i].GasType.Symbol);
                 }
                 else
                 {
-                    var ppm = UnitConversions.MillibarsToPPM(orderedGases[i].SurfacePressure);
+                    var ppm = UnitConversions.MillibarsToPPM(orderedGases[i].SurfacePressure.Millibars);
                     str += String.Format("{0:0.0000}ppm {1}", ppm, orderedGases[i].GasType.Symbol);
                 }
                 if (i < orderedGases.Count - 1)
@@ -307,7 +307,7 @@ namespace Primoris.Universe.Stargen.Display
             {
                 return "None";
             }
-            if (planet.Atmosphere.SurfacePressure < 0.0005)
+            if (planet.Atmosphere.SurfacePressure.Millibars < 0.0005)
             {
                 return "Almost None";
             }

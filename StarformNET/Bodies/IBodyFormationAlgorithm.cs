@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
@@ -7,13 +8,13 @@ namespace Primoris.Universe.Stargen.Bodies
 		double CloudEccentricity { get; set; }
 		double GasDustRatio { get; set; }
 
-		IEnumerable<Seed> CreateSeeds(double stellarMassRatio,
-								double stellarLumRatio,
-								double innerDust,
-								double outerDust,
-								double outerPlanetLimit,
-								double dustDensityCoeff,
-								double semiMajorAxisAU,
-								double ecc);
+		IEnumerable<Seed> CreateSeeds(Mass stellarMassRatio,
+								Luminosity stellarLumRatio,
+								Length innerDust,
+								Length outerDust,
+								Length outerPlanetLimit,
+								Ratio dustDensityCoeff,
+								Length semiMajorAxisAU,
+								Ratio ecc);
 	}
 }

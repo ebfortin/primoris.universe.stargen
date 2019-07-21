@@ -4,6 +4,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using Primoris.Universe.Stargen.Astrophysics;
+using UnitsNet;
+
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
@@ -19,7 +21,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 			[TestMethod]
 			public void TestLuminosityToSpectral()
 			{
-				var st1 = StellarType.FromLuminosityAndRadius(0.16378798, 0.72014487);
+				var st1 = StellarType.FromLuminosityAndRadius(Luminosity.FromSolarLuminosities(0.16378798), Length.FromSolarRadiuses(0.72014487));
 				Console.WriteLine(st1.ToString());
 				Console.WriteLine("Mass = " + st1.Mass);
 				Console.WriteLine("Temperature = " + st1.Temperature);
@@ -35,14 +37,14 @@ namespace Primoris.Universe.Stargen.UnitTests
 				Console.WriteLine("Luminosity = " + st2.Luminosity);
 				Console.WriteLine("Radius = " + st2.Radius);
 
-				Assert.IsTrue(Math.Abs(st2.Temperature - 4327.0) <= 150.0);
+				Assert.IsTrue(Math.Abs(st2.Temperature.Kelvins - 4327.0) <= 150.0);
 			}
 
 			[TestCategory("StellarType Creation")]
 			[TestMethod]
 			public void TestTemperatureAndLuminosity()
 			{
-				StellarType st = StellarType.FromTemperatureAndLuminosity(20000.0, 2.0);
+				StellarType st = StellarType.FromTemperatureAndLuminosity(Temperature.FromKelvins(20000.0), Luminosity.FromSolarLuminosities(2.0));
 				Console.WriteLine(st.ToString());
 				Console.WriteLine(st.Luminosity);
 				Console.WriteLine(st.Mass);
@@ -57,7 +59,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 			[TestMethod]
 			public void TestTemperatureToSpectral()
 			{
-				var st1 = StellarType.FromTemperatureAndLuminosity(4417.3335, 0.17183004);
+				var st1 = StellarType.FromTemperatureAndLuminosity(Temperature.FromKelvins(4417.3335), Luminosity.FromSolarLuminosities(0.17183004));
 				Console.WriteLine(st1.ToString());
 				Console.WriteLine(st1.Temperature);
 				Console.WriteLine(st1.Luminosity);
@@ -69,7 +71,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				Console.WriteLine(st2.Temperature);
 				Console.WriteLine(st2.Luminosity);
 
-				Assert.IsTrue(Math.Abs(st2.Temperature - 4417.3335) <= 150.0);
+				Assert.IsTrue(Math.Abs(st2.Temperature.Kelvins - 4417.3335) <= 150.0);
 			}
 		}
 	}

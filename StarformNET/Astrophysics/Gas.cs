@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using UnitsNet;
 
 
 namespace Primoris.Universe.Stargen.Astrophysics
@@ -8,9 +9,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
 	public class Gas
 	{
 		public ChemType GasType { get; private set; }
-		public double SurfacePressure { get; private set; }
+		public Pressure SurfacePressure { get; private set; }
 
-		public Gas(ChemType gType, double pressure)
+		public Gas(ChemType gType, Pressure pressure)
 		{
 			GasType = gType;
 			SurfacePressure = pressure;

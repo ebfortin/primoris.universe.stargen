@@ -8,11 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="12.1.2" />
-    <PackageReference Include="GitVersionTask" Version="5.0.0-beta3-4">
+    <PackageReference Include="GitVersionTask" Version="5.0.0-beta5.40">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Management.Automation" Version="6.2.1" />
+    <PackageReference Include="System.Management.Automation" Version="7.0.0-preview.2" />
+    <PackageReference Include="UnitsNet" Version="4.32.0" />
   </ItemGroup>
 
   <ItemGroup>

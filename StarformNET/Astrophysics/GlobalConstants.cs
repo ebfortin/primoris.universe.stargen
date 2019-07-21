@@ -1,6 +1,10 @@
+using System;
+using UnitsNet;
+
+
 namespace Primoris.Universe.Stargen.Astrophysics
 {
-	using System;
+
 
 	// TODO destroy this motherfucker
 	public static class GlobalConstants
@@ -20,14 +24,15 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
 		public static double SUN_AGE_IN_YEARS = 4600000000;
 		public static double ECCENTRICITY_COEFF = 0.077;                       // Dole's was 0.077			
-		public static double PROTOPLANET_MASS = 1.0E-15;                     // Units of solar masses	
+		public static Mass PROTOPLANET_MASS = Mass.FromSolarMasses(1.0E-15);                     // Units of solar masses	
 		public static double CHANGE_IN_EARTH_ANG_VEL = -1.3E-15;                    // Units of radians/sec/year
 		public static double SOLAR_MASS_IN_GRAMS = 1.989E33;                    // Units of grams			
 		public static double SOLAR_MASS_IN_KILOGRAMS = 1.989E30;                    // Units of kg				
 		public static double EARTH_MASS_IN_GRAMS = 5.977E27;                    // Units of grams			
 		public static double EARTH_RADIUS = 6.378E8;                     // Units of cm				
 		public static double EARTH_DENSITY = 5.52;                        // Units of g/cc			
-		public static double KM_EARTH_RADIUS = 6378.0;                      // Units of km				
+		public static double KM_EARTH_RADIUS = 6378.0;                      // Units of km	
+		public static double KM_SUN_RADIUS = 695500.0;						// Sun radius in KM.
 		public static double EARTH_ACCELERATION = 980.7;                       // Units of cm/sec2 (was 981.0)
 		public static double EARTH_AXIAL_TILT = 23.4;                        // Units of degrees			
 		public static double EARTH_EXOSPHERE_TEMP = 1273.0;                      // Units of degrees Kelvin (should be 1773).

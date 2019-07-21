@@ -1,9 +1,13 @@
-﻿namespace Primoris.Universe.Stargen.Astrophysics
+﻿using System;
+using UnitsNet;
+
+namespace Primoris.Universe.Stargen.Astrophysics
 {
 	public interface IScienceThermodynamics
 	{
-		double GetBoilingPointWater(double surfpres);
-		double GetExosphereTemperature(double semiMajorAxisAu, double ecosphereRadiusAU, double sunTemperature);
+		Temperature GetBoilingPointWater(Pressure surfpres);
+
+		Temperature GetExosphereTemperature(Length semiMajorAxisAu, Length ecosphereRadiusAU, Temperature sunTemperature);
 
 		// TODO look up Fogg's eq.19. and write a summary
 		/// <summary>
@@ -13,7 +17,7 @@
 		/// <param name="orbitalRadius">Orbital radius in AU</param>
 		/// <param name="albedo"></param>
 		/// <returns>Temperature in Kelvin</returns>
-		public double GetEffectiveTemperature(double ecosphereRadius, double orbitalRadius, double albedo);
+		Temperature GetEffectiveTemperature(Length ecosphereRadius, Length orbitalRadius, Ratio albedo);
 
 		/// <summary>
 		/// Returns the rise in temperature produced by the greenhouse effect.
@@ -22,6 +26,16 @@
 		/// <param name="effectiveTemp">Effective temperature in units of Kelvin</param>
 		/// <param name="surfPressure"></param>
 		/// <returns>Rise in temperature in Kelvin</returns>
-		public double GetGreenhouseTemperatureRise(double opticalDepth, double effectiveTemp, double surfPressure);
+		TemperatureDelta GetGreenhouseTemperatureRise(Ratio opticalDepth, Temperature effectiveTemp, Pressure surfPressure);
+
+		// TODO figure out how this function differs from EffTemp, write summary
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="ecosphereRadius"></param>
+		/// <param name="orbitalRadius"></param>
+		/// <param name="albedo"></param>
+		/// <returns></returns>
+		Temperature GetEstimatedTemperature(Length ecosphereRadius, Length orbitalRadius, Ratio albedo);
 	}
 }

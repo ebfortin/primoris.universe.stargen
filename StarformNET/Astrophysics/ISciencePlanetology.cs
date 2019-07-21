@@ -1,11 +1,21 @@
 ﻿using Primoris.Universe.Stargen.Bodies;
+using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
 	public interface ISciencePlanetology
 	{
-		BodyType GetBodyType(double massSM, double gasMassSM, double molecularWeightRetained, double surfacePressure, double waterCoverFraction, double iceCoverFraction, double maxTemperature, double boilingPointWater, double surfaceTemperature);
-		double GetCoreRadius(double massSM, int orbitZone, bool giant);
+		BodyType GetBodyType(Mass massSM,
+					   Mass gasMassSM,
+					   Mass molecularWeightRetained,
+					   Pressure surfacePressure,
+					   Ratio waterCoverFraction,
+					   Ratio iceCoverFraction,
+					   Temperature maxTemperature,
+					   Temperature boilingPointWater,
+					   Temperature surfaceTemperature);
+
+		Length GetCoreRadius(Mass massSM, int orbitZone, bool giant);
 
 		/// <summary>
 		/// Returns the dimensionless quantity of optical depth, which is useful in determing the amount
@@ -14,7 +24,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <param name="molecularWeight"></param>
 		/// <param name="surfPressure"></param>
 		/// <returns></returns>
-		public double GetOpacity(double molecularWeight, double surfPressure);
+		Ratio GetOpacity(Mass molecularWeight, Pressure surfPressure);
 
 
 		/// <summary>
@@ -25,7 +35,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <param name="volatileGasInventory"></param>
 		/// <param name="planetRadius">Radius in km</param>
 		/// <returns>Fraction of the planet covered in water</returns>
-		public double GetWaterFraction(double volatileGasInventory, double planetRadius);
+		Ratio GetWaterFraction(Ratio volatileGasInventory, Length planetRadius);
 
 		/// <summary>
 		/// Returns the fraction of cloud cover available.
@@ -33,14 +43,14 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <remarks>
 		/// 
 		/// </remarks>
-		public double GetCloudFraction(double surfaceTemp, double smallestMWRetained, double equatorialRadius, double hydroFraction);
+		Ratio GetCloudFraction(Temperature surfaceTemp, Mass smallestMWRetained, Length equatorialRadius, Ratio hydroFraction);
 
 		/// <summary>
 		/// Given the surface temperature of a planet (in Kelvin), this function
 		///	returns the fraction of the planet's surface covered by ice.
 		/// </summary>
 		/// <returns>Fraction of the planet's surface covered in ice</returns>
-		public double GetIceFraction(double hydroFraction, double surfTemp);
+		Ratio GetIceFraction(Ratio hydroFraction, Temperature surfTemp);
 
 		/// <summary>
 		/// Calculates the albedo of a planetary body.
@@ -50,9 +60,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <param name="iceFraction">Fraction of planet covered by ice.</param>
 		/// <param name="surfPressure">Surface pressure in mb.</param>
 		/// <returns>Average overall albedo of the body.</returns>
-		public double GetAlbedo(double waterFraction, double cloudFraction, double iceFraction, double surfPressure);
+		Ratio GetAlbedo(Ratio waterFraction, Ratio cloudFraction, Ratio iceFraction, Pressure surfPressure);
 
-		bool TestHasGreenhouseEffect(double ecosphereRadius, double semiAxisMajorAU);
+		bool TestHasGreenhouseEffect(Length ecosphereRadius, Length semiAxisMajorAU);
 
 		/// <summary>
 		/// Checks if a planet's rotation is in resonance with its orbit
@@ -62,10 +72,27 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <param name="orbitalPeriodDays">The orbital period of the planet in days</param>
 		/// <param name="ecc">The eccentricity of the planet's orbit</param>
 		/// <returns>True if the planet is in a resonant orbit</returns>
-		bool TestHasResonantPeriod(double angularVelocityRadSec, double dayLength, double orbitalPeriod, double eccentricity);
-		bool TestIsEarthLike(double surfaceTemperature, double waterCoverFraction, double cloudCoverFraction, double iceCoverFraction, double surfacePressure, double surfaceGravityG, Breathability breathability, BodyType type);
-		bool TestIsGasGiant(double massSM, double gasMassSM, double molecularWeightRetained);
-		bool TestIsHabitable(double dayLength, double orbitalPeriod, Breathability breathability, bool hasResonantPeriod, bool isTidallyLocked);
-		bool TestIsTidallyLocked(double dayLength, double orbitalPeriod);
+		bool TestHasResonantPeriod(RotationalSpeed angularVelocityRadSec,
+							 Duration dayLength,
+							 Duration orbitalPeriod,
+							 Ratio eccentricity);
+		bool TestIsEarthLike(Temperature surfaceTemperature,
+					   Ratio waterCoverFraction,
+					   Ratio cloudCoverFraction,
+					   Ratio iceCoverFraction,
+					   Pressure surfacePressure,
+					   Acceleration surfaceGravityG,
+					   Breathability breathability,
+					   BodyType type);
+		bool TestIsGasGiant(Mass massSM,
+					  Mass gasMassSM,
+					  Mass molecularWeightRetained);
+		bool TestIsHabitable(Duration dayLength,
+					   Duration orbitalPeriod,
+					   Breathability breathability,
+					   bool hasResonantPeriod,
+					   bool isTidallyLocked);
+		bool TestIsTidallyLocked(Duration dayLength,
+						   Duration orbitalPeriod);
 	}
 }

@@ -1,4 +1,6 @@
-﻿namespace Primoris.Universe.Stargen.Astrophysics
+﻿using UnitsNet;
+
+namespace Primoris.Universe.Stargen.Astrophysics
 {
 	public interface IScienceDynamics
 	{
@@ -14,7 +16,7 @@
 		/// <param name="largeMassSM">Mass of the large mass in solar masses</param>
 		/// <param name="largeAgeYears">Age of the large mass in years</param>
 		/// <returns>Angular velocity in radians/sec</returns>
-		double GetAngularVelocity(double massSM, double radiusKM, double densityGCC, double semiMajorAxisAU, bool isGasGiant, double largeMassSM, double largeAgeYears);
+		RotationalSpeed GetAngularVelocity(Mass massSM, Length radiusKM, Density densityGCC, Length semiMajorAxisAU, bool isGasGiant, Mass largeMassSM, Duration largeAgeYears);
 
 		/// <summary>
 		/// Provides an approximation of angular velocity for non-tidally decelerated
@@ -24,7 +26,7 @@
 		/// <param name="radiusKM">Radius of the body in km</param>
 		/// <param name="isGasGiant">Is the body a gas giant?</param>
 		/// <returns>Angular velocity in rad/sec</returns>
-		double GetBaseAngularVelocity(double massSM, double radiusKM, bool isGasGiant);
+		RotationalSpeed GetBaseAngularVelocity(Mass massSM, Length radiusKM, bool isGasGiant);
 
 		/// <summary>
 		/// Provides an approximation of braking due to tidal forces as a ratio to the
@@ -36,7 +38,7 @@
 		/// <param name="semiMajorAxisAU">Semi-major axis of the body's orbit in AU</param>
 		/// <param name="largeMassSM">Mass of the large mass in solar masses</param>
 		/// <returns></returns>
-		double GetChangeInAngularVelocity(double densityGCC, double massSM, double radiusKM, double semiMajorAxisAU, double largeMassSM);
+		RotationalSpeed GetChangeInAngularVelocity(Density densityGCC, Mass massSM, Length radiusKM, Length semiMajorAxisAU, Mass largeMassSM);
 
 		/// <summary>
 		/// Returns escape velocity in cm/sec
@@ -44,7 +46,7 @@
 		/// <param name="mass">Mass in units of solar mass</param>
 		/// <param name="radius">Radius in km</param>
 		/// <returns></returns>
-		double GetEscapeVelocity(double massSM, double radius);
+		Speed GetEscapeVelocity(Mass massSM, Length radius);
 
 	}
 }

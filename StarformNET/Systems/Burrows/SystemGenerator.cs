@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Bodies.Burrows;
+using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Systems.Burrows
 {
@@ -31,10 +32,10 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 
 			var accrete = new Accrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);
 			double outer_planet_limit = GetOuterLimit(sun);
-			double outer_dust_limit = GetStellarDustLimit(sun.MassSM);
-			seedSystem = seedSystem ?? accrete.CreateSeeds(sun.MassSM,
-				sun.LuminositySM, 0.0, outer_dust_limit, outer_planet_limit,
-				genOptions.DustDensityCoeff);
+			double outer_dust_limit = GetStellarDustLimit(sun.Mass.SolarMasses);
+			seedSystem = seedSystem ?? accrete.CreateSeeds(sun.Mass,
+				sun.Luminosity, Length.FromAstronomicalUnits(0.0), Length.FromAstronomicalUnits(outer_dust_limit), Length.FromAstronomicalUnits(outer_planet_limit),
+				Ratio.FromDecimalFractions(genOptions.DustDensityCoeff), Length.FromAstronomicalUnits(double.NaN), Ratio.FromDecimalFractions(double.NaN));
 
 			// Todo: swing that to Star.
 			var planets = GeneratePlanets(sun, seedSystem, useRandomTilt, genOptions);
@@ -80,7 +81,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			// The following is Holman & Wiegert's equation 1 from
 			// Long-Term Stability of Planets in Binary Systems
 			// The Astronomical Journal, 117:621-628, Jan 1999
-			double m1 = star.MassSM;
+			double m1 = star.Mass.SolarMasses;
 			double m2 = star.BinaryMass;
 			double mu = m2 / (m1 + m2);
 			double e = star.SemiMajorAxisAU;

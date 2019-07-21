@@ -9,6 +9,9 @@ using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using Primoris.Universe.Stargen.Astrophysics;
 
+using Units = UnitsNet;
+
+
 namespace Primoris.Universe.Stargen.Cmdlets
 {
 	public class StellarTypeConverter : DefaultTypeConverter
@@ -33,10 +36,10 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			Map(m => m.Name);
 			Map(m => m.Age);
 			Map(m => m.Life);
-			Map(m => m.EcosphereRadiusAU);
-			Map(m => m.LuminositySM);
-			Map(m => m.MassSM);
-			Map(m => m.RadiusSM);
+			Map(m => m.EcosphereRadius);
+			Map(m => m.Luminosity);
+			Map(m => m.Mass);
+			Map(m => m.Radius);
 			Map(m => m.Temperature);
 			Map(m => m.SemiMajorAxisAU);
 			Map(m => m.Eccentricity);
@@ -98,7 +101,10 @@ namespace Primoris.Universe.Stargen.Cmdlets
         {
             StellarType st = StellarType.FromString(StarStellarType);
             if (!double.IsNaN(Mass) || !double.IsNaN(Luminosity) || !double.IsNaN(Temperature) || !double.IsNaN(Radius))
-                st.Change(Mass, Luminosity, Temperature, Radius);
+                st.Change(Units.Mass.FromSolarMasses(Mass),
+						  Units.Luminosity.FromSolarLuminosities(Luminosity),
+						  Units.Temperature.FromKelvins(Temperature),
+						  Units.Length.FromSolarRadiuses(Radius));
 
             if (Name == String.Empty)
             {
