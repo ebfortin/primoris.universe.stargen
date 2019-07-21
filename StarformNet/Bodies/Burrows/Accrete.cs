@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Primoris.Universe.Stargen.Astrophysics;
+using UnitsNet;
+
 
 namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
@@ -12,7 +14,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			internal InnerSeed NextBody { get; set; } = null;
 			internal InnerSeed FirstSatellite { get; set; } = null;
 
-			public InnerSeed(double a, double e, double mass, double dMass, double gMass) : base(a, e, mass, dMass, gMass)
+			public InnerSeed(Length a, Ratio e, Mass mass, Mass dMass, Mass gMass) : base(a, e, mass, dMass, gMass)
 			{
 			}
 		}
@@ -48,37 +50,38 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		/// <param name="outerPlanetLimit"></param>
 		/// <param name="dustDensityCoeff"></param>
 		/// <returns></returns>
-		public IEnumerable<Seed> CreateSeeds(double stellarMassRatio,
-											 double stellarLumRatio,
-											 double innerDust,
-											 double outerDust,
-											 double outerPlanetLimit,
-											 double dustDensityCoeff,
-											 double semiMajorAxisAU = double.NaN,
-											 double ecc = double.NaN)
+		public IEnumerable<Seed> CreateSeeds(Mass stellarMassRatio,
+										Luminosity stellarLumRatio,
+										Length innerDust,
+										Length outerDust,
+										Length outerPlanetLimit,
+										Ratio dustDensityCoeff,
+										Length semiMajorAxisAU,
+										Ratio ecc)
 		{
 			SetInitialConditions(innerDust, outerDust);
 
-			double planet_inner_bound = NearestPlanet(stellarMassRatio);
-			double planet_outer_bound = outerPlanetLimit == 0
+			Length planet_inner_bound = NearestPlanet(stellarMassRatio);
+			Length planet_outer_bound = outerPlanetLimit.AstronomicalUnits == 0.0
 				? FarthestPlanet(stellarMassRatio)
 				: outerPlanetLimit;
 
 			while (_dustLeft)
 			{
-				double a, e;
-				a = double.IsNaN(semiMajorAxisAU) ? Utilities.RandomNumber(planet_inner_bound, planet_outer_bound) : semiMajorAxisAU;
-				e = double.IsNaN(ecc) ? Utilities.RandomEccentricity() : ecc;
+				Length a;
+				Ratio e;
+				a = semiMajorAxisAU == Length.Zero ? Length.FromAstronomicalUnits(Utilities.RandomNumber(planet_inner_bound.AstronomicalUnits, planet_outer_bound.AstronomicalUnits)) : semiMajorAxisAU;
+				e = ecc == Ratio.Zero ? Ratio.FromDecimalFractions(Utilities.RandomEccentricity()) : ecc;
 
-				double mass = GlobalConstants.PROTOPLANET_MASS;
-				double dust_mass = 0;
-				double gas_mass = 0;
+				Mass mass = GlobalConstants.PROTOPLANET_MASS;
+				Mass dust_mass = Mass.FromSolarMasses(0.0);
+				Mass gas_mass = Mass.FromSolarMasses(0.0);
 
 
-				if (DustAvailable(InnerEffectLimit(a, e, mass), OuterEffectLimit(a, e, mass)))
+				if (DustAvailable(InnerEffectLimit(a.AstronomicalUnits, e.DecimalFractions, mass.SolarMasses), OuterEffectLimit(a.AstronomicalUnits, e.DecimalFractions, mass.SolarMasses)))
 				{
-					_dustDensity = dustDensityCoeff * Math.Sqrt(stellarMassRatio) * Math.Exp(-GlobalConstants.ALPHA * Math.Pow(a, 1.0 / GlobalConstants.N));
-					double crit_mass = CriticalLimit(a, e, stellarLumRatio);
+					_dustDensity = (dustDensityCoeff * Math.Sqrt(stellarMassRatio.SolarMasses) * Math.Exp(-GlobalConstants.ALPHA * Math.Pow(a.AstronomicalUnits, 1.0 / GlobalConstants.N))).DecimalFractions;
+					Mass crit_mass = Mass.FromSolarMasses(CriticalLimit(a.AstronomicalUnits, e.DecimalFractions, stellarLumRatio.SolarLuminosities));
 					AccreteDust(ref mass, ref dust_mass, ref gas_mass, a, e, crit_mass, planet_inner_bound, planet_outer_bound);
 
 					dust_mass += GlobalConstants.PROTOPLANET_MASS;
@@ -117,15 +120,15 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			return seedList;
 		}
 
-		private void SetInitialConditions(double inner_limit_of_dust, double outer_limit_of_dust)
+		private void SetInitialConditions(Length inner_limit_of_dust, Length outer_limit_of_dust)
 		{
 			_histHead = new Generation();
 
 			_planetHead = null;
 			_dustHead = new DustRecord();
 			_dustHead.NextBand = null;
-			_dustHead.OuterEdge = outer_limit_of_dust;
-			_dustHead.InnerEdge = inner_limit_of_dust;
+			_dustHead.OuterEdge = outer_limit_of_dust.AstronomicalUnits;
+			_dustHead.InnerEdge = inner_limit_of_dust.AstronomicalUnits;
 			_dustHead.DustPresent = true;
 			_dustHead.GasPresent = true;
 			_dustLeft = true;
@@ -136,14 +139,14 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			_histHead.Next = _histHead;
 		}
 
-		private double NearestPlanet(double stell_mass_ratio)
+		private Length NearestPlanet(Mass stell_mass_ratio)
 		{
-			return 0.3 * Math.Pow(stell_mass_ratio, 1.0 / 3.0);
+			return Length.FromAstronomicalUnits(0.3 * Math.Pow(stell_mass_ratio.SolarMasses, 1.0 / 3.0));
 		}
 
-		private double FarthestPlanet(double stell_mass_ratio)
+		private Length FarthestPlanet(Mass stell_mass_ratio)
 		{
-			return 50.0 * Math.Pow(stell_mass_ratio, 1.0 / 3.0);
+			return Length.FromAstronomicalUnits(50.0 * Math.Pow(stell_mass_ratio.SolarMasses, 1.0 / 3.0));
 		}
 
 		private double InnerEffectLimit(double a, double e, double mass)
@@ -184,7 +187,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			return dust_here;
 		}
 
-		private void UpdateDustLanes(double min, double max, double mass, double crit_mass, double body_inner_bound, double body_outer_bound)
+		private void UpdateDustLanes(double min, double max, Mass mass, Mass crit_mass, Length body_inner_bound, Length body_outer_bound)
 		{
 			bool gas;
 			DustRecord node1 = null;
@@ -288,7 +291,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			node1 = _dustHead;
 			while (node1 != null)
 			{
-				if (node1.DustPresent && node1.OuterEdge >= body_inner_bound && node1.InnerEdge <= body_outer_bound)
+				if (node1.DustPresent && node1.OuterEdge >= body_inner_bound.AstronomicalUnits && node1.InnerEdge <= body_outer_bound.AstronomicalUnits)
 				{
 					_dustLeft = true;
 				}
@@ -307,12 +310,12 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			}
 		}
 
-		private double CollectDust(double last_mass, ref double new_dust, ref double new_gas, double a, double e, double crit_mass, ref DustRecord dust_band)
+		private Mass CollectDust(Mass last_mass, ref Mass new_dust, ref Mass new_gas, Length a, Ratio e, Mass crit_mass, ref DustRecord dust_band)
 		{
-			double temp = last_mass / (1.0 + last_mass);
+			double temp = last_mass.SolarMasses / (1.0 + last_mass.SolarMasses);
 			_reducedMass = Math.Pow(temp, 1.0 / 4.0);
-			_rInner = InnerEffectLimit(a, e, _reducedMass);
-			_rOuter = OuterEffectLimit(a, e, _reducedMass);
+			_rInner = InnerEffectLimit(a.AstronomicalUnits, e.DecimalFractions, _reducedMass);
+			_rOuter = OuterEffectLimit(a.AstronomicalUnits, e.DecimalFractions, _reducedMass);
 
 			if (_rInner < 0.0)
 			{
@@ -321,7 +324,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			if (dust_band == null)
 			{
-				return 0.0;
+				return Mass.FromSolarMasses(0.0);
 			}
 			else
 			{
@@ -369,16 +372,16 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					}
 					width = width - temp2;
 
-					temp = 4.0 * Math.PI * Math.Pow(a, 2.0) * _reducedMass * (1.0 - e * (temp1 - temp2) / bandwidth);
+					temp = 4.0 * Math.PI * Math.Pow(a.AstronomicalUnits, 2.0) * _reducedMass * (1.0 - e.DecimalFractions * (temp1 - temp2) / bandwidth);
 					double volume = temp * width;
 
-					double new_mass = volume * mass_density;
-					new_gas = volume * gas_density;
+					Mass new_mass = Mass.FromSolarMasses(volume * mass_density);
+					new_gas = Mass.FromSolarMasses(volume * gas_density);
 					new_dust = new_mass - new_gas;
 
-					double next_dust = 0;
-					double next_gas = 0;
-					double next_mass = CollectDust(last_mass, ref next_dust, ref next_gas, a, e, crit_mass, ref dust_band.NextBand);
+					Mass next_dust = Mass.FromSolarMasses(0.0);
+					Mass next_gas = Mass.FromSolarMasses(0.0);
+					Mass next_mass = CollectDust(last_mass, ref next_dust, ref next_gas, a, e, crit_mass, ref dust_band.NextBand);
 
 					new_gas = new_gas + next_gas;
 					new_dust = new_dust + next_dust;
@@ -395,10 +398,10 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			return GlobalConstants.B * Math.Pow(temp, -0.75);
 		}
 
-		private void AccreteDust(ref double seed_mass, ref double new_dust, ref double new_gas, double a, double e, double crit_mass, double body_inner_bound, double body_outer_bound)
+		private void AccreteDust(ref Mass seed_mass, ref Mass new_dust, ref Mass new_gas, Length a, Ratio e, Mass crit_mass, Length body_inner_bound, Length body_outer_bound)
 		{
-			double new_mass = seed_mass;
-			double temp_mass;
+			Mass new_mass = seed_mass;
+			Mass temp_mass;
 
 			do
 			{
@@ -411,10 +414,10 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			UpdateDustLanes(_rInner, _rOuter, seed_mass, crit_mass, body_inner_bound, body_outer_bound);
 		}
 
-		private bool DoMoons(InnerSeed planet, double mass, double critMass, double dustMass, double gasMass)
+		private bool DoMoons(InnerSeed planet, Mass mass, Mass critMass, Mass dustMass, Mass gasMass)
 		{
 			bool finished = false;
-			double existingMass = 0.0;
+			Mass existingMass = Mass.FromSolarMasses(0.0);
 
 			if (planet.FirstSatellite != null)
 			{
@@ -426,15 +429,15 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			if (mass < critMass)
 			{
-				if (mass * GlobalConstants.SUN_MASS_IN_EARTH_MASSES < 2.5 && mass * GlobalConstants.SUN_MASS_IN_EARTH_MASSES > .0001 && existingMass < planet.Mass * .05)
+				if (mass.EarthMasses < 2.5 && mass.EarthMasses > .0001 && existingMass < planet.Mass * .05)
 				{
-					InnerSeed moon = new InnerSeed(0, 0, mass, dustMass, gasMass);
+					InnerSeed moon = new InnerSeed(Length.FromMeters(0.0), Ratio.FromDecimalFractions(0.0), mass, dustMass, gasMass);
 
 					if (moon.DustMass + moon.GasMass > planet.DustMass + planet.GasMass)
 					{
-						double tempDust = planet.DustMass;
-						double tempGas = planet.GasMass;
-						double tempMass = planet.Mass;
+						Mass tempDust = planet.DustMass;
+						Mass tempGas = planet.GasMass;
+						Mass tempMass = planet.Mass;
 
 						planet.DustMass = moon.DustMass;
 						planet.GasMass = moon.GasMass;
@@ -476,28 +479,28 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			return finished;
 		}
 
-		private double GetNewEccentricity(Seed the_planet, double e, double a, double mass, double newA)
+		private Ratio GetNewEccentricity(Seed the_planet, Ratio e, Length a, Mass mass, Length newA)
 		{
-			var newE = the_planet.Mass * Math.Sqrt(the_planet.SemiMajorAxisAU) * Math.Sqrt(1.0 - Math.Pow(the_planet.Eccentricity, 2.0));
-			newE = newE + mass * Math.Sqrt(a) * Math.Sqrt(Math.Sqrt(1.0 - Math.Pow(e, 2.0)));
-			newE = newE / ((the_planet.Mass + mass) * Math.Sqrt(newA));
+			var newE = the_planet.Mass.SolarMasses * Math.Sqrt(the_planet.SemiMajorAxis.AstronomicalUnits) * Math.Sqrt(1.0 - Math.Pow(the_planet.Eccentricity.Value, 2.0));
+			newE = newE + mass.SolarMasses * Math.Sqrt(a.AstronomicalUnits) * Math.Sqrt(Math.Sqrt(1.0 - Math.Pow(e.Value, 2.0)));
+			newE = newE / ((the_planet.Mass.SolarMasses + mass.SolarMasses) * Math.Sqrt(newA.AstronomicalUnits));
 			newE = 1.0 - Math.Pow(newE, 2.0);
 			if (newE < 0.0 || newE >= 1.0)
 			{
 				newE = 0.0;
 			}
-			return Math.Sqrt(newE);
+			return Ratio.FromDecimalFractions(Math.Sqrt(newE));
 		}
 
-		private void CoalescePlanetesimals(double a,
-									 double e,
-									 double mass,
-									 double critMass,
-									 double dustMass,
-									 double gasMass,
-									 double stellLuminosityRatio,
-									 double bodyInnerBound,
-									 double bodyOuterBound,
+		private void CoalescePlanetesimals(Length a,
+									 Ratio e,
+									 Mass mass,
+									 Mass critMass,
+									 Mass dustMass,
+									 Mass gasMass,
+									 Luminosity stellLuminosityRatio,
+									 Length bodyInnerBound,
+									 Length bodyOuterBound,
 									 bool doMoons)
 		{
 			// First we try to find an existing planet with an over-lapping orbit.
@@ -507,33 +510,33 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			var finished = false;
 			for (thePlanet = _planetHead; thePlanet != null; thePlanet = thePlanet.NextBody)
 			{
-				double diff = thePlanet.SemiMajorAxisAU - a;
-				double dist1;
-				double dist2;
+				Length diff = thePlanet.SemiMajorAxis - a;
+				Length dist1;
+				Length dist2;
 
-				if (diff > 0.0)
+				if (diff.AstronomicalUnits > 0.0)
 				{
-					dist1 = a * (1.0 + e) * (1.0 + _reducedMass) - a;
+					dist1 = a * (1.0 + e.Value) * (1.0 + _reducedMass) - a;
 					/* x aphelion	 */
-					_reducedMass = Math.Pow(thePlanet.Mass / (1.0 + thePlanet.Mass), 1.0 / 4.0);
-					dist2 = thePlanet.SemiMajorAxisAU
-						- thePlanet.SemiMajorAxisAU * (1.0 - thePlanet.Eccentricity) * (1.0 - _reducedMass);
+					_reducedMass = Math.Pow(thePlanet.Mass.SolarMasses / (1.0 + thePlanet.Mass.SolarMasses), 1.0 / 4.0);
+					dist2 = thePlanet.SemiMajorAxis - thePlanet.SemiMajorAxis * (1.0 - thePlanet.Eccentricity.Value) * (1.0 - _reducedMass);
 				}
 				else
 				{
-					dist1 = a - a * (1.0 - e) * (1.0 - _reducedMass);
+					dist1 = a - a * (1.0 - e.Value) * (1.0 - _reducedMass);
 					/* x perihelion */
-					_reducedMass = Math.Pow(thePlanet.Mass / (1.0 + thePlanet.Mass), 1.0 / 4.0);
-					dist2 = thePlanet.SemiMajorAxisAU * (1.0 + thePlanet.Eccentricity) * (1.0 + _reducedMass)
-						- thePlanet.SemiMajorAxisAU;
+					_reducedMass = Math.Pow(thePlanet.Mass.SolarMasses / (1.0 + thePlanet.Mass.SolarMasses), 1.0 / 4.0);
+					dist2 = thePlanet.SemiMajorAxis * (1.0 + thePlanet.Eccentricity.Value) * (1.0 + _reducedMass)
+						- thePlanet.SemiMajorAxis;
 				}
 
 				// Did the planetesimal collide with this planet?
-				if (Math.Abs(diff) <= Math.Abs(dist1) || Math.Abs(diff) <= Math.Abs(dist2))
+				if (Math.Abs(diff.Value) <= Math.Abs(dist1.Value) || Math.Abs(diff.Value) <= Math.Abs(dist2.Value))
 				{
-					double new_dust = 0;
-					double new_gas = 0;
-					double new_a = (thePlanet.Mass + mass) / (thePlanet.Mass / thePlanet.SemiMajorAxisAU + mass / a);
+					Mass new_dust = Mass.FromSolarMasses(0.0);
+					Mass new_gas = Mass.FromSolarMasses(0.0);
+					Length new_a = Length.FromAstronomicalUnits((thePlanet.Mass.SolarMasses + mass.SolarMasses) 
+														/ (thePlanet.Mass.SolarMasses / thePlanet.SemiMajorAxis.AstronomicalUnits + mass.SolarMasses / a.AstronomicalUnits));
 
 					e = GetNewEccentricity(thePlanet, e, a, mass, new_a);
 
@@ -553,11 +556,12 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 						//    new_a, e);
 
 						var newMass = thePlanet.Mass + mass;
+						// TODO: Why is a solar luminosity ratio passed as a Mass for critical mass?
 						AccreteDust(ref newMass, ref new_dust, ref new_gas,
-									 new_a, e, stellLuminosityRatio,
+									 new_a, e, Mass.FromSolarMasses(stellLuminosityRatio.SolarLuminosities),
 									 bodyInnerBound, bodyOuterBound);
 
-						thePlanet.SemiMajorAxisAU = new_a;
+						thePlanet.SemiMajorAxis = new_a;
 						thePlanet.Eccentricity = e;
 						thePlanet.Mass = newMass;
 						thePlanet.DustMass += dustMass + new_dust;
@@ -567,7 +571,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 							thePlanet.IsGasGiant = true;
 						}
 
-						while (thePlanet.NextBody != null && thePlanet.NextBody.SemiMajorAxisAU < new_a)
+						while (thePlanet.NextBody != null && thePlanet.NextBody.SemiMajorAxis < new_a)
 						{
 							nextPlanet = thePlanet.NextBody;
 
@@ -614,7 +618,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					_planetHead = thePlanet;
 					thePlanet.NextBody = null;
 				}
-				else if (a < _planetHead.SemiMajorAxisAU)
+				else if (a < _planetHead.SemiMajorAxis)
 				{
 					thePlanet.NextBody = _planetHead;
 					_planetHead = thePlanet;
@@ -627,7 +631,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				else
 				{
 					nextPlanet = _planetHead;
-					while (nextPlanet != null && nextPlanet.SemiMajorAxisAU < a)
+					while (nextPlanet != null && nextPlanet.SemiMajorAxis < a)
 					{
 						prevPlanet = nextPlanet;
 						nextPlanet = nextPlanet.NextBody;

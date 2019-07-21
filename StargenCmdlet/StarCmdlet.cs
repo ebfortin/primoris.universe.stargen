@@ -56,16 +56,16 @@ namespace Primoris.Universe.Stargen.Cmdlets
 		public string Name { get; set; } = String.Empty;
 
 		[Parameter]
-		public double Luminosity { get; set; } = double.NaN;
+		public double Luminosity { get; set; } = 0.0;
 
 		[Parameter]
-		public double Mass { get; set; } = double.NaN;
+		public double Mass { get; set; } = 0.0;
 
 		[Parameter]
-		public double Temperature { get; set; } = double.NaN;
+		public double Temperature { get; set; } = 0.0;
 
 		[Parameter]
-		public double Radius { get; set; } = double.NaN;
+		public double Radius { get; set; } = 0.0;
 
 		[Parameter]
 		public string StarStellarType { get; set; } = "G2V";
@@ -100,7 +100,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
         protected Star GenerateStar()
         {
             StellarType st = StellarType.FromString(StarStellarType);
-            if (!double.IsNaN(Mass) || !double.IsNaN(Luminosity) || !double.IsNaN(Temperature) || !double.IsNaN(Radius))
+            if (!(Mass == 0.0) || !(Luminosity == 0.0)  || !(Temperature == 0.0) || !(Radius == 0.0))
                 st.Change(Units.Mass.FromSolarMasses(Mass),
 						  Units.Luminosity.FromSolarLuminosities(Luminosity),
 						  Units.Temperature.FromKelvins(Temperature),

@@ -349,8 +349,10 @@ namespace Primoris.Universe.Stargen.UnitTests
 
             private SatelliteBody GetMockPlanet(Func<Gas[]> mockAtmoGen)
             {
-                var planet = new Planet(new Star(), new Atmosphere(null, mockAtmoGen().ToList()));
-                return planet;
+                var planet = new Planet(new Star(), mockAtmoGen());
+
+				//planet.RecalculateGases(mockAtmoGen());
+				return planet;
             }
 
             /*[TestCategory("Breathability")]

@@ -578,7 +578,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 							  Density bodyDensity,
 							  Density satelliteDensity)
 		{
-			return 1.26 * bodyRadius * Math.Pow(bodyDensity / satelliteDensity, 1.0 / 3.0) / 1000.0;
+			return 1.26 * bodyRadius * Math.Pow(bodyDensity / satelliteDensity, 1.0 / 3.0);
 		}
 
 		public bool TestIsHabitable(Duration dayLength,

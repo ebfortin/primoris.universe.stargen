@@ -144,25 +144,29 @@ namespace Primoris.Universe.Stargen.UnitTests
 				{
 					{ "CH4", 0.00000 },
 					{ "NH3", 0.00000 },
-					{ "H2O", 439.75570 },
-					{ "Ne", 23.73352 },
-					{ "Ar", 89996.73270 },
-					{ "CO2", 1315.66719 },
+					{ "H2O", 16.2157413960053 },
+					{ "Ne", 1.3778591536954556 },
+					{ "Ar", 83004.30383977713 },
+					{ "CO2", 1800.2575437308321 },
 					{ "O3", 0.00000 },
 					{ "Br", 0.00000 },
-					{ "Kr", 193.90706 },
-					{ "I", 4.79257 },
-					{ "Xe", 25.41126 }
+					{ "Kr", 3693.1965231241725 },
+					{ "I", 491.99131741143265 },
+					{ "Xe", 2992.6571754067277 }
 				};
 
                 var planet = GetTestPlanetAtmosphere();
 
                 Assert.AreEqual(expected.Count, planet.Atmosphere.Composition.Count);
 
+				double surfPres = 0.0;
                 foreach (var gas in planet.Atmosphere.Composition)
                 {
                     Assert.AreEqual(expected[gas.GasType.Symbol], gas.SurfacePressure.Millibars, DELTA);
-                }
+					surfPres += gas.SurfacePressure.Millibars;
+				}
+
+				Assert.AreEqual(planet.Atmosphere.SurfacePressure.Millibars, surfPres, DELTA);
             }
 
             [TestCategory("Atmosphere")]

@@ -64,8 +64,8 @@ namespace Primoris.Universe.Stargen.UnitTests
 				Console.WriteLine(st1.Temperature);
 				Console.WriteLine(st1.Luminosity);
 
-				Assert.AreEqual(4417.3335, st1.Temperature);
-				Assert.AreEqual(0.17183004, st1.Luminosity);
+				Assert.AreEqual(4417.3335, st1.Temperature.Kelvins);
+				Assert.AreEqual(0.17183004, st1.Luminosity.SolarLuminosities);
 
 				var st2 = StellarType.FromString(st1.ToString());
 				Console.WriteLine(st2.Temperature);

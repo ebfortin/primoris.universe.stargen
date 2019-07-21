@@ -33,6 +33,16 @@ namespace Primoris.Universe.Stargen.Bodies
 			Breathability = CalculateBreathability();
 		}
 
+
+		public Atmosphere(SatelliteBody planet, ChemType[] gasTable)
+		{
+			Planet = planet;
+			SurfacePressure = planet.Astro.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
+			CalculateGases(planet, gasTable);
+
+			Breathability = CalculateBreathability();
+		}
+
 		public Atmosphere(SatelliteBody planet, IEnumerable<Gas> gases)
 		{
 			Planet = planet;
@@ -55,14 +65,14 @@ namespace Primoris.Universe.Stargen.Bodies
 			Breathability = CalculateBreathability();
 		}
 
-		public Atmosphere(SatelliteBody planet, ChemType[] gasTable)
+		/*public Atmosphere(SatelliteBody planet)
 		{
 			Planet = planet;
 			SurfacePressure = planet.Astro.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
 			CalculateGases(planet, gasTable);
 
 			Breathability = CalculateBreathability();
-		}
+		}*/
 
 		/// <summary>
 		/// Returns the breathability state of the planet's atmosphere.
@@ -116,6 +126,11 @@ namespace Primoris.Universe.Stargen.Bodies
 			CalculateGases(Planet, gasTable);
 		}
 
+		/// <summary>
+		/// TODO: Validate with StarformNET that the gas composition is the same. 
+		/// </summary>
+		/// <param name="planet"></param>
+		/// <param name="gasTable"></param>
 		private void CalculateGases(SatelliteBody planet, ChemType[] gasTable = null)
 		{
 			gasTable ??= ChemType.Load();
@@ -144,7 +159,6 @@ namespace Primoris.Universe.Stargen.Bodies
 					double abund, react;
 					CheckForSpecialRules(out abund, out react, pressure, planet, gasTable[i]);
 
-					// TODO: Switch Environment.RMSVelocity for a particular gas to IBodyPhysics.
 					Speed vrms = Planet.Astro.Physics.GetRMSVelocity(gasTable[i].Weight, planet.ExosphereTemperature);
 					double pvrms = Math.Pow(1 / (1 + vrms / planet.EscapeVelocity), sun.Age.Years365 / 1e9);
 

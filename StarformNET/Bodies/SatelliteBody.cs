@@ -27,23 +27,23 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		#region Orbit data
 
-		public Length SemiMajorAxis { get; protected set; }
+		public Length SemiMajorAxis { get; protected set; } = Length.FromAstronomicalUnits(1.0);
 
 		/// <summary>
 		/// Eccentricity of the body's orbit.
 		/// </summary>
-		public Ratio Eccentricity { get; protected set; }
+		public Ratio Eccentricity { get; protected set; } = Ratio.FromDecimalFractions(0.0);
 
 		/// <summary>
 		/// Axial tilt of the planet expressed in degrees.
 		/// </summary>
-		public Angle AxialTilt { get; protected set; }
+		public Angle AxialTilt { get; protected set; } = Angle.FromDegrees(0.0);
 
 		/// <summary>
 		/// Orbital zone the planet is located in. Value is 1, 2, or 3. Used in
 		/// radius and volatile inventory calculations.
 		/// </summary>
-		public int OrbitZone { get; protected set; }
+		public int OrbitZone { get; protected set; } = 1;
 
 		/// <summary>
 		/// The length of the planet's year in days.
@@ -92,19 +92,15 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		//public double EscapeVelocityCMSec { get; protected set; }
 
-		public Speed EscapeVelocity { get; protected set; }
-
 		/// <summary>
 		/// The gravitational acceleration felt at the surface of the planet. Given in cm/sec^2
 		/// </summary>
-		//public double SurfaceAccelerationCMSec2 { get; protected set; }
+		public Speed EscapeVelocity { get; protected set; }
 
-		public Acceleration SurfaceAcceleration { get; protected set; }
-		
 		/// <summary>
 		/// The gravitational acceleration felt at the surface of the planet. Given as a fraction of Earth gravity (Gs).
 		/// </summary>
-		//public Acceleration SurfaceGravityG { get; protected set; }
+		public Acceleration SurfaceAcceleration { get; protected set; }
 
 		/// <summary>
 		/// The radius of the planet's core in km.
@@ -328,9 +324,19 @@ namespace Primoris.Universe.Stargen.Bodies
 			Astro = phys;
 
 			Star = star;
+
 			Check();
 		}
 
+		public SatelliteBody(IScienceAstrophysics phys, Star star, Gas[] atmosComp)
+		{
+			Astro = phys;
+			Star = star;
+
+			Atmosphere = new Atmosphere(this, atmosComp);
+
+			Check();
+		} 
 
 		public SatelliteBody(IScienceAstrophysics phys, Seed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
 		{

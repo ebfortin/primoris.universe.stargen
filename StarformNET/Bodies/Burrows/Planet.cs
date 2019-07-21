@@ -66,6 +66,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 												   genOptions)
 		{ }
 
+		public Planet(Star star, Gas[] atmosComp) : base(BurrowsPhysics, star, atmosComp) { }
 
 		public Planet(Star star) : base(BurrowsPhysics, star) { }
 

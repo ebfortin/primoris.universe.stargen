@@ -35,8 +35,8 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			double outer_dust_limit = GetStellarDustLimit(sun.Mass.SolarMasses);
 			seedSystem = seedSystem ?? accrete.CreateSeeds(sun.Mass,
 				sun.Luminosity, Length.FromAstronomicalUnits(0.0), Length.FromAstronomicalUnits(outer_dust_limit), Length.FromAstronomicalUnits(outer_planet_limit),
-				Ratio.FromDecimalFractions(genOptions.DustDensityCoeff), Length.FromAstronomicalUnits(double.NaN), Ratio.FromDecimalFractions(double.NaN));
-
+				Ratio.FromDecimalFractions(genOptions.DustDensityCoeff), Length.Zero, Ratio.Zero);
+			
 			// Todo: swing that to Star.
 			var planets = GeneratePlanets(sun, seedSystem, useRandomTilt, genOptions);
 			return new StellarSystem()

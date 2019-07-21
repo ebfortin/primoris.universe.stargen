@@ -18,7 +18,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
 		public Star() : this(Mass.FromSolarMasses(Utilities.RandomNumber(0.7, 1.4))) { }
 
-		public Star(Mass mass) : this(mass, Luminosity.FromSolarLuminosities(0.0), Duration.FromYears365(double.NaN)) { }
+		public Star(Mass mass) : this(mass, Luminosity.FromSolarLuminosities(0.0), Duration.FromYears365(double.MaxValue)) { }
 
 		public Star(Mass mass, Luminosity lum, Duration age)
 		{
@@ -37,7 +37,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			//EcosphereRadiusAU = Math.Sqrt(lum);
 			Life = Duration.FromYears365(1.0E10 * (Mass.SolarMasses / Luminosity.SolarLuminosities));
 
-			if (double.IsNaN(age.Years365))
+			if (age.Years365 == double.MaxValue)
 				Age = Duration.FromYears365(Utilities.RandomNumber(MinSunAge.Years365, Life < MaxSunAge ? Life.Years365 : MaxSunAge.Years365));
 			else
 				Age = age;
