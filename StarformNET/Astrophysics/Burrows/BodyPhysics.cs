@@ -112,7 +112,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		{
 			//return Environment.RMSVelocity(GlobalConstants.MOL_NITROGEN, exoTemp);
 
-			return Speed.FromMetersPerSecond(Math.Sqrt((3.0 * GlobalConstants.MOLAR_GAS_CONST * exoTemp.Kelvins) / molecularWeight.Grams) * GlobalConstants.CM_PER_METER);
+			return Speed.FromMetersPerSecond(Math.Sqrt((3.0 * GlobalConstants.MOLAR_GAS_CONST * exoTemp.Kelvins) / molecularWeight.Grams));
 		}
 
 		/// <summary>
@@ -626,11 +626,11 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 
 		public int GetOrbitalZone(Luminosity luminosity, Length orbRadius)
 		{
-			if (orbRadius.Kilometers < 4.0 * Math.Sqrt(luminosity.SolarLuminosities))
+			if (orbRadius.AstronomicalUnits < 4.0 * Math.Sqrt(luminosity.SolarLuminosities))
 			{
 				return 1;
 			}
-			else if (orbRadius.Kilometers < 15.0 * Math.Sqrt(luminosity.SolarLuminosities))
+			else if (orbRadius.AstronomicalUnits < 15.0 * Math.Sqrt(luminosity.SolarLuminosities))
 			{
 				return 2;
 			}
@@ -908,9 +908,9 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <returns></returns>
 		public Duration GetGasLife(Mass molecularWeight, Temperature exoTempKelvin, Acceleration surfGravG, Length radiusKM)
 		{
-			var v = GetRMSVelocity(molecularWeight, exoTempKelvin).MetersPerSecond;
+			var v = GetRMSVelocity(molecularWeight, exoTempKelvin).CentimetersPerSecond;
 			var g = surfGravG.StandardGravity * GlobalConstants.EARTH_ACCELERATION;
-			var r = radiusKM.Kilometers * GlobalConstants.CM_PER_KM;
+			var r = radiusKM.Centimeters;
 			var t = (Utilities.Pow3(v) / (2.0 * Utilities.Pow2(g) * r)) * Math.Exp((3.0 * g * r) / Utilities.Pow2(v));
 			var years = t / (GlobalConstants.SECONDS_PER_HOUR * 24.0 * GlobalConstants.DAYS_IN_A_YEAR);
 

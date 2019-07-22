@@ -19,7 +19,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
 		public override string ToString()
 		{
-			return GasType.DisplaySymbol + "[" + SurfacePressure.ToString("F5") + "]";
+			return GasType.DisplaySymbol + "[" + SurfacePressure + "]";
 		}
 	}
 }

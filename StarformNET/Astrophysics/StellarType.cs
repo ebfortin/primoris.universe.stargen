@@ -90,13 +90,20 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			Change(Mass, Luminosity, Temperature, radius);
 		}
 
+        /// <summary>
+        /// TODO: Add more check to prevent impossible values like Temperature = 1K. Could be by calculating typical distance per components instead of global.
+        /// </summary>
+        /// <param name="mass"></param>
+        /// <param name="lum"></param>
+        /// <param name="temp"></param>
+        /// <param name="radius"></param>
 		public void Change(Mass mass, Luminosity lum, Temperature temp, Length radius)
 		{
 			var data = (from row in _types
-						orderby Math.Sqrt((!double.IsNaN(lum.Value) ? Math.Pow(lum.SolarLuminosities - row.Luminosity, 2.0) : 0.0) +
-										  (!double.IsNaN(radius.Value) ? Math.Pow(radius.SolarRadiuses - row.Radius, 2.0) : 0.0) +
-										  (!double.IsNaN(mass.Value) ? Math.Pow(mass.SolarMasses - row.Mass, 2.0) : 0.0) +
-										  (!double.IsNaN(temp.Value) ? Math.Pow(temp.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) : 0.0))
+						orderby Math.Sqrt((!(lum.Value == 0.0) ? Math.Pow(lum.SolarLuminosities - row.Luminosity, 2.0) : 0.0) +
+										  (!(radius.Value == 0.0) ? Math.Pow(radius.SolarRadiuses - row.Radius, 2.0) : 0.0) +
+										  (!(mass.Value == 0.0) ? Math.Pow(mass.SolarMasses - row.Mass, 2.0) : 0.0) +
+										  (!(temp.Value == 0.0) ? Math.Pow(temp.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) : 0.0))
 						ascending
 						select row).FirstOrDefault();
 
@@ -110,10 +117,10 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			double t = st.Temperature.Kelvins;
 			double r = st.Radius.SolarRadiuses;
 
-			Mass = !double.IsNaN(mass.Value) ? mass : Mass.FromSolarMasses(m);
-			Luminosity = !double.IsNaN(lum.Value) ? lum : Luminosity.FromSolarLuminosities(l);
-			Temperature = !double.IsNaN(temp.Value) ? temp : Temperature.FromKelvins(t);
-			Radius = !double.IsNaN(radius.Value) ? radius : Length.FromSolarRadiuses(r);
+			Mass = !(mass.Value == 0.0) ? mass : Mass.FromSolarMasses(m);
+			Luminosity = !(lum.Value == 0.0) ? lum : Luminosity.FromSolarLuminosities(l);
+			Temperature = !(temp.Value == 0.0) ? temp : Temperature.FromKelvins(t);
+			Radius = !(radius.Value == 0.0) ? radius : Length.FromSolarRadiuses(r);
 
 			Color = ConvertColor(data.ColorRGB);
 		}

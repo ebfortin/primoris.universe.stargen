@@ -19,15 +19,15 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <returns></returns>
 		Duration GetGasLife(Mass molecularWeight, Temperature exoTempKelvin, Acceleration surfGravG, Length radiusKM);
 
-		/// <summary>
-		/// Returns the smallest molecular weight retained by the body, which is useful
-		/// for determining atmospheric composition.
-		/// </summary>
-		/// <param name="mass">Mass in solar masses</param>
-		/// <param name="equatorialRadius">Equatorial radius in units of kilometers</param>
-		/// <param name="exosphericTemp"></param>
-		/// <returns></returns>
-		Mass GetInitialMolecularWeightRetained(Mass mass, Length radius, Temperature exoTemp);
+        /// <summary>
+        /// Returns the smallest molecular weight retained by the body, which is useful
+        /// for determining atmospheric composition.
+        /// </summary>
+        /// <param name="mass">Mass in solar masses</param>
+        /// <param name="radius">Equatorial radius in units of kilometers</param>
+        /// <param name="exoTemp"></param>
+        /// <returns></returns>
+        Mass GetInitialMolecularWeightRetained(Mass mass, Length radius, Temperature exoTemp);
 
 
 		/// <summary>

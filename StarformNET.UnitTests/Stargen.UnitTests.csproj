@@ -32,6 +32,12 @@
   <ItemGroup>
     <ProjectReference Include="..\StarformNet\Primoris.Universe.Stargen.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="StarformNet">
+      <HintPath>libs\StarformNet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>
 

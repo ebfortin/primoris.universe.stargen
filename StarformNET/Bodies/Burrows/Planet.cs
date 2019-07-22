@@ -178,7 +178,6 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				AdjustPropertiesForRockyBody();
 
 				MolecularWeightRetained = Astro.Physics.GetMolecularWeightRetained(SurfaceAcceleration, Mass, Radius, ExosphereTemperature, sun.Age);
-				HasGreenhouseEffect = Astro.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis);
 			}
 
 			planet.AngularVelocityRadSec = Astro.Dynamics.GetAngularVelocity(Mass,
@@ -215,7 +214,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 				// Generate complete atmosphere.
 				Atmosphere = new Atmosphere(planet, genOptions.GasTable);
-			}
+                HasGreenhouseEffect = Astro.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & Atmosphere.Composition.Count > 0;
+            }
 
 			Type = Astro.Planetology.GetBodyType(Mass,
 										 GasMass,

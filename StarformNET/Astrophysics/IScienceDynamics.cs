@@ -16,7 +16,13 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <param name="largeMassSM">Mass of the large mass in solar masses</param>
 		/// <param name="largeAgeYears">Age of the large mass in years</param>
 		/// <returns>Angular velocity in radians/sec</returns>
-		RotationalSpeed GetAngularVelocity(Mass massSM, Length radiusKM, Density densityGCC, Length semiMajorAxisAU, bool isGasGiant, Mass largeMassSM, Duration largeAgeYears);
+		RotationalSpeed GetAngularVelocity(Mass massSM,
+                                     Length radiusKM,
+                                     Density densityGCC,
+                                     Length semiMajorAxisAU,
+                                     bool isGasGiant,
+                                     Mass largeMassSM,
+                                     Duration largeAgeYears);
 
 		/// <summary>
 		/// Provides an approximation of angular velocity for non-tidally decelerated
@@ -43,7 +49,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <summary>
 		/// Returns escape velocity in cm/sec
 		/// </summary>
-		/// <param name="mass">Mass in units of solar mass</param>
+		/// <param name="massSM">Mass in units of solar mass</param>
 		/// <param name="radius">Radius in km</param>
 		/// <returns></returns>
 		Speed GetEscapeVelocity(Mass massSM, Length radius);

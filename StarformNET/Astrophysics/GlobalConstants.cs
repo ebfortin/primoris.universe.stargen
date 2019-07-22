@@ -94,7 +94,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
 		public static double GRAV_CONSTANT = 6.672E-8;                    // units of dyne cm2/gram2	
 		public static double MOLAR_GAS_CONST = 8314.41;                     // units: g*m2/ = (sec2*K*mol); 
-		public const double K = 25.0;                        // K = gas/dust ratio. Was 50.0, is now 25.0 to allows for habitable planets.	
+		public const double K = 50.0;                        // K = gas/dust ratio. Was 50.0, is now 25.0 to allows for habitable planets.	
 		public static double B = 1.2E-5;                      // Used in Crit_mass calc	
 		public const double DUST_DENSITY_COEFF = 0.002;                       // A in Dole's paper		
 		public static double ALPHA = 5.0;                         // Used in density calcs	
