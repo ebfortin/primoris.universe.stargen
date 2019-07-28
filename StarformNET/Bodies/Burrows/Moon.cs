@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Systems;
 using Environment = Primoris.Universe.Stargen.Astrophysics.Environment;
 using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
-	public class Moon : Planet
+    public class Moon : Planet
 	{
 		public Moon(Seed seed,
-					   Star star,
+					   StellarBody star,
 					   SatelliteBody parentBody,
-					   int num,
 					   bool useRandomTilt,
 					   string planetID,
 					   SystemGenerationOptions genOptions) : base(seed,
 												   star,
-												   num,
+                                                   parentBody,
 												   useRandomTilt,
 												   planetID,
 												   genOptions)

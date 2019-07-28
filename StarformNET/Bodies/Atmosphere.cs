@@ -135,7 +135,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			gasTable ??= ChemType.Load();
 
-			var sun = planet.Star;
+			var sun = planet.Parent;
 			Composition = new List<Gas>();
 
 			if (!(SurfacePressure.Millibars > 0))
@@ -199,7 +199,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		private void CheckForSpecialRules(out double abund, out double react, double pressure, SatelliteBody planet, ChemType gas)
 		{
-			var sun = planet.Star;
+			var sun = planet.Parent;
 			var pres2 = 1.0;
 			abund = gas.Abunds.Value;
 
@@ -213,13 +213,13 @@ namespace Primoris.Universe.Stargen.Bodies
 				pres2 = 0.75 + pressure;
 				react = Math.Pow(1 / (1 + gas.Reactivity.Value), sun.Age.Years365 / 2e9 * pres2);
 			}
-			else if ((gas.Symbol == "O" || gas.Symbol == "O2") && sun.Age.Years365 > 2e9 && planet.SurfaceTemperature.Kelvins > 270 && planet.SurfaceTemperature.Kelvins < 400)
+			else if ((gas.Symbol == "O" || gas.Symbol == "O2") && sun.Age.Years365 > 2e9 && planet.Temperature.Kelvins > 270 && planet.Temperature.Kelvins < 400)
 			{
 				// pres2 = (0.65 + pressure/2); // Breathable - M: .55-1.4
 				pres2 = 0.89 + pressure / 4;  // Breathable - M: .6 -1.8
 				react = Math.Pow(1 / (1 + gas.Reactivity.Value), Math.Pow(sun.Age.Years365 / 2e9, 0.25) * pres2);
 			}
-			else if (gas.Symbol == "CO2" && sun.Age.Years365 > 2e9 && planet.SurfaceTemperature.Kelvins > 270 && planet.SurfaceTemperature.Kelvins < 400)
+			else if (gas.Symbol == "CO2" && sun.Age.Years365 > 2e9 && planet.Temperature.Kelvins > 270 && planet.Temperature.Kelvins < 400)
 			{
 				pres2 = 0.75 + pressure;
 				react = Math.Pow(1 / (1 + gas.Reactivity.Value), Math.Pow(sun.Age.Years365 / 2e9, 0.5) * pres2);

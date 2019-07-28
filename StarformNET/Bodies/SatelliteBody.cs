@@ -11,18 +11,20 @@ using UnitsNet;
 namespace Primoris.Universe.Stargen.Bodies
 {
 
+    public delegate SatelliteBody CreateSatelliteBodyDelegate(Seed seed,
+                                                            StellarBody star,
+                                                            bool useRandomTilt,
+                                                            string planetID,
+                                                            SystemGenerationOptions genOptions);
+
 	// TODO break this class up
 	// TODO orbit zone is supposedly no longer used anywhere. Check references and possibly remove.
 
 	[Serializable]
 	public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 	{
-		public IScienceAstrophysics Astro { get; set; }
+		//public override Body Parent { get; }
 
-		public int Position { get; protected set; }
-		//private readonly double SemiAxisMajorAU;
-
-		public Star Star { get; }
 		public Atmosphere Atmosphere { get; protected set; }
 
 		#region Orbit data
@@ -32,12 +34,12 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <summary>
 		/// Eccentricity of the body's orbit.
 		/// </summary>
-		public Ratio Eccentricity { get; protected set; } = Ratio.FromDecimalFractions(0.0);
+		public Ratio Eccentricity { get; protected set; } = Ratio.Zero;
 
 		/// <summary>
 		/// Axial tilt of the planet expressed in degrees.
 		/// </summary>
-		public Angle AxialTilt { get; protected set; } = Angle.FromDegrees(0.0);
+		public Angle AxialTilt { get; protected set; } = Angle.Zero;
 
 		/// <summary>
 		/// Orbital zone the planet is located in. Value is 1, 2, or 3. Used in
@@ -53,7 +55,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <summary>
 		/// Angular velocity about the planet's axis in radians/sec.
 		/// </summary>
-		public RotationalSpeed AngularVelocityRadSec { get; protected set; }
+		public RotationalSpeed AngularVelocity { get; protected set; }
 
 		/// <summary>
 		/// The length of the planet's day in hours.
@@ -72,7 +74,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <summary>
 		/// The mass of the planet in units of Solar mass.
 		/// </summary>
-		public override Mass Mass { get; protected set; }
+		//public override Mass Mass { get; protected set; }
 
 		/// <summary>
 		/// The mass of dust retained by the planet (ie, the mass of the planet
@@ -87,20 +89,20 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		public Mass GasMass { get; protected set; }
 
-		/// <summary>
-		/// The velocity required to escape from the body given in cm/sec.
-		/// </summary>
-		//public double EscapeVelocityCMSec { get; protected set; }
+        /// <summary>
+        /// The velocity required to escape from the body given in cm/sec.
+        /// </summary>
+        //public double EscapeVelocityCMSec { get; protected set; }
 
-		/// <summary>
-		/// The gravitational acceleration felt at the surface of the planet. Given in cm/sec^2
-		/// </summary>
-		public Speed EscapeVelocity { get; protected set; }
+        /// <summary>
+        /// The gravitational acceleration felt at the surface of the planet. Given in cm/sec^2
+        /// </summary>
+        //public override Speed EscapeVelocity { get; protected set; }
 
-		/// <summary>
-		/// The gravitational acceleration felt at the surface of the planet. Given as a fraction of Earth gravity (Gs).
-		/// </summary>
-		public Acceleration SurfaceAcceleration { get; protected set; }
+        /// <summary>
+        /// The gravitational acceleration felt at the surface of the planet. Given as a fraction of Earth gravity (Gs).
+        /// </summary>
+        public Acceleration SurfaceAcceleration { get; protected set; }
 
 		/// <summary>
 		/// The radius of the planet's core in km.
@@ -110,7 +112,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <summary>
 		/// The radius of the planet's surface in km.
 		/// </summary>
-		public Length Radius { get; protected set; }
+		//public override Length Radius { get; protected set; }
 
 		/// <summary>
 		/// The density of the planet given in g/cc. 
@@ -141,15 +143,6 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		#endregion
 
-		#region Satellites data
-
-		//public IEnumerable<SatelliteBody> Satellites { get; protected set; }
-
-		public double MoonSemiMajorAxisAU { get; protected set; }
-
-		public double MoonEccentricity { get; protected set; }
-
-		#endregion
 
 		#region Atmospheric data
 		/// <summary>
@@ -203,7 +196,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <summary>
 		/// Temperature at the body's surface given in Kelvin.
 		/// </summary>
-		public Temperature SurfaceTemperature { get; protected set; }
+		//public override Temperature Temperature { get; protected set; }
 
 		/// <summary>
 		/// Amount (in Kelvin) that the planet's surface temperature is being
@@ -256,18 +249,20 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		#endregion
 
-		public SatelliteBody(IScienceAstrophysics phys, Star sun, Atmosphere atmos)
+		public SatelliteBody(IScienceAstrophysics phys, StellarBody sun, Body parentBody, Atmosphere atmos)
 		{
 			Astro = phys;
 
-			Star = sun;
+			Parent = parentBody;
+            StellarBody = sun;
 			Atmosphere = atmos;
 			atmos.Planet = this;
 			Check();
 		}
 
 		public SatelliteBody(IScienceAstrophysics phys,
-					  Star sun,
+					  StellarBody sun,
+                      Body parentBody,
 					  Length semiMajorAxisAU,
 					  Ratio eccentricity,
 					  Angle axialTilt,
@@ -284,12 +279,13 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			Astro = phys;
 
-			Star = sun;
+			Parent = parentBody;
+            StellarBody = sun;
 
 			SemiMajorAxis = semiMajorAxisAU;
 			Eccentricity = eccentricity;
 			AxialTilt = axialTilt;
-			OrbitZone = Astro.Astronomy.GetOrbitalZone(Star.Luminosity, SemiMajorAxis);
+			OrbitZone = Astro.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
 			DayLength = dayLengthHours;
 			OrbitalPeriod = orbitalPeriodDays;
 
@@ -297,14 +293,14 @@ namespace Primoris.Universe.Stargen.Bodies
 			GasMass = gasMassSM;
 			DustMass = Mass - GasMass;
 			Radius = radius;
-			Density = Astro.Physics.GetDensityFromStar(Mass, SemiMajorAxis, Star.EcosphereRadius, true);
-			ExosphereTemperature = Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(SemiMajorAxis / Star.EcosphereRadius));
+			Density = Astro.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
+			ExosphereTemperature = Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(SemiMajorAxis / sun.EcosphereRadius));
 			SurfaceAcceleration = surfGrav; //Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * massSM.Grams / Utilities.Pow2(radius.Centimeters));
 			EscapeVelocity = Astro.Dynamics.GetEscapeVelocity(Mass, Radius);
 
 			DaytimeTemperature = dayTimeTempK;
 			NighttimeTemperature = nightTimeTempK;
-			SurfaceTemperature = surfTempK;
+			Temperature = surfTempK;
 			//SurfaceGravityG = surfGrav;
 			MolecularWeightRetained = Astro.Physics.GetMolecularWeightRetained(SurfaceAcceleration, Mass, Radius, ExosphereTemperature, sun.Age);
 
@@ -319,39 +315,43 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		/// <param name="phys"></param>
 		/// <param name="star"></param>
-		public SatelliteBody(IScienceAstrophysics phys, Star star)
+		public SatelliteBody(IScienceAstrophysics phys, StellarBody star, Body parentBody)
 		{
 			Astro = phys;
 
-			Star = star;
+            StellarBody = star;
+			Parent = parentBody;
 
 			Check();
 		}
 
-		public SatelliteBody(IScienceAstrophysics phys, Star star, Gas[] atmosComp)
+		public SatelliteBody(IScienceAstrophysics phys, StellarBody star, Body parentBody, Gas[] atmosComp)
 		{
 			Astro = phys;
-			Star = star;
+
+            StellarBody = star;
+			Parent = parentBody;
 
 			Atmosphere = new Atmosphere(this, atmosComp);
 
 			Check();
 		} 
 
-		public SatelliteBody(IScienceAstrophysics phys, Seed seed, Star star, int num, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
+		public SatelliteBody(IScienceAstrophysics phys, Seed seed, StellarBody star, Body parentBody, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
 		{
 			Astro = phys;
 
-			Star = star;
-			Position = num;
+            StellarBody = star;
+			Parent = parentBody;
+
 			SemiMajorAxis = seed.SemiMajorAxis;
 			Eccentricity = seed.Eccentricity;
 			Mass = seed.Mass;
 			DustMass = seed.DustMass;
 			GasMass = seed.GasMass;
 
-			Generate(seed, num, star, useRandomTilt, planetID, genOptions);
-			Satellites = GenerateSatellites(seed, Star, this, useRandomTilt, genOptions);
+			Generate(seed, star, useRandomTilt, planetID, genOptions);
+			Satellites = GenerateSatellites(seed, star, this, useRandomTilt, genOptions);
 
 			Check();
 		}
@@ -360,9 +360,9 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			Atmosphere ??= new Atmosphere(this);
 
-			Illumination = Astro.Astronomy.GetMinimumIllumination(SemiMajorAxis, Star.Luminosity);
+			Illumination = Astro.Astronomy.GetMinimumIllumination(SemiMajorAxis, StellarBody.Luminosity);
 			IsHabitable = Astro.Planetology.TestIsHabitable(DayLength, OrbitalPeriod, Atmosphere.Breathability, HasResonantPeriod, IsTidallyLocked);
-			IsEarthlike = Astro.Planetology.TestIsEarthLike(SurfaceTemperature,
+			IsEarthlike = Astro.Planetology.TestIsEarthLike(Temperature,
 												   WaterCoverFraction,
 												   CloudCoverFraction,
 												   IceCoverFraction,
@@ -378,9 +378,9 @@ namespace Primoris.Universe.Stargen.Bodies
 		protected abstract void AdjustPropertiesForGasBody();
 
 
-		protected abstract void Generate(Seed seed, int planetNo, Star sun, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions);
+		protected abstract void Generate(Seed seed, StellarBody sun, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions);
 
-		protected abstract IEnumerable<SatelliteBody> GenerateSatellites(Seed seed, Star star, SatelliteBody parentBody, bool useRandomTilt, SystemGenerationOptions genOptions);
+		protected abstract IEnumerable<SatelliteBody> GenerateSatellites(Seed seed, StellarBody star, SatelliteBody parentBody, bool useRandomTilt, SystemGenerationOptions genOptions);
 
 
 		// TODO write summary
@@ -424,7 +424,7 @@ namespace Primoris.Universe.Stargen.Bodies
 				Utilities.AlmostEqual(Albedo.Value, other.Albedo.Value) &&
 				Utilities.AlmostEqual(Illumination.Value, other.Illumination.Value) &&
 				Utilities.AlmostEqual(ExosphereTemperature.Kelvins, other.ExosphereTemperature.Kelvins) &&
-				Utilities.AlmostEqual(SurfaceTemperature.Kelvins, other.SurfaceTemperature.Kelvins) &&
+				Utilities.AlmostEqual(Temperature.Kelvins, other.Temperature.Kelvins) &&
 				Utilities.AlmostEqual(GreenhouseRiseTemperature.Kelvins, other.GreenhouseRiseTemperature.Kelvins) &&
 				Utilities.AlmostEqual(DaytimeTemperature.Kelvins, other.DaytimeTemperature.Kelvins) &&
 				Utilities.AlmostEqual(NighttimeTemperature.Kelvins, other.NighttimeTemperature.Kelvins) &&

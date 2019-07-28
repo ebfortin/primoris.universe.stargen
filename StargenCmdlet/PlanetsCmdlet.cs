@@ -7,12 +7,14 @@ using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using Primoris.Universe.Stargen.Systems;
 using Primoris.Universe.Stargen.Astrophysics;
+using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using Primoris.Universe.Stargen.Bodies;
+using Primoris.Universe.Stargen.Bodies.Burrows;
 using Primoris.Universe.Stargen.Systems.Burrows;
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {
-	internal class PlanetMap : ClassMap<SatelliteBody>
+    internal class PlanetMap : ClassMap<SatelliteBody>
 	{
 		public PlanetMap()
 		{
@@ -22,7 +24,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			Map(m => m.AxialTilt);
 			Map(m => m.OrbitZone);
 			Map(m => m.OrbitalPeriod);
-			Map(m => m.AngularVelocityRadSec);
+			Map(m => m.AngularVelocity);
 			Map(m => m.DayLength);
 			Map(m => m.HillSphere);
 			Map(m => m.Mass);
@@ -46,7 +48,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			Map(m => m.Albedo);
 			Map(m => m.Illumination);
 			Map(m => m.ExosphereTemperature);
-			Map(m => m.SurfaceTemperature);
+			Map(m => m.Temperature);
 			Map(m => m.GreenhouseRiseTemperature);
 			Map(m => m.DaytimeTemperature);
 			Map(m => m.NighttimeTemperature);
@@ -73,21 +75,33 @@ namespace Primoris.Universe.Stargen.Cmdlets
 		[Parameter]
 		public bool OnlyHabitableSystem { get; set; } = false;
 
+        private SatelliteBody CreatePlanet(Seed seed,
+                                        StellarBody star,
+                                        bool useRandomTilt,
+                                        string planetID,
+                                        SystemGenerationOptions genOptions)
+        {
+            return new Planet(seed, star, star, useRandomTilt, planetID, genOptions);
+        }
+
 		protected override void ProcessRecord()
 		{
             var sun = GenerateStar();
 			bool findsys;
-			StellarSystem sys;
+
 			do
 			{
-				sys = SystemGenerator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun: sun);
-				findsys = (from p in sys.Planets where p.IsHabitable select p).Count() > 0;
+                //sys = SystemGenerator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun: sun);
+                IScienceAstrophysics phy = new BodyPhysics();
+                IBodyFormationAlgorithm frm = new Accrete(CloudEccentricity, GasDensityRatio);
+                sun.GenerateSystem(frm, CreatePlanet, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio));
+                findsys = (from p in sun.Satellites where p.IsHabitable select p).Count() > 0;
 			} while (!findsys && OnlyHabitableSystem);
 
 			if (String.IsNullOrEmpty(CsvOutputPath))
             {
                 WriteObject(sun);
-                WriteObject(sys.Planets);
+                WriteObject(sun.Satellites);
             }
             else
             {
@@ -100,7 +114,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 
 				cw.WriteHeader<SatelliteBody>();
 				cw.NextRecord();
-				cw.WriteRecords<SatelliteBody>(sys.Planets);
+				cw.WriteRecords<SatelliteBody>(sun.Satellites);
 				cw.Flush();
 
 				w.Close();

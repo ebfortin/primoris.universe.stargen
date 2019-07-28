@@ -24,6 +24,8 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <returns>Hill Sphere radius in AU.</returns>
 		Length GetHillSphere(Mass sunMass, Mass massSM, Length semiMajorAxisAU);
 
+        Length GetEcosphereRadius(Mass mass, Luminosity lum);
+
 		Ratio GetMinimumIllumination(Length a, Luminosity l);
 
 		/// <summary>
@@ -45,5 +47,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <param name="largeMass">Large mass in Units of solar masses</param>
 		/// <returns>Period in Earth days</returns>
 		Duration GetPeriod(Length separation, Mass smallMass, Mass largeMass);
-	}
+
+        Length GetOuterLimit(Mass mass, Mass otherMass, Length otherSemiMajorAxis, Ratio ecc);
+
+        Length GetStellarDustLimit(Mass mass);
+    }
 }

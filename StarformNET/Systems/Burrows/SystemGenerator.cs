@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Primoris.Universe.Stargen.Astrophysics;
+using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Bodies.Burrows;
 using UnitsNet;
@@ -9,7 +10,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 {
 
 
-	public class SystemGenerator
+    public class SystemGenerator
 	{
 		public static StellarGroup GenerateStellarGroup(int seed, int numSystems, SystemGenerationOptions genOptions = null)
 		{
@@ -24,10 +25,12 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			return group;
 		}
 
-		public static StellarSystem GenerateStellarSystem(string systemName, SystemGenerationOptions genOptions = null, Star sun = null, IEnumerable<Seed> seedSystem = null)
+		public static StellarSystem GenerateStellarSystem(string systemName, SystemGenerationOptions genOptions = null, StellarBody sun = null, IEnumerable<Seed> seedSystem = null)
 		{
 			genOptions ??= new SystemGenerationOptions();
-			sun ??= new Star();
+
+            var phy = new BodyPhysics();
+			sun ??= new Star(phy);
 			var useRandomTilt = seedSystem == null;
 
 			var accrete = new Accrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);
@@ -48,7 +51,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			};
 		}
 
-		private static ICollection<SatelliteBody> GeneratePlanets(Star sun, IEnumerable<Seed> seeds, bool useRandomTilt, SystemGenerationOptions genOptions)
+		private static ICollection<SatelliteBody> GeneratePlanets(StellarBody sun, IEnumerable<Seed> seeds, bool useRandomTilt, SystemGenerationOptions genOptions)
 		{
 			var planets = new List<SatelliteBody>();
 			var i = 0;
@@ -59,7 +62,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 
 				string planet_id = planetNo.ToString();
 
-				var planet = new Planet(seed, sun, planetNo, useRandomTilt, planet_id, genOptions);
+				var planet = new Planet(seed, sun, sun, useRandomTilt, planet_id, genOptions);
 				planets.Add(planet);
 			}
 
@@ -71,9 +74,9 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			return 200.0 * Math.Pow(stellarMassRatio, 1.0 / 3.0);
 		}
 
-		private static double GetOuterLimit(Star star)
+		private static double GetOuterLimit(StellarBody star)
 		{
-			if (star.BinaryMass < .001)
+			if (star.BinaryMass.SolarMasses < .001)
 			{
 				return 0.0;
 			}
@@ -82,11 +85,11 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			// Long-Term Stability of Planets in Binary Systems
 			// The Astronomical Journal, 117:621-628, Jan 1999
 			double m1 = star.Mass.SolarMasses;
-			double m2 = star.BinaryMass;
+			double m2 = star.BinaryMass.SolarMasses;
 			double mu = m2 / (m1 + m2);
-			double e = star.SemiMajorAxisAU;
+			double e = star.BinarySemiMajorAxis.AstronomicalUnits;
 			double e2 = Utilities.Pow2(e);
-			double a = star.Eccentricity;
+			double a = star.BinaryEccentricity.Value;
 
 			return (0.464 + -0.380 * mu + -0.631 * e + 0.586 * mu * e + 0.150 * e2 + -0.198 * mu * e2) * a;
 		}

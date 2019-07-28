@@ -26,14 +26,17 @@ namespace Primoris.Universe.Stargen.UnitTests
             double VeryHighDelta = 1e-2;
             double UnitDelta = 1.0;
 
-            private Star GetTestStar()
+            private StellarBody GetTestStar()
             {
-                return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10));
+                var phy = new BodyPhysics();
+                return new Star(phy, Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10));
             }
 
             private SatelliteBody GetTestPlanetAtmosphere()
             {
-                var planet = new Planet(GetTestStar(),
+                var star = GetTestStar();
+                var planet = new Planet(star,
+                            star,
                             Length.FromAstronomicalUnits(0.723332),
                             Ratio.FromDecimalFractions(0.0067),
                             Angle.FromDegrees(2.8),
@@ -251,7 +254,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                                                         p1.Mass,
                                                         p1.Radius,
                                                         p1.ExosphereTemperature,
-                                                        p1.Star.Age).Grams,
+                                                        p1.Parent.Age).Grams,
                 UnitDelta);
             }
 

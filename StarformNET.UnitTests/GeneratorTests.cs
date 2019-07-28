@@ -12,12 +12,13 @@ using Primoris.Universe.Stargen.Systems;
 using Primoris.Universe.Stargen.Bodies.Burrows;
 using Primoris.Universe.Stargen.Systems.Burrows;
 using Primoris.Universe.Stargen.Astrophysics;
+using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using UnitsNet;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
 
-	class GeneratorTests
+    class GeneratorTests
 	{
 		[TestClass]
 		public class GenerateStellarSystemTests
@@ -86,14 +87,18 @@ namespace Primoris.Universe.Stargen.UnitTests
 		{
 			private double DELTA = 0.0001;
 
-			private Star GetTestStar()
+			private StellarBody GetTestStar()
 			{
-				return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10));
+                var phy = new BodyPhysics();
+				return new Star(phy, Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10));
 			}
 
 			private SatelliteBody GetTestPlanetAtmosphere()
 			{
-				var planet = new Planet(GetTestStar(),
+                var star = GetTestStar();
+
+				var planet = new Planet(star,
+                            star,
 							Length.FromAstronomicalUnits(0.723332),
 							Ratio.FromDecimalFractions(0.0067),
 							Angle.FromDegrees(2.8),
@@ -113,7 +118,8 @@ namespace Primoris.Universe.Stargen.UnitTests
 
 			private SatelliteBody GetTestPlanetNoAtmosphere()
 			{
-				var planet = new Planet(GetTestStar());
+                var star = GetTestStar();
+				var planet = new Planet(star, star);
 				return planet;
 			}
 
@@ -121,7 +127,8 @@ namespace Primoris.Universe.Stargen.UnitTests
 			[TestMethod]
 			public void TestEmptyPlanet()
 			{
-				var planet = new Planet(GetTestStar());
+                var star = GetTestStar();
+				var planet = new Planet(star, star);
 
 				Assert.AreEqual(0, planet.Atmosphere.Composition.Count);
 			}
@@ -144,15 +151,15 @@ namespace Primoris.Universe.Stargen.UnitTests
 				{
 					{ "CH4", 0.00000 },
 					{ "NH3", 0.00000 },
-					{ "H2O", 16.2157413960053 },
-					{ "Ne", 1.3778591536954556 },
-					{ "Ar", 83004.30383977713 },
-					{ "CO2", 1800.2575437308321 },
+					{ "H2O", 440.14434 },
+					{ "Ne", 23.74552607000449 },
+					{ "Ar", 89996.39719877411 },
+					{ "CO2", 1315.6310584147352 },
 					{ "O3", 0.00000 },
 					{ "Br", 0.00000 },
-					{ "Kr", 3693.1965231241725 },
-					{ "I", 491.99131741143265 },
-					{ "Xe", 2992.6571754067277 }
+					{ "Kr", 193.8829087894019 },
+					{ "I", 4.791810606490484 },
+					{ "Xe", 25.407153913445107 }
 				};
 
                 var planet = GetTestPlanetAtmosphere();

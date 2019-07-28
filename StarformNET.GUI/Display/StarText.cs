@@ -1,17 +1,18 @@
 using System;
 using System.Text;
 using Primoris.Universe.Stargen.Astrophysics;
+using Primoris.Universe.Stargen.Bodies;
 
 namespace Primoris.Universe.Stargen.Display
 {
 
-	public static class StarText
+    public static class StarText
     {
         /// <summary>
         /// Returns a simple, multi-line string containing basic
         /// information on a star using units relative to the Sun.
         /// </summary>
-        public static string GetFullStarTextRelative(Star star, bool showUnits=true)
+        public static string GetFullStarTextRelative(StellarBody star, bool showUnits=true)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Star");
@@ -27,7 +28,7 @@ namespace Primoris.Universe.Stargen.Display
         /// <summary>
         /// Returns a string containing the age of a star relative to the Sun.
         /// </summary>
-        public static string GetAgeStringRel(Star star, bool showUnits=true)
+        public static string GetAgeStringRel(StellarBody star, bool showUnits=true)
         {
             var age = String.Format("{0:0.00}", star.Age / GlobalConstants.SUN_AGE_IN_YEARS);
             var units = showUnits ? " Solar Ages" : "";
@@ -37,7 +38,7 @@ namespace Primoris.Universe.Stargen.Display
         /// <summary>
         /// Returns a string containing the age of a star in years, displayed
         /// using scientific notation.
-        public static string GetAgeStringYearsSciN(Star star, bool showUnits=true)
+        public static string GetAgeStringYearsSciN(StellarBody star, bool showUnits=true)
         {
             var age = String.Format("{0:E2}", star.Age);
             var units = showUnits ? " Years" : "";
@@ -48,7 +49,7 @@ namespace Primoris.Universe.Stargen.Display
         /// Returns a string containing the luminosity of a star in Solar
         /// Luminosity units.
         /// </summary>
-        public static string GetLuminosityRel(Star star, bool showUnits=true)
+        public static string GetLuminosityRel(StellarBody star, bool showUnits=true)
         {
             var lum = String.Format("{0:0.00}", star.Luminosity);
             var units = showUnits ? " Solar Luminosity" : "";
@@ -59,7 +60,7 @@ namespace Primoris.Universe.Stargen.Display
         /// Returns a string containing the luminosity of a star as a
         /// percentage of Sol's luminosity
         /// </summary>
-        public static string GetLuminosityPercent(Star star, bool showUnits=true)
+        public static string GetLuminosityPercent(StellarBody star, bool showUnits=true)
         {
             var lum = String.Format("{0:0.}", star.Luminosity * 100);
             var units = showUnits ? "% Sol" : "";
@@ -70,7 +71,7 @@ namespace Primoris.Universe.Stargen.Display
         /// Returns a string containing the mass of a star in Solar
         /// Mass units.
         /// </summary>
-        public static string GetMassRel(Star star, bool showUnits=true)
+        public static string GetMassRel(StellarBody star, bool showUnits=true)
         {
             var mass = String.Format("{0:0.00}", star.Mass);
             var units = showUnits ? " Solar Masses" : "";
@@ -81,7 +82,7 @@ namespace Primoris.Universe.Stargen.Display
         /// Returns a string containing the mass of a star as a
         /// percentage of Sol's mass.
         /// </summary>
-        public static string GetMassPercent(Star star, bool showUnits = true)
+        public static string GetMassPercent(StellarBody star, bool showUnits = true)
         {
             var mass = String.Format("{0:0.}", star.Mass * 100);
             var units = showUnits ? "% Sol" : "";

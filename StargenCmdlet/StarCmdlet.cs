@@ -8,13 +8,14 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using Primoris.Universe.Stargen.Astrophysics;
+using Primoris.Universe.Stargen.Astrophysics.Burrows;
 
 using Units = UnitsNet;
-
+using Primoris.Universe.Stargen.Bodies;
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {
-	public class StellarTypeConverter : DefaultTypeConverter
+    public class StellarTypeConverter : DefaultTypeConverter
 	{
 		public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
 		{
@@ -27,7 +28,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 		}
 	}
 
-	internal class StarMap : ClassMap<Star>
+	internal class StarMap : ClassMap<StellarBody>
 	{
 		public StarMap()
 		{
@@ -41,8 +42,8 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			Map(m => m.Mass);
 			Map(m => m.Radius);
 			Map(m => m.Temperature);
-			Map(m => m.SemiMajorAxisAU);
-			Map(m => m.Eccentricity);
+			Map(m => m.BinarySemiMajorAxis);
+			Map(m => m.BinaryEccentricity);
 		}
 	}
 
@@ -88,16 +89,16 @@ namespace Primoris.Universe.Stargen.Cmdlets
 				var w = new StreamWriter(f);
 				var cw = new CsvWriter(w, conf);
 
-				cw.WriteHeader<Star>();
+				cw.WriteHeader<StellarBody>();
 				cw.NextRecord();
-				cw.WriteRecord<Star>(sun);
+				cw.WriteRecord<StellarBody>(sun);
 				cw.Flush();
 
 				w.Close();
             }
 		}
 
-        protected Star GenerateStar()
+        protected StellarBody GenerateStar()
         {
             StellarType st = StellarType.FromString(StarStellarType);
             if (!(Mass == 0.0) || !(Luminosity == 0.0)  || !(Temperature == 0.0) || !(Radius == 0.0))
@@ -112,7 +113,8 @@ namespace Primoris.Universe.Stargen.Cmdlets
                 Name = ng.NextName();
             }
 
-            return new Star(st, Name);
+            var phy = new BodyPhysics();
+            return new Star(phy, st, Name);
         }
 	}
 }

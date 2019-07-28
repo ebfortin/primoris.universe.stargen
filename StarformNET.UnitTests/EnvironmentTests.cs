@@ -13,7 +13,7 @@ using UnitsNet;
 namespace Primoris.Universe.Stargen.UnitTests
 {
 
-	class BurrowsPhysicsTests
+    class BurrowsPhysicsTests
     {
         [TestClass]
         public class GasLifeTest
@@ -104,7 +104,10 @@ namespace Primoris.Universe.Stargen.UnitTests
                 const double expectedValue = 1.0;
                 const double sunLuminosity = 1.0;
 
-                Assert.AreEqual(expectedValue, Environment.StarEcosphereRadiusAU(sunLuminosity), 0.0001);
+                var phy = new BodyPhysics();
+
+                Assert.AreEqual(expectedValue, phy.Astronomy.GetEcosphereRadius(Mass.FromSolarMasses(1.0), 
+                                                                               Luminosity.FromSolarLuminosities(sunLuminosity)).AstronomicalUnits, 0.0001);
             }
         }
 
@@ -349,7 +352,10 @@ namespace Primoris.Universe.Stargen.UnitTests
 
             private SatelliteBody GetMockPlanet(Func<Gas[]> mockAtmoGen)
             {
-                var planet = new Planet(new Star(), mockAtmoGen());
+                var phy = new BodyPhysics();
+
+                var star = new Star(phy);
+                var planet = new Planet(star, star, mockAtmoGen());
 
 				//planet.RecalculateGases(mockAtmoGen());
 				return planet;

@@ -17,14 +17,22 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
 		Length GetCoreRadius(Mass massSM, int orbitZone, bool giant);
 
-		/// <summary>
-		/// Returns the dimensionless quantity of optical depth, which is useful in determing the amount
-		/// of greenhouse effect on a planet.
-		/// </summary>
-		/// <param name="molecularWeight"></param>
-		/// <param name="surfPressure"></param>
-		/// <returns></returns>
-		Ratio GetOpacity(Mass molecularWeight, Pressure surfPressure);
+        /// <summary>
+        /// Calculates the radius of a planet.
+        /// </summary>
+        /// <param name="mass">Mass in units of solar masses</param>
+        /// <param name="density">Density in units of grams/cc</param>
+        /// <returns>Radius in units of km</returns>
+        Length GetRadius(Mass mass, Density density);
+
+        /// <summary>
+        /// Returns the dimensionless quantity of optical depth, which is useful in determing the amount
+        /// of greenhouse effect on a planet.
+        /// </summary>
+        /// <param name="molecularWeight"></param>
+        /// <param name="surfPressure"></param>
+        /// <returns></returns>
+        Ratio GetOpacity(Mass molecularWeight, Pressure surfPressure);
 
 
 		/// <summary>

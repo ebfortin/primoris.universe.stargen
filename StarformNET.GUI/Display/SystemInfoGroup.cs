@@ -6,7 +6,7 @@ using Primoris.Universe.Stargen.Bodies;
 namespace Primoris.Universe.Stargen.Display
 {
 
-	public class SystemInfoGroup : InfoGroup
+    public class SystemInfoGroup : InfoGroup
     {
         public void SetSystem(IEnumerable<SatelliteBody> planets)
         {
@@ -15,7 +15,7 @@ namespace Primoris.Universe.Stargen.Display
                 return;
             }
 
-            var star = planets.ElementAt(0).Star;
+            var star = planets.ElementAt(0).Parent as StellarBody;
 
             var labels = new List<string>()
             {

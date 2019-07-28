@@ -14,7 +14,7 @@ namespace Primoris.Universe.Stargen.Display
         public static string GetSystemText(IEnumerable<SatelliteBody> planets)
         {
             var sb = new StringBuilder();
-            var sun = planets.ElementAt(0).Star;
+            var sun = planets.ElementAt(0).StellarBody;
             sb.AppendLine(StarText.GetFullStarTextRelative(sun, true));
             sb.AppendLine();
 

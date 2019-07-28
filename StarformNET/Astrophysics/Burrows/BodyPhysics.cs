@@ -950,6 +950,61 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				  * Utilities.Pow1_4((1.0 - albedo.DecimalFractions) / (1.0 - GlobalConstants.EARTH_ALBEDO))
 				  * GlobalConstants.EARTH_AVERAGE_KELVIN);
 		}
-	}
+
+        /// <summary>
+        /// The following is Holman & Wiegert's equation 1 from
+        /// Long-Term Stability of Planets in Binary Systems
+        /// The Astronomical Journal, 117:621-628, Jan 1999
+        /// </summary>
+        /// <param name="mass"></param>
+        /// <param name="otherMass"></param>
+        /// <param name="otherSemiMajorAxis"></param>
+        /// <param name="ecc"></param>
+        /// <returns></returns>
+        public Length GetOuterLimit(Mass mass, Mass otherMass, Length otherSemiMajorAxis, Ratio ecc)
+        {
+            if (otherMass.SolarMasses < .001)
+            {
+                return Length.Zero;
+            }
+
+            // The following is Holman & Wiegert's equation 1 from
+            // Long-Term Stability of Planets in Binary Systems
+            // The Astronomical Journal, 117:621-628, Jan 1999
+            double m1 = mass.SolarMasses;
+            double m2 = otherMass.SolarMasses;
+            double mu = m2 / (m1 + m2);
+            double e = otherSemiMajorAxis.AstronomicalUnits;
+            double e2 = Utilities.Pow2(e);
+            double a = ecc.DecimalFractions;
+
+            return Length.FromAstronomicalUnits((0.464 + -0.380 * mu + -0.631 * e + 0.586 * mu * e + 0.150 * e2 + -0.198 * mu * e2) * a);
+        }
+
+        /// <summary>
+        /// Give SatelliteBody radius given a mass and a density.
+        /// </summary>
+        /// <param name="mass"></param>
+        /// <param name="density"></param>
+        /// <returns></returns>
+        public Length GetRadius(Mass mass, Density density)
+        {
+            double volume;
+
+            double m = mass.Grams;
+            volume = m / density.GramsPerCubicCentimeter;
+            return Length.FromKilometers(Math.Pow((3.0 * volume) / (4.0 * Math.PI), (1.0 / 3.0)) / GlobalConstants.CM_PER_KM);
+        }
+
+        public Length GetStellarDustLimit(Mass mass)
+        {
+            return Length.FromAstronomicalUnits(200.0 * Math.Pow(mass.SolarMasses, 1.0 / 3.0));
+        }
+
+        public Length GetEcosphereRadius(Mass mass, Luminosity lum)
+        {
+            return Length.FromKilometers(Math.Sqrt(lum.SolarLuminosities) * GlobalConstants.ASTRONOMICAL_UNIT_KM);
+        }
+    }
 
 }

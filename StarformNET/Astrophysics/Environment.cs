@@ -26,35 +26,6 @@ namespace Primoris.Universe.Stargen.Astrophysics
         }
 
 
-		/// <summary>
-		/// Returns the mass of a star using the Mass-Luminosity relationship.
-		/// </summary>
-		/// <param name="lumRatio">Luminosity ratio of the star</param>
-		/// <returns>Mass ratio</returns>
-		public static double LuminosityToMass(double lumRatio)
-		{
-			double a = lumRatio;
-			if (a <= (0.3815 * Math.Pow(0.6224, 2.5185)))
-			{
-				return 1.46613 * Math.Pow(a, 0.3970617431010522);
-			}
-			else if (a <= 1)
-			{
-				return Math.Pow(a, 0.2197319270490002);
-			}
-			else if (a <= Math.Pow(3.1623, 4.351))
-			{
-				return Math.Pow(a, 0.2298322224775914);
-			}
-			else if (a <= (2.7563 * Math.Pow(16, 3.4704)))
-			{
-				return 0.746654 * Math.Pow(a, 0.2881512217611803);
-			}
-			else
-			{
-				return 0.221579 * Math.Pow(a, 0.4023659115599726);
-			}
-		}
 
         /// <summary>
         /// Returns the luminosity of a star using the Mass-Luminosity relationship.
@@ -86,14 +57,6 @@ namespace Primoris.Universe.Stargen.Astrophysics
 				return 42.321 * Math.Pow(massRatio, 2.4853);
 			}
 		}
-
-        /// <summary>
-        /// Returns true if the planet is tidally locked to its parent body.
-        /// </summary>
-        /*public static bool IsTidallyLocked(SatelliteBody planet)
-        {
-            return (int) planet.DayLength == (int) (planet.OrbitalPeriod * 24);
-        }*/
 
 
         /// <summary>
@@ -218,15 +181,6 @@ namespace Primoris.Universe.Stargen.Astrophysics
             return (GlobalConstants.GRAV_CONSTANT * (mass * GlobalConstants.SOLAR_MASS_IN_GRAMS) / Utilities.Pow2(radius * GlobalConstants.CM_PER_KM));
         }
 
-        /// <summary>
-        /// Calculates the surface gravity of a planet.
-        /// </summary>
-        /// <param name="acceleration">Acceleration in units of cm/sec2</param>
-        /// <returns>Gravity in units of Earth gravities</returns>
-        public static double Gravity(Acceleration acceleration)
-        {
-            return acceleration.CentimetersPerSecondSquared / GlobalConstants.EARTH_ACCELERATION;
-        }
         
 
 
@@ -237,23 +191,6 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
 
 
-
-
-
-        // TODO figure out how this function differs from EffTemp, write summary
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ecosphereRadius"></param>
-        /// <param name="orbitalRadius"></param>
-        /// <param name="albedo"></param>
-        /// <returns></returns>
-        public static double EstTemp(double ecosphereRadius, double orbitalRadius, double albedo)
-        {
-            return Math.Sqrt(ecosphereRadius / orbitalRadius)
-                  * Utilities.Pow1_4((1.0 - albedo) / (1.0 - GlobalConstants.EARTH_ALBEDO))
-                  * GlobalConstants.EARTH_AVERAGE_KELVIN;
-        }
         
 
 
@@ -291,84 +228,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
             return years;
         }
         
-        /// <summary>
-        /// Calculates the minimum molecular weight retained by a planet
-        /// </summary>
-        /*public static double MinMolecularWeight(SatelliteBody planet)
-        {
-            var surfGrav = planet.SurfaceGravityG;
-            var mass = planet.Mass;
-            var radius = planet.Radius.Kilometers;
-            var exosphereTemp = planet.ExosphereTemperature.Kelvins;
-            var temp = planet.ExosphereTemperature.Kelvins;
-            var target = 5.0E9;
 
-            var guess1 = MoleculeLimit(mass, radius, temp);
-            var guess2 = guess1;
-
-            var life = GasLife(guess1, exosphereTemp, surfGrav, radius);
-
-            var loops = 0;
-
-            if (planet.Star != null)
-            {
-                target = planet.Star.Age.Years365;
-            }
-
-            if (life > target)
-            {
-                while ((life > target) && (loops++ < 25))
-                {
-                    guess1 = guess1 / 2.0;
-                    life = GasLife(guess1, exosphereTemp, surfGrav, radius);
-                }
-            }
-            else
-            {
-                while ((life < target) && (loops++ < 25))
-                {
-                    guess2 = guess2 * 2.0;
-                    life = GasLife(guess2, exosphereTemp, surfGrav, radius);
-                }
-            }
-
-            loops = 0;
-
-            while (guess2 - guess1 > 0.1 && loops++ < 25)
-            {
-                var guess3 = (guess1 + guess2) / 2.0;
-                life = GasLife(guess3, exosphereTemp, surfGrav, radius);
-
-                if (life < target)
-                {
-                    guess1 = guess3;
-                }
-                else
-                {
-                    guess2 = guess3;
-                }
-            }
-
-            life = GasLife(guess2, exosphereTemp, surfGrav, radius);
-
-            return guess2;
-        }*/
-
-        /// <summary>
-        /// Inspired partial pressure, taking into account humidification of the air in the nasal
-        /// passage and throat.
-        /// </summary>
-        /// <param name="surf_pressure">Total atmospheric surface pressure in millibars</param>
-        /// <param name="gas_pressure">Partial gas pressure in millibars</param>
-        /// <returns>Inspired partial pressure in millibars</returns>
-        public static double InspiredPartialPressure(double surf_pressure, double gas_pressure)
-        {
-            //  This formula is on Dole's p. 14
-            var pH2O = (GlobalConstants.H20_ASSUMED_PRESSURE);
-            var fraction = gas_pressure / surf_pressure;
-
-            return (surf_pressure - pH2O) * fraction;
-        }
 
 
     }
