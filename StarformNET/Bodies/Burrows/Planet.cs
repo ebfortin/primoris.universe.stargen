@@ -16,10 +16,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
     [Serializable]
 	public class Planet : SatelliteBody
 	{
-		private static readonly IScienceAstrophysics BurrowsPhysics = new BodyPhysics();
-
-
-		public Planet(StellarBody sun, Body parentBody, Atmosphere atmos) : base(BurrowsPhysics, sun, parentBody, atmos) { }
+		public Planet(StellarBody sun, Body parentBody, Atmosphere atmos) : base(new BodyPhysics(), sun, parentBody, atmos) { }
 
 		public Planet(StellarBody sun,
                       Body parentBody,
@@ -35,8 +32,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					  Temperature dayTimeTempK,
 					  Temperature nightTimeTempK,
 					  Temperature surfTempK,
-					  Acceleration surfGrav) : base(BurrowsPhysics,
-							   sun,
+					  Acceleration surfGrav) : base(new BodyPhysics(), sun,
                                parentBody,
 							   semiMajorAxisAU,
 							   eccentricity,
@@ -59,8 +55,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
                        Body parentBody,
 					   bool useRandomTilt,
 					   string planetID,
-					   SystemGenerationOptions genOptions) : base(BurrowsPhysics,
-												   seed,
+					   SystemGenerationOptions genOptions) : base(new BodyPhysics(), seed,
 												   star,
                                                    parentBody,
 												   useRandomTilt,
@@ -68,9 +63,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 												   genOptions)
 		{ }
 
-		public Planet(StellarBody star, Body parentBody, Gas[] atmosComp) : base(BurrowsPhysics, star, parentBody, atmosComp) { }
+		public Planet(StellarBody star, Body parentBody, Gas[] atmosComp) : base(new BodyPhysics(), star, parentBody, atmosComp) { }
 
-		public Planet(StellarBody star, Body parentBody) : base(BurrowsPhysics, star, parentBody) { }
+		public Planet(StellarBody star, Body parentBody) : base(new BodyPhysics(), star, parentBody) { }
 
 		protected override void AdjustPropertiesForRockyBody()
 		{
@@ -138,31 +133,31 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		{
 			var planet = this;
 
-			planet.OrbitZone = Astro.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
-			planet.OrbitalPeriod = Astro.Astronomy.GetPeriod(SemiMajorAxis, Mass, sun.Mass);
+			planet.OrbitZone = Science.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
+			planet.OrbitalPeriod = Science.Astronomy.GetPeriod(SemiMajorAxis, Mass, sun.Mass);
 			if (useRandomTilt)
 			{
 				planet.AxialTilt = Environment.Inclination(SemiMajorAxis);
 			}
 
-			planet.ExosphereTemperature = Astro.Thermodynamics.GetExosphereTemperature(SemiMajorAxis, sun.EcosphereRadius, sun.Temperature);
-			planet.RMSVelocity = Astro.Physics.GetRMSVelocity(Mass.FromGrams(GlobalConstants.MOL_NITROGEN), ExosphereTemperature);
-			planet.CoreRadius = Astro.Planetology.GetCoreRadius(DustMass, OrbitZone, false);
+			planet.ExosphereTemperature = Science.Thermodynamics.GetExosphereTemperature(SemiMajorAxis, sun.EcosphereRadius, sun.Temperature);
+			planet.RMSVelocity = Science.Physics.GetRMSVelocity(Mass.FromGrams(GlobalConstants.MOL_NITROGEN), ExosphereTemperature);
+			planet.CoreRadius = Science.Planetology.GetCoreRadius(DustMass, OrbitZone, false);
 
 			// Calculate the radius as a gas giant, to verify it will retain gas.
 			// Then if mass > Earth, it's at least 5% gas and retains He, it's
 			// some flavor of gas giant.
 
-			planet.Density = Astro.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
+			planet.Density = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
 			planet.Radius = Length.FromKilometers(Environment.VolumeRadius(Mass.SolarMasses, Density.GramsPerCubicCentimeter));
 
 			planet.SurfaceAcceleration = GetAcceleration(Mass, Radius);
 			//planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAcceleration);
 
-			planet.MolecularWeightRetained = Astro.Physics.GetMolecularWeightRetained(SurfaceAcceleration, Mass, Radius, ExosphereTemperature, sun.Age);
+			planet.MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, Mass, Radius, ExosphereTemperature, sun.Age);
 
 			// Is the planet a gas giant?
-			if (Astro.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained))
+			if (Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained))
 			{
 				//Type = GetGasGiantType(MassSM, GasMassSM);
 
@@ -170,8 +165,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			}
 			else // If not, it's rocky.
 			{
-				Radius = Astro.Planetology.GetCoreRadius(Mass, OrbitZone, false);
-				Density = Astro.Physics.GetDensityFromBody(Mass, Radius);
+				Radius = Science.Planetology.GetCoreRadius(Mass, OrbitZone, false);
+				Density = Science.Physics.GetDensityFromBody(Mass, Radius);
 
 				// Radius has changed, we need to adjust Surfa
 				SurfaceAcceleration = GetAcceleration(Mass, Radius);
@@ -179,47 +174,47 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 				AdjustPropertiesForRockyBody();
 
-				MolecularWeightRetained = Astro.Physics.GetMolecularWeightRetained(SurfaceAcceleration, Mass, Radius, ExosphereTemperature, sun.Age);
+				MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, Mass, Radius, ExosphereTemperature, sun.Age);
 			}
 
-			planet.AngularVelocity = Astro.Dynamics.GetAngularVelocity(Mass,
+			planet.AngularVelocity = Science.Dynamics.GetAngularVelocity(Mass,
 																  Radius,
 																  Density,
 																  SemiMajorAxis,
-																  Astro.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained),
+																  Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained),
 																  sun.Mass,
 																  sun.Age);
-			planet.DayLength = Astro.Astronomy.GetDayLength(planet.AngularVelocity, planet.OrbitalPeriod, planet.Eccentricity);
-			planet.HasResonantPeriod = Astro.Planetology.TestHasResonantPeriod(planet.AngularVelocity, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
-			planet.EscapeVelocity = Astro.Dynamics.GetEscapeVelocity(planet.Mass, planet.Radius);
-			planet.VolatileGasInventory = Astro.Physics.GetVolatileGasInventory(Mass,
+			planet.DayLength = Science.Astronomy.GetDayLength(planet.AngularVelocity, planet.OrbitalPeriod, planet.Eccentricity);
+			planet.HasResonantPeriod = Science.Planetology.TestHasResonantPeriod(planet.AngularVelocity, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
+			planet.EscapeVelocity = Science.Dynamics.GetEscapeVelocity(planet.Mass, planet.Radius);
+			planet.VolatileGasInventory = Science.Physics.GetVolatileGasInventory(Mass,
 																	   EscapeVelocity,
 																	   RMSVelocity,
 																	   sun.Mass,
 																	   GasMass,
 																	   OrbitZone,
 																	   HasGreenhouseEffect);
-			planet.HillSphere = Astro.Astronomy.GetHillSphere(sun.Mass, planet.Mass, planet.SemiMajorAxis);
+			planet.HillSphere = Science.Astronomy.GetHillSphere(sun.Mass, planet.Mass, planet.SemiMajorAxis);
 
-			if (!Astro.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained))
+			if (!Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained))
 			{
-				Pressure surfpres = Astro.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
+				Pressure surfpres = Science.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
 
 
-				planet.BoilingPointWater = Astro.Thermodynamics.GetBoilingPointWater(surfpres);
+				planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);
 
 				// Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
 				// planet.cloud_cover, planet.ice_cover
 				AdjustSurfaceTemperatures(surfpres);
 
-				planet.IsTidallyLocked = Astro.Planetology.TestIsTidallyLocked(DayLength, OrbitalPeriod);
+				planet.IsTidallyLocked = Science.Planetology.TestIsTidallyLocked(DayLength, OrbitalPeriod);
 
 				// Generate complete atmosphere.
 				Atmosphere = new Atmosphere(planet, genOptions.GasTable);
-                HasGreenhouseEffect = Astro.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & Atmosphere.Composition.Count > 0;
+                HasGreenhouseEffect = Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & Atmosphere.Composition.Count > 0;
             }
 
-			Type = Astro.Planetology.GetBodyType(Mass,
+			Type = Science.Planetology.GetBodyType(Mass,
 										 GasMass,
 										 MolecularWeightRetained,
 										 Atmosphere != null ? Atmosphere.SurfacePressure : Pressure.FromMillibars(0.0),
@@ -303,7 +298,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		/// <param name="planet"></param>
 		protected override void AdjustSurfaceTemperatures(Pressure surfpres)
 		{
-			var initTemp = Astro.Thermodynamics.GetEstimatedTemperature(StellarBody.EcosphereRadius, SemiMajorAxis, Albedo);
+			var initTemp = Science.Thermodynamics.GetEstimatedTemperature(StellarBody.EcosphereRadius, SemiMajorAxis, Albedo);
 
 			//var h2Life = GasLife(GlobalConstants.MOL_HYDROGEN, planet);
 			//var h2oLife = GasLife(GlobalConstants.WATER_VAPOR, planet);
@@ -360,8 +355,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				planet.Albedo = Ratio.FromDecimalFractions(GlobalConstants.EARTH_ALBEDO);
 
-				effectiveTemp = Astro.Thermodynamics.GetEffectiveTemperature(planet.StellarBody.EcosphereRadius, planet.SemiMajorAxis, planet.Albedo);
-				greenhouseTemp = Astro.Thermodynamics.GetGreenhouseTemperatureRise(Astro.Planetology.GetOpacity(planet.MolecularWeightRetained, surfpres), effectiveTemp, surfpres);
+				effectiveTemp = Science.Thermodynamics.GetEffectiveTemperature(planet.StellarBody.EcosphereRadius, planet.SemiMajorAxis, planet.Albedo);
+				greenhouseTemp = Science.Thermodynamics.GetGreenhouseTemperatureRise(Science.Planetology.GetOpacity(planet.MolecularWeightRetained, surfpres), effectiveTemp, surfpres);
 				planet.Temperature = effectiveTemp + greenhouseTemp;
 
 				SetTempRange(surfpres.Millibars);
@@ -371,27 +366,27 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				planet.HasGreenhouseEffect = false;
 
-				planet.VolatileGasInventory = Astro.Physics.GetVolatileGasInventory(planet.Mass,
+				planet.VolatileGasInventory = Science.Physics.GetVolatileGasInventory(planet.Mass,
 					planet.EscapeVelocity, planet.RMSVelocity, planet.Parent.Mass, planet.GasMass,
 					planet.OrbitZone, planet.HasGreenhouseEffect);
 				//planet.Atmosphere.SurfacePressure = Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
 
-				planet.BoilingPointWater = Astro.Thermodynamics.GetBoilingPointWater(surfpres);
+				planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);
 			}
 
-			waterRaw = planet.WaterCoverFraction = Astro.Planetology.GetWaterFraction(planet.VolatileGasInventory, planet.Radius);
-			cloudsRaw = planet.CloudCoverFraction = Astro.Planetology.GetCloudFraction(planet.Temperature,
+			waterRaw = planet.WaterCoverFraction = Science.Planetology.GetWaterFraction(planet.VolatileGasInventory, planet.Radius);
+			cloudsRaw = planet.CloudCoverFraction = Science.Planetology.GetCloudFraction(planet.Temperature,
 													 planet.MolecularWeightRetained,
 													 planet.Radius,
 													 planet.WaterCoverFraction);
-			planet.IceCoverFraction = Astro.Planetology.GetIceFraction(planet.WaterCoverFraction, planet.Temperature);
+			planet.IceCoverFraction = Science.Planetology.GetIceFraction(planet.WaterCoverFraction, planet.Temperature);
 
 			if (planet.HasGreenhouseEffect && surfpres.Millibars > 0.0)
 			{
 				planet.CloudCoverFraction = Ratio.FromDecimalFractions(1.0);
 			}
 
-			if (planet.DaytimeTemperature >= planet.BoilingPointWater && !first && !(Astro.Planetology.TestIsTidallyLocked(planet.DayLength, planet.OrbitalPeriod) || planet.HasResonantPeriod))
+			if (planet.DaytimeTemperature >= planet.BoilingPointWater && !first && !(Science.Planetology.TestIsTidallyLocked(planet.DayLength, planet.OrbitalPeriod) || planet.HasResonantPeriod))
 			{
 				planet.WaterCoverFraction = Ratio.FromDecimalFractions(0.0);
 				boilOff = true;
@@ -411,11 +406,11 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				planet.WaterCoverFraction = Ratio.FromDecimalFractions(0.0);
 			}
 
-			planet.Albedo = Astro.Planetology.GetAlbedo(planet.WaterCoverFraction, planet.CloudCoverFraction, planet.IceCoverFraction, surfpres);
+			planet.Albedo = Science.Planetology.GetAlbedo(planet.WaterCoverFraction, planet.CloudCoverFraction, planet.IceCoverFraction, surfpres);
 
-			effectiveTemp = Astro.Thermodynamics.GetEffectiveTemperature(planet.StellarBody.EcosphereRadius, planet.SemiMajorAxis, planet.Albedo);
-			greenhouseTemp = Astro.Thermodynamics.GetGreenhouseTemperatureRise(
-				Astro.Planetology.GetOpacity(planet.MolecularWeightRetained, surfpres),
+			effectiveTemp = Science.Thermodynamics.GetEffectiveTemperature(planet.StellarBody.EcosphereRadius, planet.SemiMajorAxis, planet.Albedo);
+			greenhouseTemp = Science.Thermodynamics.GetGreenhouseTemperatureRise(
+				Science.Planetology.GetOpacity(planet.MolecularWeightRetained, surfpres),
 				effectiveTemp, surfpres);
 			planet.Temperature = effectiveTemp + greenhouseTemp;
 

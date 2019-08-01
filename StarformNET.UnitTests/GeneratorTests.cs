@@ -90,7 +90,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 			private StellarBody GetTestStar()
 			{
                 var phy = new BodyPhysics();
-				return new Star(phy, Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10));
+				return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10));
 			}
 
 			private SatelliteBody GetTestPlanetAtmosphere()

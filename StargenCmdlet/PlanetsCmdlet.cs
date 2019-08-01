@@ -92,9 +92,8 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			do
 			{
                 //sys = SystemGenerator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun: sun);
-                IScienceAstrophysics phy = new BodyPhysics();
-                IBodyFormationAlgorithm frm = new Accrete(CloudEccentricity, GasDensityRatio);
-                sun.GenerateSystem(frm, CreatePlanet, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio));
+                sun.BodyFormationScience = new Accrete(CloudEccentricity, GasDensityRatio);
+                sun.GenerateSystem(CreatePlanet, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio));
                 findsys = (from p in sun.Satellites where p.IsHabitable select p).Count() > 0;
 			} while (!findsys && OnlyHabitableSystem);
 

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Systems;
+using Primoris.Universe.Stargen.Services;
 using Environment = Primoris.Universe.Stargen.Astrophysics.Environment;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using UnitsNet;
@@ -17,15 +18,11 @@ namespace Primoris.Universe.Stargen.Bodies
                                                             string planetID,
                                                             SystemGenerationOptions genOptions);
 
-	// TODO break this class up
-	// TODO orbit zone is supposedly no longer used anywhere. Check references and possibly remove.
 
 	[Serializable]
 	public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 	{
-		//public override Body Parent { get; }
 
-		public Atmosphere Atmosphere { get; protected set; }
 
 		#region Orbit data
 
@@ -141,18 +138,19 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		public bool HasGreenhouseEffect { get; protected set; }
 
-		#endregion
+        #endregion
 
 
-		#region Atmospheric data
-		/// <summary>
-		/// The root-mean-square velocity of N2 at the planet's exosphere given
-		/// in cm/sec. Used to determine where or not a planet is capable of
-		/// retaining an atmosphere.
-		/// </summary>
-		//public double RMSVelocityCMSec { get; protected set; }
+        #region Atmospheric data
 
-		public Speed RMSVelocity { get; set; }
+        public Atmosphere Atmosphere { get; protected set; }
+
+        /// <summary>
+        /// The root-mean-square velocity of N2 at the planet's exosphere given
+        /// in cm/sec. Used to determine where or not a planet is capable of
+        /// retaining an atmosphere.
+        /// </summary>
+        public Speed RMSVelocity { get; protected set; }
 
 		/// <summary>
 		/// The smallest molecular weight the planet is capable of retaining.
@@ -247,11 +245,12 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		public Ratio IceCoverFraction { get; protected set; }
 
-		#endregion
+        #endregion
 
-		public SatelliteBody(IScienceAstrophysics phys, StellarBody sun, Body parentBody, Atmosphere atmos)
+
+        public SatelliteBody(IScienceAstrophysics phy, StellarBody sun, Body parentBody, Atmosphere atmos)
 		{
-			Astro = phys;
+            Science = phy;
 
 			Parent = parentBody;
             StellarBody = sun;
@@ -260,8 +259,8 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		}
 
-		public SatelliteBody(IScienceAstrophysics phys,
-					  StellarBody sun,
+		public SatelliteBody(IScienceAstrophysics phy,
+                      StellarBody sun,
                       Body parentBody,
 					  Length semiMajorAxisAU,
 					  Ratio eccentricity,
@@ -277,7 +276,7 @@ namespace Primoris.Universe.Stargen.Bodies
 					  Temperature surfTempK,
 					  Acceleration surfGrav)
 		{
-			Astro = phys;
+            Science = phy;
 
 			Parent = parentBody;
             StellarBody = sun;
@@ -285,7 +284,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			SemiMajorAxis = semiMajorAxisAU;
 			Eccentricity = eccentricity;
 			AxialTilt = axialTilt;
-			OrbitZone = Astro.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
+			OrbitZone = Science.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
 			DayLength = dayLengthHours;
 			OrbitalPeriod = orbitalPeriodDays;
 
@@ -293,16 +292,16 @@ namespace Primoris.Universe.Stargen.Bodies
 			GasMass = gasMassSM;
 			DustMass = Mass - GasMass;
 			Radius = radius;
-			Density = Astro.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
+			Density = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
 			ExosphereTemperature = Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(SemiMajorAxis / sun.EcosphereRadius));
 			SurfaceAcceleration = surfGrav; //Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * massSM.Grams / Utilities.Pow2(radius.Centimeters));
-			EscapeVelocity = Astro.Dynamics.GetEscapeVelocity(Mass, Radius);
+			EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
 
 			DaytimeTemperature = dayTimeTempK;
 			NighttimeTemperature = nightTimeTempK;
 			Temperature = surfTempK;
 			//SurfaceGravityG = surfGrav;
-			MolecularWeightRetained = Astro.Physics.GetMolecularWeightRetained(SurfaceAcceleration, Mass, Radius, ExosphereTemperature, sun.Age);
+			MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, Mass, Radius, ExosphereTemperature, sun.Age);
 
 			Atmosphere = new Atmosphere(this, surfPressure);
 
@@ -315,9 +314,9 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		/// <param name="phys"></param>
 		/// <param name="star"></param>
-		public SatelliteBody(IScienceAstrophysics phys, StellarBody star, Body parentBody)
+		public SatelliteBody(IScienceAstrophysics phy, StellarBody star, Body parentBody)
 		{
-			Astro = phys;
+            Science = phy;
 
             StellarBody = star;
 			Parent = parentBody;
@@ -325,9 +324,9 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		}
 
-		public SatelliteBody(IScienceAstrophysics phys, StellarBody star, Body parentBody, Gas[] atmosComp)
+		public SatelliteBody(IScienceAstrophysics phy, StellarBody star, Body parentBody, Gas[] atmosComp)
 		{
-			Astro = phys;
+            Science = phy;
 
             StellarBody = star;
 			Parent = parentBody;
@@ -337,9 +336,9 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		} 
 
-		public SatelliteBody(IScienceAstrophysics phys, Seed seed, StellarBody star, Body parentBody, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
+		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
 		{
-			Astro = phys;
+            Science = phy;
 
             StellarBody = star;
 			Parent = parentBody;
@@ -356,13 +355,15 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		}
 
-		private void Check()
+        public override int Position { get => Array.IndexOf(Parent.Satellites.ToArray(), this); protected set { } }
+
+        private void Check()
 		{
 			Atmosphere ??= new Atmosphere(this);
 
-			Illumination = Astro.Astronomy.GetMinimumIllumination(SemiMajorAxis, StellarBody.Luminosity);
-			IsHabitable = Astro.Planetology.TestIsHabitable(DayLength, OrbitalPeriod, Atmosphere.Breathability, HasResonantPeriod, IsTidallyLocked);
-			IsEarthlike = Astro.Planetology.TestIsEarthLike(Temperature,
+			Illumination = Science.Astronomy.GetMinimumIllumination(SemiMajorAxis, StellarBody.Luminosity);
+			IsHabitable = Science.Planetology.TestIsHabitable(DayLength, OrbitalPeriod, Atmosphere.Breathability, HasResonantPeriod, IsTidallyLocked);
+			IsEarthlike = Science.Planetology.TestIsEarthLike(Temperature,
 												   WaterCoverFraction,
 												   CloudCoverFraction,
 												   IceCoverFraction,

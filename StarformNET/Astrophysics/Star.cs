@@ -10,25 +10,27 @@ namespace Primoris.Universe.Stargen.Astrophysics
 {
     public class Star : StellarBody
     {
-        public Star(IScienceAstrophysics phy) : base(phy)
+        public Star() : base()
         {
         }
 
-        public Star(IScienceAstrophysics phy, Mass mass) : base(phy, mass)
+        public Star(Mass mass) : base(mass)
         {
         }
 
-        public Star(IScienceAstrophysics phy, StellarType st) : base(phy, st)
+        public Star(StellarType st) : base(st)
         {
         }
 
-        public Star(IScienceAstrophysics phy, StellarType st, string name) : base(phy, st, name)
+        public Star(StellarType st, string name) : base(st, name)
         {
         }
 
-        public Star(IScienceAstrophysics phy, Mass mass, Luminosity lum, Duration age) : base(phy, mass, lum, age)
+        public Star(Mass mass, Luminosity lum, Duration age) : base(mass, lum, age)
         {
         }
+
+        public override int Position { get => 0; protected set { } }
 
         protected override IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc, bool useRandomTilt, SystemGenerationOptions genOptions)
         {

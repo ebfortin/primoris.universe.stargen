@@ -30,7 +30,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			genOptions ??= new SystemGenerationOptions();
 
             var phy = new BodyPhysics();
-			sun ??= new Star(phy);
+			sun ??= new Star() { Science = phy };
 			var useRandomTilt = seedSystem == null;
 
 			var accrete = new Accrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);

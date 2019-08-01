@@ -113,8 +113,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
                 Name = ng.NextName();
             }
 
-            var phy = new BodyPhysics();
-            return new Star(phy, st, Name);
+            return new Star(st, Name) { Science = new BodyPhysics() };
         }
 	}
 }

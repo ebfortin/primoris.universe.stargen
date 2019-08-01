@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Main = Primoris.Universe.Stargen;
 using Primoris.Universe.Stargen.Systems;
+using Primoris.Universe.Stargen.Services;
 using System.Drawing;
 using UnitsNet;
 using Primoris.Universe.Stargen.Astrophysics;
@@ -18,14 +19,13 @@ namespace Primoris.Universe.Stargen.Bodies
         public static readonly Duration MinSunAge = Duration.FromYears365(1.0E9);
         public static readonly Duration MaxSunAge = Duration.FromYears365(6.0E9);
 
-        public StellarBody(IScienceAstrophysics phy) : this(phy, Mass.FromSolarMasses(Utilities.RandomNumber(0.7, 1.4))) { }
+        public StellarBody() : this(Mass.FromSolarMasses(Utilities.RandomNumber(0.7, 1.4))) { }
 
-        public StellarBody(IScienceAstrophysics phy, Mass mass) : this(phy, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
+        public StellarBody(Mass mass) : this(mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
 
-        public StellarBody(IScienceAstrophysics phy, Mass mass, Luminosity lum, Duration age)
+        public StellarBody(Mass mass, Luminosity lum, Duration age)
         {
             Parent = null;
-            Astro = phy;
 
             if (mass.SolarMasses < 0.2 || mass.SolarMasses > 1.5)
             {
@@ -51,13 +51,13 @@ namespace Primoris.Universe.Stargen.Bodies
             Radius = StellarType.Radius;
             Luminosity = StellarType.Luminosity;
             Temperature = StellarType.Temperature;
-            EscapeVelocity = Astro.Dynamics.GetEscapeVelocity(Mass, Radius);
+            EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
         }
 
-        public StellarBody(IScienceAstrophysics phy, StellarType st)
+        public StellarBody(StellarType st)
         {
             Parent = null;
-            Astro = phy;
+
             StellarType = st;
             Life = Duration.FromYears365(1.0E10 * (st.Mass.SolarMasses / st.Luminosity.SolarLuminosities));
             Age = Duration.FromYears365(Utilities.RandomNumber(MinSunAge.Years365, Life < MaxSunAge ? Life.Years365 : MaxSunAge.Years365));
@@ -66,13 +66,17 @@ namespace Primoris.Universe.Stargen.Bodies
             Radius = StellarType.Radius;
             Luminosity = StellarType.Luminosity;
             Temperature = StellarType.Temperature;
-            EscapeVelocity = Astro.Dynamics.GetEscapeVelocity(Mass, Radius);
+            EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
         }
 
-        public StellarBody(IScienceAstrophysics phy, StellarType st, string name) : this(phy, st)
+        public StellarBody(StellarType st, string name) : this(st)
         {
             Name = name;
         }
+
+
+        private IBodyFormationAlgorithm _frm = null;
+        public virtual IBodyFormationAlgorithm BodyFormationScience { get => _frm is null ? Provider.Use().GetService<IBodyFormationAlgorithm>() : _frm; set => _frm = value; }
 
         //public override Body Parent { get => null; protected set { } }
 
@@ -101,7 +105,7 @@ namespace Primoris.Universe.Stargen.Bodies
         /// </summary>
         public Duration Life { get; protected set; }
 
-        public Length EcosphereRadius { get => Astro.Astronomy.GetEcosphereRadius(Mass, Luminosity); }
+        public Length EcosphereRadius { get => Science.Astronomy.GetEcosphereRadius(Mass, Luminosity); }
 
         /// <summary>
         /// Luminosity of the star in solar luminosity units (L<sub>☉</sub>).
@@ -127,9 +131,10 @@ namespace Primoris.Universe.Stargen.Bodies
         /// </summary>
         public Ratio BinaryEccentricity { get; protected set; } = Ratio.Zero;
 
-        public virtual void GenerateSystem(IBodyFormationAlgorithm frm, CreateSatelliteBodyDelegate createFunc, SystemGenerationOptions genOptions)
+        public virtual void GenerateSystem(CreateSatelliteBodyDelegate createFunc, SystemGenerationOptions genOptions)
         {
-            var phy = Astro;
+            var phy = Science;
+            var frm = BodyFormationScience;
 
             genOptions ??= new SystemGenerationOptions();
             var sun = this;

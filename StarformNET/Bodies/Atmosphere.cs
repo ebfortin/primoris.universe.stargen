@@ -37,7 +37,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		public Atmosphere(SatelliteBody planet, ChemType[] gasTable)
 		{
 			Planet = planet;
-			SurfacePressure = planet.Astro.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
+			SurfacePressure = planet.Science.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
 			CalculateGases(planet, gasTable);
 
 			Breathability = CalculateBreathability();
@@ -100,7 +100,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			{
 				var gas = Composition[index];
 
-				var ipp = planet.Astro.Physics.GetInspiredPartialPressure(SurfacePressure, Composition[index].SurfacePressure);
+				var ipp = planet.Science.Physics.GetInspiredPartialPressure(SurfacePressure, Composition[index].SurfacePressure);
 				if (ipp > gas.GasType.MaxIpp)
 				{
 					poisonous = true;
@@ -159,7 +159,7 @@ namespace Primoris.Universe.Stargen.Bodies
 					double abund, react;
 					CheckForSpecialRules(out abund, out react, pressure, planet, gasTable[i]);
 
-					Speed vrms = Planet.Astro.Physics.GetRMSVelocity(gasTable[i].Weight, planet.ExosphereTemperature);
+					Speed vrms = Planet.Science.Physics.GetRMSVelocity(gasTable[i].Weight, planet.ExosphereTemperature);
 					double pvrms = Math.Pow(1 / (1 + vrms / planet.EscapeVelocity), sun.Age.Years365 / 1e9);
 
 					double fract = 1 - planet.MolecularWeightRetained / gasTable[i].Weight;

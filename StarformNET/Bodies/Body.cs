@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Primoris.Universe.Stargen.Astrophysics;
+using Primoris.Universe.Stargen.Services;
 using UnitsNet;
 
 
@@ -9,7 +10,8 @@ namespace Primoris.Universe.Stargen.Bodies
 {
 	public abstract class Body
 	{
-        public virtual IScienceAstrophysics Astro { get; protected set; }
+        private IScienceAstrophysics _phy = null;
+        public virtual IScienceAstrophysics Science { get => _phy is null ? Provider.Use().GetService<IScienceAstrophysics>() : _phy; set => _phy = value; }
 
         public virtual int Position { get; protected set; }
 

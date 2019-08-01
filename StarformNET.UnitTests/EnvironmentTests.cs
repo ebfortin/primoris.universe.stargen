@@ -352,9 +352,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 
             private SatelliteBody GetMockPlanet(Func<Gas[]> mockAtmoGen)
             {
-                var phy = new BodyPhysics();
-
-                var star = new Star(phy);
+                var star = new Star() { Science = new BodyPhysics() };
                 var planet = new Planet(star, star, mockAtmoGen());
 
 				//planet.RecalculateGases(mockAtmoGen());
