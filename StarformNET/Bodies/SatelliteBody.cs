@@ -14,6 +14,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
     public delegate SatelliteBody CreateSatelliteBodyDelegate(Seed seed,
                                                             StellarBody star,
+															int pos,
                                                             bool useRandomTilt,
                                                             string planetID,
                                                             SystemGenerationOptions genOptions);
@@ -248,6 +249,7 @@ namespace Primoris.Universe.Stargen.Bodies
         #endregion
 
 
+		public SatelliteBody(StellarBody sun, Body parentBody, Atmosphere atmos) : this(Provider.Use().GetService<IScienceAstrophysics>(), sun, parentBody, atmos) { }
         public SatelliteBody(IScienceAstrophysics phy, StellarBody sun, Body parentBody, Atmosphere atmos)
 		{
             Science = phy;
@@ -259,6 +261,36 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		}
 
+		public SatelliteBody(StellarBody sun,
+					  Body parentBody,
+					  Length semiMajorAxisAU,
+					  Ratio eccentricity,
+					  Angle axialTilt,
+					  Duration dayLengthHours,
+					  Duration orbitalPeriodDays,
+					  Mass massSM,
+					  Mass gasMassSM,
+					  Length radius,
+					  Pressure surfPressure,
+					  Temperature dayTimeTempK,
+					  Temperature nightTimeTempK,
+					  Temperature surfTempK,
+					  Acceleration surfGrav) : this(Provider.Use().GetService<IScienceAstrophysics>(),
+									 sun,
+									 parentBody,
+									 semiMajorAxisAU,
+									 eccentricity,
+									 axialTilt,
+									 dayLengthHours,
+									 orbitalPeriodDays,
+									 massSM,
+									 gasMassSM,
+									 radius,
+									 surfPressure,
+									 dayTimeTempK,
+									 nightTimeTempK,
+									 surfTempK,
+									 surfGrav) { } 
 		public SatelliteBody(IScienceAstrophysics phy,
                       StellarBody sun,
                       Body parentBody,
@@ -309,6 +341,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		}
 
+		public SatelliteBody(StellarBody star, Body parentBody) : this(Provider.Use().GetService<IScienceAstrophysics>(), star, parentBody) { }
 		/// <summary>
 		/// TODO: This constructor do not work!!!
 		/// </summary>
@@ -324,6 +357,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		}
 
+		public SatelliteBody(StellarBody star, Body parentBody, Gas[] atmosComp) : this(Provider.Use().GetService<IScienceAstrophysics>(), star, parentBody, atmosComp) { }
 		public SatelliteBody(IScienceAstrophysics phy, StellarBody star, Body parentBody, Gas[] atmosComp)
 		{
             Science = phy;
@@ -336,7 +370,25 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		} 
 
-		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions)
+		public SatelliteBody(Seed seed,
+					   StellarBody star,
+					   Body parentBody,
+					   bool useRandomTilt,
+					   string planetID,
+					   SystemGenerationOptions genOptions) : this(Provider.Use().GetService<IScienceAstrophysics>(),
+												   seed, 
+												   star,
+												   parentBody,
+												   useRandomTilt,
+												   planetID,
+												   genOptions) { }
+		public SatelliteBody(IScienceAstrophysics phy,
+					   Seed seed,
+					   StellarBody star,
+					   Body parentBody,
+					   bool useRandomTilt,
+					   string planetID,
+					   SystemGenerationOptions genOptions)
 		{
             Science = phy;
 
@@ -354,8 +406,6 @@ namespace Primoris.Universe.Stargen.Bodies
 
 			Check();
 		}
-
-        public override int Position { get => Array.IndexOf(Parent.Satellites.ToArray(), this); protected set { } }
 
         private void Check()
 		{

@@ -15,10 +15,10 @@ namespace Primoris.Universe.Stargen.Services
 
         public static Provider Use()
         {
-            if (_instance is null)
-                return new Provider();
-            else
-                return _instance;
+			if (_instance is null)
+				_instance = new Provider();
+
+			return _instance;
         }
 
 
@@ -41,7 +41,7 @@ namespace Primoris.Universe.Stargen.Services
             where T : class
         {
             if (!_services.ContainsKey(typeof(T)))
-                throw new NotSupportedException();
+                throw new MissingServiceConfigurationException();
 
             return _services[typeof(T)] as T;
         }

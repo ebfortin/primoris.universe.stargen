@@ -19,12 +19,16 @@ namespace Primoris.Universe.Stargen.Bodies
         public static readonly Duration MinSunAge = Duration.FromYears365(1.0E9);
         public static readonly Duration MaxSunAge = Duration.FromYears365(6.0E9);
 
-        public StellarBody() : this(Mass.FromSolarMasses(Utilities.RandomNumber(0.7, 1.4))) { }
+		public StellarBody() : this(Provider.Use().GetService<IScienceAstrophysics>()) { }
+        public StellarBody(IScienceAstrophysics phy) : this(phy, Mass.FromSolarMasses(Utilities.RandomNumber(0.7, 1.4))) { }
 
-        public StellarBody(Mass mass) : this(mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
+		public StellarBody(Mass mass) : this(Provider.Use().GetService<IScienceAstrophysics>(), mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
+        public StellarBody(IScienceAstrophysics phy, Mass mass) : this(phy, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
 
-        public StellarBody(Mass mass, Luminosity lum, Duration age)
+		public StellarBody(Mass mass, Luminosity lum, Duration age) : this(Provider.Use().GetService<IScienceAstrophysics>(), mass, lum, age) { }
+        public StellarBody(IScienceAstrophysics phy, Mass mass, Luminosity lum, Duration age)
         {
+            Science = phy;
             Parent = null;
 
             if (mass.SolarMasses < 0.2 || mass.SolarMasses > 1.5)
@@ -40,7 +44,7 @@ namespace Primoris.Universe.Stargen.Bodies
             StellarType = StellarType.FromLuminosityAndRadius(lum, Length.FromSolarRadiuses(1.0));
 
             //EcosphereRadiusAU = Math.Sqrt(lum);
-            Life = Duration.FromYears365(1.0E10 * (Mass.SolarMasses / Luminosity.SolarLuminosities));
+            Life = Duration.FromYears365(1.0E10 * (mass.SolarMasses / lum.SolarLuminosities));
 
             if (age.Years365 == double.MaxValue)
                 Age = Duration.FromYears365(Utilities.RandomNumber(MinSunAge.Years365, Life < MaxSunAge ? Life.Years365 : MaxSunAge.Years365));
@@ -54,8 +58,10 @@ namespace Primoris.Universe.Stargen.Bodies
             EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
         }
 
-        public StellarBody(StellarType st)
+		public StellarBody(StellarType st) : this(Provider.Use().GetService<IScienceAstrophysics>(), st) { }
+        public StellarBody(IScienceAstrophysics phy, StellarType st)
         {
+            Science = phy;
             Parent = null;
 
             StellarType = st;
@@ -69,7 +75,8 @@ namespace Primoris.Universe.Stargen.Bodies
             EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
         }
 
-        public StellarBody(StellarType st, string name) : this(st)
+		public StellarBody(StellarType st, string name) : this(Provider.Use().GetService<IScienceAstrophysics>(), st, name) { }
+        public StellarBody(IScienceAstrophysics phy, StellarType st, string name) : this(phy, st)
         {
             Name = name;
         }

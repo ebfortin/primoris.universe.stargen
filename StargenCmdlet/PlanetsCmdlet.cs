@@ -77,11 +77,12 @@ namespace Primoris.Universe.Stargen.Cmdlets
 
         private SatelliteBody CreatePlanet(Seed seed,
                                         StellarBody star,
+										int pos,
                                         bool useRandomTilt,
                                         string planetID,
                                         SystemGenerationOptions genOptions)
         {
-            return new Planet(seed, star, star, useRandomTilt, planetID, genOptions);
+			return new Planet(seed, star, star, useRandomTilt, planetID, genOptions) { Position = pos };
         }
 
 		protected override void ProcessRecord()
@@ -91,7 +92,6 @@ namespace Primoris.Universe.Stargen.Cmdlets
 
 			do
 			{
-                //sys = SystemGenerator.GenerateStellarSystem(Name, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio), sun: sun);
                 sun.BodyFormationScience = new Accrete(CloudEccentricity, GasDensityRatio);
                 sun.GenerateSystem(CreatePlanet, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio));
                 findsys = (from p in sun.Satellites where p.IsHabitable select p).Count() > 0;

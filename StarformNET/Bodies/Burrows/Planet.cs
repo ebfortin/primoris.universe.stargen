@@ -16,7 +16,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
     [Serializable]
 	public class Planet : SatelliteBody
 	{
-		public Planet(StellarBody sun, Body parentBody, Atmosphere atmos) : base(new BodyPhysics(), sun, parentBody, atmos) { }
+		public Planet(StellarBody sun, Body parentBody, Atmosphere atmos) : base(sun, parentBody, atmos) { }
 
 		public Planet(StellarBody sun,
                       Body parentBody,
@@ -32,7 +32,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					  Temperature dayTimeTempK,
 					  Temperature nightTimeTempK,
 					  Temperature surfTempK,
-					  Acceleration surfGrav) : base(new BodyPhysics(), sun,
+					  Acceleration surfGrav) : base(sun,
                                parentBody,
 							   semiMajorAxisAU,
 							   eccentricity,
@@ -55,7 +55,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
                        Body parentBody,
 					   bool useRandomTilt,
 					   string planetID,
-					   SystemGenerationOptions genOptions) : base(new BodyPhysics(), seed,
+					   SystemGenerationOptions genOptions) : base(seed,
 												   star,
                                                    parentBody,
 												   useRandomTilt,
@@ -63,12 +63,33 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 												   genOptions)
 		{ }
 
-		public Planet(StellarBody star, Body parentBody, Gas[] atmosComp) : base(new BodyPhysics(), star, parentBody, atmosComp) { }
+		public Planet(StellarBody star, Body parentBody, Gas[] atmosComp) : base(star, parentBody, atmosComp) { }
 
-		public Planet(StellarBody star, Body parentBody) : base(new BodyPhysics(), star, parentBody) { }
+		public Planet(StellarBody star, Body parentBody) : base(star, parentBody) { }
+
+		public Planet(IScienceAstrophysics phy, StellarBody sun, Body parentBody, Atmosphere atmos) : base(phy, sun, parentBody, atmos)
+		{
+		}
+
+		public Planet(IScienceAstrophysics phy, StellarBody sun, Body parentBody, Length semiMajorAxisAU, Ratio eccentricity, Angle axialTilt, Duration dayLengthHours, Duration orbitalPeriodDays, Mass massSM, Mass gasMassSM, Length radius, Pressure surfPressure, Temperature dayTimeTempK, Temperature nightTimeTempK, Temperature surfTempK, Acceleration surfGrav) : base(phy, sun, parentBody, semiMajorAxisAU, eccentricity, axialTilt, dayLengthHours, orbitalPeriodDays, massSM, gasMassSM, radius, surfPressure, dayTimeTempK, nightTimeTempK, surfTempK, surfGrav)
+		{
+		}
+
+		public Planet(IScienceAstrophysics phy, StellarBody star, Body parentBody) : base(phy, star, parentBody)
+		{
+		}
+
+		public Planet(IScienceAstrophysics phy, StellarBody star, Body parentBody, Gas[] atmosComp) : base(phy, star, parentBody, atmosComp)
+		{
+		}
+
+		public Planet(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions) : base(phy, seed, star, parentBody, useRandomTilt, planetID, genOptions)
+		{
+		}
 
 		protected override void AdjustPropertiesForRockyBody()
 		{
+			// TODO: Remove last references to Environment.
 			double age = Parent.Age.Years365;
 			double massSM = Mass.SolarMasses;
 			double gasMassSM = GasMass.SolarMasses;

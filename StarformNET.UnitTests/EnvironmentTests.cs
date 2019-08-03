@@ -7,6 +7,7 @@ using Primoris.Universe.Stargen.Astrophysics;
 using Environment = Primoris.Universe.Stargen.Astrophysics.Environment;
 using Primoris.Universe.Stargen.Bodies.Burrows;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
+using Primoris.Universe.Stargen.Services;
 using UnitsNet;
 
 
@@ -320,6 +321,14 @@ namespace Primoris.Universe.Stargen.UnitTests
                 {"CO2", new ChemType(GlobalConstants.AN_CO2, "CO2", "CO<SUB><SMALL>2</SMALL></SUB>", "CarbonDioxide",   44.0000, 194.66, 194.66,  0.001,     0.01,        0.0005,        0,     GlobalConstants.MAX_CO2_IPP) },
             };
 
+			//private static Provider _dummy = Provider.Use().WithAstrophysics(new BodyPhysics());
+
+			[TestInitialize]
+			public void InitializeTests()
+			{
+				Provider.Use().WithAstrophysics(new BodyPhysics());
+			}
+
             private Gas[] GetMockBreathableAtmo()
             {
                 return new Gas[]
@@ -352,7 +361,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 
             private SatelliteBody GetMockPlanet(Func<Gas[]> mockAtmoGen)
             {
-                var star = new Star() { Science = new BodyPhysics() };
+				var star = new Star();
                 var planet = new Planet(star, star, mockAtmoGen());
 
 				//planet.RecalculateGases(mockAtmoGen());

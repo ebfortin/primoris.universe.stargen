@@ -11,9 +11,9 @@ namespace Primoris.Universe.Stargen.Bodies
 	public abstract class Body
 	{
         private IScienceAstrophysics _phy = null;
-        public virtual IScienceAstrophysics Science { get => _phy is null ? Provider.Use().GetService<IScienceAstrophysics>() : _phy; set => _phy = value; }
+        public IScienceAstrophysics Science { get => _phy is null ? Provider.Use().GetService<IScienceAstrophysics>() : _phy; set => _phy = value; }
 
-        public virtual int Position { get; protected set; }
+        public int Position { get; set; }
 
         public string Name { get; protected set; }
 
