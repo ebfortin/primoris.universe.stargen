@@ -138,7 +138,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 			public void TestEmptyChemTable()
 			{
 				var planet = GetTestPlanetAtmosphere();
-				planet.RecalculateGases(new ChemType[0]);
+				planet.RecalculateGases(new Chemical[0]);
 
 				Assert.AreEqual(0, planet.Atmosphere.Composition.Count);
 			}

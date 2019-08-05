@@ -12,7 +12,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
 	// TODO abunde isn't used anywhere
 	// TODO break out abundance into a separate class for star/planet profiles
-	public class ChemType
+	public class Chemical
 	{
 		public int Num { get; set; }
 		public string Symbol { get; set; }
@@ -27,7 +27,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		public Ratio Reactivity { get; set; }
 		public Pressure MaxIpp { get; set; } // Max inspired partial pressure im millibars
 
-		public ChemType(int an, string sym, string htmlsym, string name, double w, double m, double b, double dens, double ae, double abs, double rea, double mipp)
+		public Chemical(int an, string sym, string htmlsym, string name, double w, double m, double b, double dens, double ae, double abs, double rea, double mipp)
 		{
 			Num = an;
 			Symbol = sym;
@@ -43,7 +43,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			MaxIpp = Pressure.FromMillibars(mipp);
 		}
 
-		public static ChemType[] Load()
+		public static Chemical[] Load()
 		{
 			var a = Assembly.GetExecutingAssembly();
 			var s = a.GetManifestResourceStream("Primoris.Universe.Stargen.Resources.elements.dat");
@@ -54,7 +54,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			}
 		}
 
-		public static ChemType[] Load(Stream s)
+		public static Chemical[] Load(Stream s)
 		{
 			using (var r = new StreamReader(s))
 			{
@@ -62,9 +62,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			}
 		}
 
-		public static ChemType[] Load(TextReader r)
+		public static Chemical[] Load(TextReader r)
 		{
-			var chemTable = new List<ChemType>();
+			var chemTable = new List<Chemical>();
 
 			var json = r.ReadToEnd();
 			var items = JsonConvert.DeserializeObject<List<List<object>>>(json);
@@ -85,13 +85,13 @@ namespace Primoris.Universe.Stargen.Astrophysics
 				var maxIPP = (item.Count == 11 ? Convert.ToDouble(item[10]) : 0) * GlobalConstants.MMHG_TO_MILLIBARS;
 
 
-				chemTable.Add(new ChemType(num, sym, sym, name, weight, melt, boil, dens, abunde, abunds, rea, maxIPP));
+				chemTable.Add(new Chemical(num, sym, sym, name, weight, melt, boil, dens, abunde, abunds, rea, maxIPP));
 			}
 
 			return (from row in chemTable orderby row.Weight ascending select row).ToArray();
 		}
 
-		public static ChemType[] Load(string file)
+		public static Chemical[] Load(string file)
 		{
 			using (StreamReader r = new StreamReader(file))
 			{

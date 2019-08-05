@@ -443,7 +443,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		protected abstract void AdjustSurfaceTemperatures(Pressure surfpres);
 		
 
-		public void RecalculateGases(ChemType[] gasTable)
+		public void RecalculateGases(Chemical[] gasTable)
 		{
 			Atmosphere.RecalculateGases(gasTable);
 		}

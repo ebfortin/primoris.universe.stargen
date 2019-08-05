@@ -28,13 +28,13 @@ namespace Primoris.Universe.Stargen.Bodies
 
 			Composition = new List<Gas>();
 			PoisonousGases = new List<Gas>();
-			SurfacePressure = Pressure.FromMillibars(0.0);
+			SurfacePressure = Pressure.Zero;
 
 			Breathability = CalculateBreathability();
 		}
 
 
-		public Atmosphere(SatelliteBody planet, ChemType[] gasTable)
+		public Atmosphere(SatelliteBody planet, Chemical[] gasTable)
 		{
 			Planet = planet;
 			SurfacePressure = planet.Science.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
@@ -121,7 +121,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			return oxygenOk ? Breathability.Breathable : Breathability.Unbreathable;
 		}
 
-		public void RecalculateGases(ChemType[] gasTable)
+		public void RecalculateGases(Chemical[] gasTable)
 		{
 			CalculateGases(Planet, gasTable);
 		}
@@ -131,9 +131,9 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		/// <param name="planet"></param>
 		/// <param name="gasTable"></param>
-		private void CalculateGases(SatelliteBody planet, ChemType[] gasTable = null)
+		private void CalculateGases(SatelliteBody planet, Chemical[] gasTable = null)
 		{
-			gasTable ??= ChemType.Load();
+			gasTable ??= Chemical.Load();
 
 			var sun = planet.Parent;
 			Composition = new List<Gas>();
@@ -197,7 +197,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		}
 
-		private void CheckForSpecialRules(out double abund, out double react, double pressure, SatelliteBody planet, ChemType gas)
+		private void CheckForSpecialRules(out double abund, out double react, double pressure, SatelliteBody planet, Chemical gas)
 		{
 			var sun = planet.Parent;
 			var pres2 = 1.0;

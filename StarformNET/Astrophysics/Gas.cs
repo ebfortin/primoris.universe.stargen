@@ -8,10 +8,10 @@ namespace Primoris.Universe.Stargen.Astrophysics
 	[Serializable]
 	public class Gas
 	{
-		public ChemType GasType { get; private set; }
+		public Chemical GasType { get; private set; }
 		public Pressure SurfacePressure { get; private set; }
 
-		public Gas(ChemType gType, Pressure pressure)
+		public Gas(Chemical gType, Pressure pressure)
 		{
 			GasType = gType;
 			SurfacePressure = pressure;

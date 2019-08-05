@@ -16,7 +16,7 @@ namespace Primoris.Universe.Stargen
         private static string ArtFolder = "Art";
         private static string PlanetsFile = "PixelPlanets.png";
 
-        private ChemType[] _gases;
+        private Chemical[] _gases;
         private PlanetSpriteSheet _planetSprites;
         private StellarSystem _system;
         private StellarGroup _group;
@@ -34,7 +34,7 @@ namespace Primoris.Universe.Stargen
                 5, 6);
             _systemMap.SpriteSheet = _planetSprites;
             _systemMap.PlanetPadding = 10;
-            _gases = ChemType.Load();
+            _gases = Chemical.Load();
             
             _seedSelector.Value = 0;
             _eccentricitySelector.Value = 0.25M;

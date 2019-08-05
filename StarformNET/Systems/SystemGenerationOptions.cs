@@ -15,13 +15,13 @@ namespace Primoris.Universe.Stargen.Systems
 			CloudEccentricity = ecc;
 			GasDensityRatio = dens;
 
-			GasTable = ChemType.Load();
+			GasTable = Chemical.Load();
 		}
 
 		public double DustDensityCoeff { get; set; }
 		public double CloudEccentricity { get; set; }
 		public double GasDensityRatio { get; set; }
 
-		public ChemType[] GasTable { get; set; } = new ChemType[0];
+		public Chemical[] GasTable { get; set; } = new Chemical[0];
 	}
 }
