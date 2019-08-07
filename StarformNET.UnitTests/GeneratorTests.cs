@@ -169,7 +169,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				double surfPres = 0.0;
                 foreach (var gas in planet.Atmosphere.Composition)
                 {
-                    Assert.AreEqual(expected[gas.GasType.Symbol], gas.SurfacePressure.Millibars, DELTA);
+                    Assert.AreEqual(expected[gas.Chemical.Symbol], gas.SurfacePressure.Millibars, DELTA);
 					surfPres += gas.SurfacePressure.Millibars;
 				}
 

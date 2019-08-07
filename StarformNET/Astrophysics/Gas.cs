@@ -6,20 +6,19 @@ using UnitsNet;
 namespace Primoris.Universe.Stargen.Astrophysics
 {
 	[Serializable]
-	public class Gas
+	public class Gas : Molecule
 	{
-		public Chemical GasType { get; private set; }
-		public Pressure SurfacePressure { get; private set; }
+		public Pressure SurfacePressure { get; protected set; }
 
 		public Gas(Chemical gType, Pressure pressure)
 		{
-			GasType = gType;
+			Chemical = gType;
 			SurfacePressure = pressure;
 		}
 
 		public override string ToString()
 		{
-			return GasType.DisplaySymbol + "[" + SurfacePressure + "]";
+			return Chemical.DisplaySymbol + "[" + SurfacePressure + "]";
 		}
 	}
 }

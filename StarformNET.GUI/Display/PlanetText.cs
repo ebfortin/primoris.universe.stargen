@@ -264,7 +264,7 @@ namespace Primoris.Universe.Stargen.Display
             for (var i = 0; i < orderedGases.Length; i++)
             {
                 var gas = orderedGases[i];
-                var curGas = gas.GasType;
+                var curGas = gas.Chemical;
                 str += String.Format("{0} [{1:0.0000} mb]", curGas.Symbol, gas.SurfacePressure);
                 if (i < orderedGases.Length - 1)
                 {
@@ -282,12 +282,12 @@ namespace Primoris.Universe.Stargen.Display
             {
                 if (orderedGases[i].SurfacePressure.Millibars > 1)
                 {
-                    str += String.Format("{0:0.0000}mb {1}", orderedGases[i].SurfacePressure, orderedGases[i].GasType.Symbol);
+                    str += String.Format("{0:0.0000}mb {1}", orderedGases[i].SurfacePressure, orderedGases[i].Chemical.Symbol);
                 }
                 else
                 {
                     var ppm = UnitConversions.MillibarsToPPM(orderedGases[i].SurfacePressure.Millibars);
-                    str += String.Format("{0:0.0000}ppm {1}", ppm, orderedGases[i].GasType.Symbol);
+                    str += String.Format("{0:0.0000}ppm {1}", ppm, orderedGases[i].Chemical.Symbol);
                 }
                 if (i < orderedGases.Count - 1)
                 {
@@ -317,7 +317,7 @@ namespace Primoris.Universe.Stargen.Display
             for (var i = 0; i < orderedGases.Length; i++)
             {
                 var gas = orderedGases[i];
-                var curGas = gas.GasType;
+                var curGas = gas.Chemical;
                 var pct = (gas.SurfacePressure / planet.Atmosphere.SurfacePressure) * 100;
                 str += String.Format("{0:0.0}% {1}", pct, curGas.Symbol);
                 if (i < orderedGases.Length - 1)

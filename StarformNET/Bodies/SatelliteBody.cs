@@ -70,11 +70,6 @@ namespace Primoris.Universe.Stargen.Bodies
 		#region Size & mass data
 
 		/// <summary>
-		/// The mass of the planet in units of Solar mass.
-		/// </summary>
-		//public override Mass Mass { get; protected set; }
-
-		/// <summary>
 		/// The mass of dust retained by the planet (ie, the mass of the planet
 		/// sans atmosphere). Given in units of Solar mass.
 		/// </summary>
@@ -87,15 +82,6 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		public Mass GasMass { get; protected set; }
 
-        /// <summary>
-        /// The velocity required to escape from the body given in cm/sec.
-        /// </summary>
-        //public double EscapeVelocityCMSec { get; protected set; }
-
-        /// <summary>
-        /// The gravitational acceleration felt at the surface of the planet. Given in cm/sec^2
-        /// </summary>
-        //public override Speed EscapeVelocity { get; protected set; }
 
         /// <summary>
         /// The gravitational acceleration felt at the surface of the planet. Given as a fraction of Earth gravity (Gs).
@@ -108,22 +94,19 @@ namespace Primoris.Universe.Stargen.Bodies
 		public Length CoreRadius { get; protected set; }
 
 		/// <summary>
-		/// The radius of the planet's surface in km.
+		/// Mean overall Density for all of the SatelliteBody. 
 		/// </summary>
-		//public override Length Radius { get; protected set; }
-
-		/// <summary>
-		/// The density of the planet given in g/cc. 
-		/// </summary>
-		//public double DensityGCC { get; protected set; }
-
 		public Density Density { get; protected set; }
+
+		public LayerStack Layers { get; protected set; } = new LayerStack();
 
 		#endregion
 
 		#region Planet properties
 
 		public BodyType Type { get; protected set; }
+
+		public bool IsForming { get; protected set; } = false;
 
 		public bool IsGasGiant => Type == BodyType.GasGiant ||
 								  Type == BodyType.SubGasGiant ||
@@ -249,8 +232,8 @@ namespace Primoris.Universe.Stargen.Bodies
         #endregion
 
 
-		public SatelliteBody(StellarBody sun, Body parentBody, Atmosphere atmos) : this(Provider.Use().GetService<IScienceAstrophysics>(), sun, parentBody, atmos) { }
-        public SatelliteBody(IScienceAstrophysics phy, StellarBody sun, Body parentBody, Atmosphere atmos)
+		//public SatelliteBody(StellarBody sun, Body parentBody, Atmosphere atmos) : this(Provider.Use().GetService<IScienceAstrophysics>(), sun, parentBody, atmos) { }
+        /*public SatelliteBody(IScienceAstrophysics phy, StellarBody sun, Body parentBody, Atmosphere atmos)
 		{
             Science = phy;
 
@@ -259,7 +242,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			Atmosphere = atmos;
 			atmos.Planet = this;
 			Check();
-		}
+		}*/
 
 		public SatelliteBody(StellarBody sun,
 					  Body parentBody,
@@ -325,7 +308,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			DustMass = Mass - GasMass;
 			Radius = radius;
 			Density = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
-			ExosphereTemperature = Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(SemiMajorAxis / sun.EcosphereRadius));
+			ExosphereTemperature = Science.Thermodynamics.GetExosphereTemperature(SemiMajorAxis, sun.EcosphereRadius, sun.Temperature);//Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(SemiMajorAxis / sun.EcosphereRadius));
 			SurfaceAcceleration = surfGrav; //Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * massSM.Grams / Utilities.Pow2(radius.Centimeters));
 			EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
 
@@ -335,10 +318,10 @@ namespace Primoris.Universe.Stargen.Bodies
 			//SurfaceGravityG = surfGrav;
 			MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, Mass, Radius, ExosphereTemperature, sun.Age);
 
-			Atmosphere = new Atmosphere(this, surfPressure);
+			//Atmosphere = new Atmosphere(this, surfPressure);
 
-			AdjustSurfaceTemperatures(surfPressure);
-			Check();
+			//AdjustSurfaceTemperatures(surfPressure);
+			//Check();
 		}
 
 		public SatelliteBody(StellarBody star, Body parentBody) : this(Provider.Use().GetService<IScienceAstrophysics>(), star, parentBody) { }
@@ -357,7 +340,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		}
 
-		public SatelliteBody(StellarBody star, Body parentBody, Gas[] atmosComp) : this(Provider.Use().GetService<IScienceAstrophysics>(), star, parentBody, atmosComp) { }
+		//public SatelliteBody(StellarBody star, Body parentBody, Gas[] atmosComp) : this(Provider.Use().GetService<IScienceAstrophysics>(), star, parentBody, atmosComp) { }
 		public SatelliteBody(IScienceAstrophysics phy, StellarBody star, Body parentBody, Gas[] atmosComp)
 		{
             Science = phy;
@@ -407,6 +390,9 @@ namespace Primoris.Universe.Stargen.Bodies
 			Check();
 		}
 
+		/// <summary>
+		/// TODO: Change Atmosphere to multiple layers of GaseousLayers.
+		/// </summary>
         private void Check()
 		{
 			Atmosphere ??= new Atmosphere(this);

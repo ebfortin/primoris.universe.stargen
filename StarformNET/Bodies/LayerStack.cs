@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Text;
+using Primoris.Universe.Stargen.Astrophysics;
+
 
 namespace Primoris.Universe.Stargen.Bodies
 {
-	public class LayerStack : IList<Layer>
+	public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	{
 		private List<Layer> _layers = new List<Layer>();
 
@@ -19,7 +21,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		public void Add(Layer item)
 		{
 			if (Count > 0 && _layers[Count - 1] is GaseousLayer && item is SolidLayer)
-				throw new InvalidBodyLayerSequenceException("Can't put a GaseousLayer on top of a SolidLayer");
+				throw new InvalidBodyLayerSequenceException("Can't put a SolidLayer on top of a GaseousLayer");
 
 			((IList<Layer>)_layers).Add(item);
 		}
@@ -51,6 +53,12 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		public void Insert(int index, Layer item)
 		{
+			if (index >= Count)
+				throw new IndexOutOfRangeException();
+
+			if (_layers[index - 1] is GaseousLayer && item is SolidLayer)
+				throw new InvalidBodyLayerSequenceException("Can't put a SolidLayer on top of a GaseousLayer");
+
 			((IList<Layer>)_layers).Insert(index, item);
 		}
 

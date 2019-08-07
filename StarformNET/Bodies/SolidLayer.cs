@@ -5,7 +5,7 @@ using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
-	public class SolidLayer : HomogeneousLayer
+	public abstract class SolidLayer : HomogeneousLayer
 	{
 		public SolidLayer(SatelliteBody parent) : base(parent)
 		{
@@ -15,14 +15,5 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 		}
 
-		public override void CalculateComposition()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void CalculateComposition(IEnumerable<Chemical> availableChems)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

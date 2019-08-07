@@ -13,13 +13,14 @@ namespace Primoris.Universe.Stargen.Bodies
 	{
 		public IScienceAstrophysics Science { get; set; }
 
+		public StellarBody StellarBody { get => Parent.StellarBody; }
 		public SatelliteBody Parent { get; }
 		public Length Thickness { get; protected set; }
 		public virtual Density MeanDensity { get; protected set; }
 		public virtual Temperature MeanTemperature { get; protected set; }
 
-		protected List<Chemical> CompositionInternal { get; } = new List<Chemical>();
-		public IEnumerable<Chemical> Composition { get => CompositionInternal; }
+		protected IList<ValueTuple<Chemical, Ratio>> CompositionInternal { get; } = new List<ValueTuple<Chemical, Ratio>>();
+		public IEnumerable<ValueTuple<Chemical, Ratio>> Composition { get => CompositionInternal; }
 
 		public Layer(SatelliteBody parent) : this(parent.Science, parent) { }
 		public Layer(IScienceAstrophysics phy, SatelliteBody parent)
@@ -39,19 +40,28 @@ namespace Primoris.Universe.Stargen.Bodies
 
 			var p = (Layer)obj;
 
-			var c1 = new List<Chemical>(Composition);
-			var c2 = new List<Chemical>(p.Composition);
+			var c1 = new List<Chemical>(from c in Composition select c.Item1);
+			var c2 = new List<Chemical>(from c in p.Composition select c.Item1);
 
 			bool eq = true;
 			foreach(var c in c1)
 			{
-				if (c1.Contains(c))
+				if (c2.Contains(c))
 					continue;
 				else
+				{
+					eq = false;
 					break;
+				}
 			}
 
-			return Parent == p.Parent && Thickness == p.Thickness && MeanDensity == p.MeanDensity && MeanTemperature == p.MeanTemperature;
+			if (!eq)
+				return false;
+
+			return Parent == p.Parent && 
+				   Utilities.AlmostEqual(Thickness.Kilometers, p.Thickness.Kilometers) && 
+				   Utilities.AlmostEqual(MeanDensity.GramsPerCubicCentimeter, p.MeanDensity.GramsPerCubicCentimeter) && 
+				   Utilities.AlmostEqual(MeanTemperature.Kelvins, p.MeanTemperature.Kelvins);
 		}
 
 	}

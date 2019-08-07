@@ -101,14 +101,14 @@ namespace Primoris.Universe.Stargen.Bodies
 				var gas = Composition[index];
 
 				var ipp = planet.Science.Physics.GetInspiredPartialPressure(SurfacePressure, Composition[index].SurfacePressure);
-				if (ipp > gas.GasType.MaxIpp)
+				if (ipp > gas.Chemical.MaxIpp)
 				{
 					poisonous = true;
 					PoisonousGases.Add(gas);
 				}
 
 				// TODO why not just have a min_ipp for every gas, even if it's going to be zero for everything that's not oxygen?
-				if (gas.GasType.Num == GlobalConstants.AN_O)
+				if (gas.Chemical.Num == GlobalConstants.AN_O)
 				{
 					oxygenOk = ipp.Millibars >= GlobalConstants.MIN_O2_IPP && ipp.Millibars <= GlobalConstants.MAX_O2_IPP;
 				}

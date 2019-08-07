@@ -23,9 +23,12 @@ namespace Primoris.Universe.Stargen.Bodies
 
         public Duration Age { get; protected set; }
 
-		public Mass Mass { get; protected set; }
+		public virtual Mass Mass { get; protected set; }
 
-        public Length Radius { get; protected set; }
+		/// <summary>
+		/// Radius of the Body, including all Layers. 
+		/// </summary>
+        public virtual Length Radius { get; protected set; }
 
         public Speed EscapeVelocity { get; protected set; }
 

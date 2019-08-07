@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using UnitsNet;
@@ -7,28 +8,23 @@ using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
-	public class GaseousLayer : HomogeneousLayer
+	public abstract class GaseousLayer : HomogeneousLayer
 	{
-		public GaseousLayer(SatelliteBody parent) : base(parent)
+		public GaseousLayer(SatelliteBody parent, Pressure surfPres) : base(parent)
 		{
+			LowerBoundaryPressure = surfPres;
 		}
 
-		public GaseousLayer(IScienceAstrophysics phy, SatelliteBody parent) : base(phy, parent)
+		public GaseousLayer(IScienceAstrophysics phy, SatelliteBody parent, Pressure surfPres) : base(phy, parent)
 		{
+			LowerBoundaryPressure = surfPres;
 		}
 
 		public Pressure LowerBoundaryPressure { get; protected set; }
 		public Breathability Breathability { get; protected set; }
-		public IEnumerable<Chemical> PoisonousGases { get; protected set; }
 
-		public override void CalculateComposition()
-		{
-			throw new NotImplementedException();
-		}
+		protected IList<Chemical> PoisonousChemicalInternal { get; } = new List<Chemical>();
+		public IEnumerable<Chemical> PoisonousChemicals { get; protected set; }
 
-		public override void CalculateComposition(IEnumerable<Chemical> availableChems)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

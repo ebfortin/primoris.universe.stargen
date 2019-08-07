@@ -16,7 +16,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
     [Serializable]
 	public class Planet : SatelliteBody
 	{
-		public Planet(StellarBody sun, Body parentBody, Atmosphere atmos) : base(sun, parentBody, atmos) { }
+		//public Planet(StellarBody sun, Body parentBody, Atmosphere atmos) : base(sun, parentBody, atmos) { }
 
 		public Planet(StellarBody sun,
                       Body parentBody,
@@ -63,13 +63,13 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 												   genOptions)
 		{ }
 
-		public Planet(StellarBody star, Body parentBody, Gas[] atmosComp) : base(star, parentBody, atmosComp) { }
+		//public Planet(StellarBody star, Body parentBody, Gas[] atmosComp) : base(star, parentBody, atmosComp) { }
 
 		public Planet(StellarBody star, Body parentBody) : base(star, parentBody) { }
 
-		public Planet(IScienceAstrophysics phy, StellarBody sun, Body parentBody, Atmosphere atmos) : base(phy, sun, parentBody, atmos)
-		{
-		}
+		//public Planet(IScienceAstrophysics phy, StellarBody sun, Body parentBody, Atmosphere atmos) : base(phy, sun, parentBody, atmos)
+		//{
+		//}
 
 		public Planet(IScienceAstrophysics phy, StellarBody sun, Body parentBody, Length semiMajorAxisAU, Ratio eccentricity, Angle axialTilt, Duration dayLengthHours, Duration orbitalPeriodDays, Mass massSM, Mass gasMassSM, Length radius, Pressure surfPressure, Temperature dayTimeTempK, Temperature nightTimeTempK, Temperature surfTempK, Acceleration surfGrav) : base(phy, sun, parentBody, semiMajorAxisAU, eccentricity, axialTilt, dayLengthHours, orbitalPeriodDays, massSM, gasMassSM, radius, surfPressure, dayTimeTempK, nightTimeTempK, surfTempK, surfGrav)
 		{
