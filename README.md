@@ -1,3 +1,6 @@
+# WARNING
+The API of this framework WILL CHANGE! It is not yet stable.
+
 # Primoris.Universe.Stargen
 This repository is a fork of Starform.NET.
 
