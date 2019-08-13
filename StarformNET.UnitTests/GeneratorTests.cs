@@ -12,6 +12,7 @@ using Primoris.Universe.Stargen.Systems;
 using Primoris.Universe.Stargen.Bodies.Burrows;
 using Primoris.Universe.Stargen.Systems.Burrows;
 using Primoris.Universe.Stargen.Astrophysics;
+using Primoris.Universe.Stargen.Services;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using UnitsNet;
 
@@ -25,6 +26,12 @@ namespace Primoris.Universe.Stargen.UnitTests
 		{
 			private string TEST_FILE = "testsystem.bin";
 			private string TEST_FILE_PATH = "Testdata";
+
+			[TestInitialize]
+			public void InitializeTests()
+			{
+				Provider.Use().WithAstrophysics(new BodyPhysics());
+			}
 
 			/*[TestCategory("Generator Regression")]
 			[TestMethod]*/
@@ -85,11 +92,16 @@ namespace Primoris.Universe.Stargen.UnitTests
 		[TestClass]
 		public class CalculateGasesTest
 		{
+			[TestInitialize]
+			public void InitializeTests()
+			{
+				Provider.Use().WithAstrophysics(new BodyPhysics());
+			}
+
 			private double DELTA = 0.0001;
 
 			private StellarBody GetTestStar()
 			{
-                var phy = new BodyPhysics();
 				return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10));
 			}
 
@@ -118,8 +130,9 @@ namespace Primoris.Universe.Stargen.UnitTests
 
 			private SatelliteBody GetTestPlanetNoAtmosphere()
 			{
+				var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.Zero);
                 var star = GetTestStar();
-				var planet = new Planet(star, star);
+				var planet = new Planet(seed, star, star, new List<Layer>() { new BasicSolidLayer() });
 				return planet;
 			}
 
@@ -128,12 +141,12 @@ namespace Primoris.Universe.Stargen.UnitTests
 			public void TestEmptyPlanet()
 			{
                 var star = GetTestStar();
-				var planet = new Planet(star, star);
+				var planet = GetTestPlanetNoAtmosphere();
 
-				Assert.AreEqual(0, planet.Atmosphere.Composition.Count);
+				Assert.AreEqual(0, planet.AtmosphereComposition.Count());
 			}
 
-			[TestCategory("Atmosphere")]
+			/*[TestCategory("Atmosphere")]
 			[TestMethod]
 			public void TestEmptyChemTable()
 			{
@@ -141,7 +154,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				planet.RecalculateGases(new Chemical[0]);
 
 				Assert.AreEqual(0, planet.Atmosphere.Composition.Count);
-			}
+			}*/
 
 			[TestCategory("Atmosphere")]
 			[TestMethod]
@@ -151,29 +164,29 @@ namespace Primoris.Universe.Stargen.UnitTests
 				{
 					{ "CH4", 0.00000 },
 					{ "NH3", 0.00000 },
-					{ "H2O", 440.14434 },
-					{ "Ne", 23.74552607000449 },
-					{ "Ar", 89996.39719877411 },
-					{ "CO2", 1315.6310584147352 },
+					{ "H2O", 0.004784178 },
+					{ "Ne", 0.000258104 },
+					{ "Ar", 0.978221709 },
+					{ "CO2", 0.014300338 },
 					{ "O3", 0.00000 },
 					{ "Br", 0.00000 },
-					{ "Kr", 193.8829087894019 },
-					{ "I", 4.791810606490484 },
-					{ "Xe", 25.407153913445107 }
+					{ "Kr", 0.002107423 },
+					{ "I", 5.20849E-05 },
+					{ "Xe", 0.000276165 }
 				};
 
                 var planet = GetTestPlanetAtmosphere();
 
-                Assert.AreEqual(expected.Count, planet.Atmosphere.Composition.Count);
+                Assert.AreEqual(expected.Count, planet.AtmosphereComposition.Count());
 
 				double surfPres = 0.0;
-                foreach (var gas in planet.Atmosphere.Composition)
+                foreach (var gas in planet.AtmosphereComposition)
                 {
-                    Assert.AreEqual(expected[gas.Chemical.Symbol], gas.SurfacePressure.Millibars, DELTA);
-					surfPres += gas.SurfacePressure.Millibars;
+                    Assert.AreEqual(expected[gas.Item1.Symbol], gas.Item2.DecimalFractions, DELTA);
+					surfPres += gas.Item2.DecimalFractions;
 				}
 
-				Assert.AreEqual(planet.Atmosphere.SurfacePressure.Millibars, surfPres, DELTA);
+				Assert.AreEqual(1.0, surfPres, DELTA);
             }
 
             [TestCategory("Atmosphere")]
@@ -183,7 +196,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var planet = GetTestPlanetNoAtmosphere();
 
 
-                Assert.AreEqual(0, planet.Atmosphere.Composition.Count);
+                Assert.AreEqual(0, planet.AtmosphereComposition.Count());
             }
         }
     }

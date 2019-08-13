@@ -11,6 +11,17 @@ namespace Primoris.Universe.Stargen.Bodies
 	public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	{
 		private List<Layer> _layers = new List<Layer>();
+		private SatelliteBody _parent;
+
+		public LayerStack(SatelliteBody parent)
+		{
+			_parent = parent;
+		}
+
+		public LayerStack(SatelliteBody parent, IEnumerable<Layer> layers) : this(parent)
+		{
+			_layers = new List<Layer>(layers);
+		}
 
 		public Layer this[int index] { get => ((IList<Layer>)_layers)[index]; set => ((IList<Layer>)_layers)[index] = value; }
 
@@ -23,7 +34,17 @@ namespace Primoris.Universe.Stargen.Bodies
 			if (Count > 0 && _layers[Count - 1] is GaseousLayer && item is SolidLayer)
 				throw new InvalidBodyLayerSequenceException("Can't put a SolidLayer on top of a GaseousLayer");
 
+			item.Parent = _parent;
+
 			((IList<Layer>)_layers).Add(item);
+		}
+
+		public void AddMany(IEnumerable<Layer> items)
+		{
+			foreach(var item in items)
+			{
+				Add(item);
+			}
 		}
 
 		public void Clear()

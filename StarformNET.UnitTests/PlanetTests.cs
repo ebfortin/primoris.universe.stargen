@@ -2,6 +2,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Primoris.Universe.Stargen.Bodies;
 using System.Linq;
 using Primoris.Universe.Stargen.Systems.Burrows;
+using Primoris.Universe.Stargen.Services;
+using Primoris.Universe.Stargen.Astrophysics.Burrows;
+
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
@@ -11,7 +14,13 @@ namespace Primoris.Universe.Stargen.UnitTests
         [TestClass]
         public class EqualTests
         {
-            [TestCategory("Planet.Equals")]
+			[TestInitialize]
+			public void InitializeTests()
+			{
+				Provider.Use().WithAstrophysics(new BodyPhysics());
+			}
+
+			[TestCategory("Planet.Equals")]
             [TestMethod]
             public void TestGeneratedEquality()
             {

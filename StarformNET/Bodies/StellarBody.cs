@@ -102,10 +102,10 @@ namespace Primoris.Universe.Stargen.Bodies
             }
         }
 
-        /// <summary>
-        /// Age of the star in years.
-        /// </summary>
-        //public Duration Age { get; protected set; }
+		/// <summary>
+		/// Age of the star in years.
+		/// </summary>
+		//public Duration Age { get; protected set; }
 
         /// <summary>
         /// The maximum lifetime of the star in years.
@@ -158,7 +158,6 @@ namespace Primoris.Universe.Stargen.Bodies
                             Length.Zero,
                             Ratio.Zero);
 
-            // Todo: swing that to Star.
             Satellites = GenerateSatellites(seedSystem, createFunc, useRandomTilt, genOptions);
         }
 

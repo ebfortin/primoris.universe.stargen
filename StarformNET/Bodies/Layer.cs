@@ -5,64 +5,74 @@ using System.Text;
 using UnitsNet;
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Services;
-
+using System.Diagnostics.CodeAnalysis;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
-	public abstract class Layer
+	public abstract class Layer : IEquatable<Layer>
 	{
-		public IScienceAstrophysics Science { get; set; }
+		private IScienceAstrophysics _phy = null;
+		public IScienceAstrophysics Science { get => _phy is null ? Provider.Use().GetService<IScienceAstrophysics>() : _phy; set => _phy = value; }
 
 		public StellarBody StellarBody { get => Parent.StellarBody; }
-		public SatelliteBody Parent { get; }
+		public SatelliteBody Parent { get; internal set; }
 		public Length Thickness { get; protected set; }
+
+		/// <summary>
+		/// Total mass of the Layer. 
+		/// </summary>
+		/// <remarks>
+		/// Combined mass of all layers should equal SatelliteBody mass. There is currently no automated way to do this.
+		/// </remarks>
+		public Mass Mass { get; protected set; }
 		public virtual Density MeanDensity { get; protected set; }
 		public virtual Temperature MeanTemperature { get; protected set; }
 
 		protected IList<ValueTuple<Chemical, Ratio>> CompositionInternal { get; } = new List<ValueTuple<Chemical, Ratio>>();
 		public IEnumerable<ValueTuple<Chemical, Ratio>> Composition { get => CompositionInternal; }
 
-		public Layer(SatelliteBody parent) : this(parent.Science, parent) { }
-		public Layer(IScienceAstrophysics phy, SatelliteBody parent)
+		public Layer()
 		{
-			Science = phy;
-			Parent = parent;
 		}
 
-		public abstract void CalculateComposition();
-
-		public abstract void CalculateComposition(IEnumerable<Chemical> availableChems);
-
-		public override bool Equals(object? obj)
+		public Layer(IEnumerable<ValueTuple<Chemical, Ratio>> composition)
 		{
-			if (!(obj is Layer))
-				return false;
-
-			var p = (Layer)obj;
-
-			var c1 = new List<Chemical>(from c in Composition select c.Item1);
-			var c2 = new List<Chemical>(from c in p.Composition select c.Item1);
-
-			bool eq = true;
-			foreach(var c in c1)
-			{
-				if (c2.Contains(c))
-					continue;
-				else
-				{
-					eq = false;
-					break;
-				}
-			}
-
-			if (!eq)
-				return false;
-
-			return Parent == p.Parent && 
-				   Utilities.AlmostEqual(Thickness.Kilometers, p.Thickness.Kilometers) && 
-				   Utilities.AlmostEqual(MeanDensity.GramsPerCubicCentimeter, p.MeanDensity.GramsPerCubicCentimeter) && 
-				   Utilities.AlmostEqual(MeanTemperature.Kelvins, p.MeanTemperature.Kelvins);
+			CompositionInternal = new List<ValueTuple<Chemical, Ratio>>(composition);
 		}
 
+		public abstract Layer Generate(SatelliteBody parentBody, Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers);
+
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as Layer);
+		}
+
+		public bool Equals([AllowNull] Layer other)
+		{
+			return other != null &&
+				   EqualityComparer<StellarBody>.Default.Equals(StellarBody, other.StellarBody) &&
+				   EqualityComparer<SatelliteBody>.Default.Equals(Parent, other.Parent) &&
+				   Thickness.Equals(other.Thickness) &&
+				   Mass.Equals(other.Mass) &&
+				   MeanDensity.Equals(other.MeanDensity) &&
+				   MeanTemperature.Equals(other.MeanTemperature) &&
+				   EqualityComparer<IList<(Chemical, Ratio)>>.Default.Equals(CompositionInternal, other.CompositionInternal) &&
+				   EqualityComparer<IEnumerable<(Chemical, Ratio)>>.Default.Equals(Composition, other.Composition);
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(StellarBody, Parent, Thickness, Mass, MeanDensity, MeanTemperature, CompositionInternal, Composition);
+		}
+
+		public static bool operator ==(Layer left, Layer right)
+		{
+			return EqualityComparer<Layer>.Default.Equals(left, right);
+		}
+
+		public static bool operator !=(Layer left, Layer right)
+		{
+			return !(left == right);
+		}
 	}
 }

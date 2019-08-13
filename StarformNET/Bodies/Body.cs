@@ -36,6 +36,6 @@ namespace Primoris.Universe.Stargen.Bodies
 
 
 
-        public IEnumerable<SatelliteBody> Satellites { get; protected set; }
+		public IEnumerable<SatelliteBody> Satellites { get; protected set; } = new SatelliteBody[0];
 	}
 }

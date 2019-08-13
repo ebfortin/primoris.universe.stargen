@@ -329,40 +329,83 @@ namespace Primoris.Universe.Stargen.UnitTests
 				Provider.Use().WithAstrophysics(new BodyPhysics());
 			}
 
-            private Gas[] GetMockBreathableAtmo()
+            private IEnumerable<Layer> GetMockBreathableAtmo()
             {
-                return new Gas[]
+				var layers = new List<Layer>()
+				{
+					new BasicSolidLayer(),
+					new BasicGaseousLayer(new List<ValueTuple<Chemical, Ratio>>()
+					{
+						new ValueTuple<Chemical, Ratio>(TestGases["O"], Ratio.FromDecimalFractions(0.21)),
+						new ValueTuple<Chemical, Ratio>(TestGases["N"], Ratio.FromDecimalFractions(0.78))
+					}, Pressure.FromBars(1.0))
+				};
+
+				return layers;
+                /*return new Gas[]
                 {
                     new Gas(TestGases["O"], Pressure.FromMillibars(GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS * 0.21) ),
                     new Gas(TestGases["N"], Pressure.FromMillibars(GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS * 0.78) )
-                };
+                };*/
             }
 
-            private Gas[] GetMockPoisonousAtmo()
+            private IEnumerable<Layer> GetMockPoisonousAtmo()
             {
-                return new Gas[]
+				var layers = new List<Layer>()
+				{
+					new BasicSolidLayer(),
+					new BasicGaseousLayer(new List<ValueTuple<Chemical, Ratio>>()
+					{
+						new ValueTuple<Chemical, Ratio>(TestGases["CO2"], Ratio.FromDecimalFractions(1.0))
+					}, Pressure.FromBars(1.0))
+				};
+
+				return layers;
+
+				/*return new Gas[]
                 {
                     new Gas(TestGases["CO2"], Pressure.FromMillibars(GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS) )
-                };
+                };*/
             }
 
-            private Gas[] GetMockUnbreathableAtmo()
+            private IEnumerable<Layer> GetMockUnbreathableAtmo()
             {
-                return new Gas[]
+				var layers = new List<Layer>()
+				{
+					new BasicSolidLayer(),
+					new BasicGaseousLayer(new List<ValueTuple<Chemical, Ratio>>()
+					{
+						new ValueTuple<Chemical, Ratio>(TestGases["N"], Ratio.FromDecimalFractions(1.0))
+					}, Pressure.FromBars(1.0))
+				};
+
+				return layers;
+
+				/*return new Gas[]
                 {
                     new Gas(TestGases["N"], Pressure.FromMillibars(GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS) )
-                };
+                };*/
             }
 
-            private Gas[] GetMockNoAtmo()
+            private IEnumerable<Layer> GetMockNoAtmo()
             {
-                return new Gas[0];
+				var layers = new List<Layer>()
+				{
+					new BasicSolidLayer()
+				};
+
+				return layers;
+
+				//return new Gas[0];
             }
 
-            private SatelliteBody GetMockPlanet(Func<Gas[]> mockAtmoGen)
+            private SatelliteBody GetMockPlanet(Func<IEnumerable<Layer>> mockAtmoGen)
             {
 				var star = new Star();
-                var planet = new Planet(new BodyPhysics(), star, star, mockAtmoGen());
+
+				var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(0.000001));
+
+                var planet = new Planet(seed, star, star, mockAtmoGen());
 
 				//planet.RecalculateGases(mockAtmoGen());
 				return planet;
@@ -381,7 +424,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             public void TestNoAtmoPlanet()
             {
                 var planet = GetMockPlanet(GetMockNoAtmo);
-				var breathe = planet.Atmosphere.Breathability;
+				var breathe = planet.Breathability;
                 Assert.AreEqual(Breathability.None, breathe);
             }
 
@@ -390,7 +433,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             public void TestBreathablePlanet()
             {
                 var planet = GetMockPlanet(GetMockBreathableAtmo);
-				var breathe = planet.Atmosphere.Breathability;
+				var breathe = planet.Breathability;
 				Assert.AreEqual(Breathability.Breathable, breathe);
             }
 
@@ -399,7 +442,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             public void TestUnbreathablePlanet()
             {
                 var planet = GetMockPlanet(GetMockUnbreathableAtmo);
-				var breathe = planet.Atmosphere.Breathability;
+				var breathe = planet.Breathability;
 				Assert.AreEqual(Breathability.Unbreathable, breathe);
             }
 
@@ -408,7 +451,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             public void TestPoisonousPlanet()
             {
                 var planet = GetMockPlanet(GetMockPoisonousAtmo);
-				var breathe = planet.Atmosphere.Breathability;
+				var breathe = planet.Breathability;
 				Assert.AreEqual(Breathability.Poisonous, breathe);
             }
         }

@@ -59,7 +59,7 @@ namespace Primoris.Universe.Stargen.Display
                 PlanetText.GetAtmoString(planet)
             };
 
-            if (planet.Atmosphere.Breathability == Breathability.Poisonous)
+            if (planet.Breathability == Breathability.Poisonous)
             {
                 labels.Add("Poison Gases:");
                 values.Add(PlanetText.GetPoisonString(planet));

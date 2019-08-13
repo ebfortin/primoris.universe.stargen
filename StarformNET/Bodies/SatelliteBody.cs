@@ -69,12 +69,13 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		#region Size & mass data
 
+		protected Seed Seed { get; set; }
+
 		/// <summary>
 		/// The mass of dust retained by the planet (ie, the mass of the planet
 		/// sans atmosphere). Given in units of Solar mass.
 		/// </summary>
 		public Mass DustMass { get; protected set; }
-
 
 		/// <summary>
 		/// The mass of gas retained by the planet (ie, the mass of its
@@ -82,6 +83,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		public Mass GasMass { get; protected set; }
 
+		public override Mass Mass => ConsolidateMass(Core.Union(Atmosphere));
 
         /// <summary>
         /// The gravitational acceleration felt at the surface of the planet. Given as a fraction of Earth gravity (Gs).
@@ -94,11 +96,15 @@ namespace Primoris.Universe.Stargen.Bodies
 		public Length CoreRadius { get; protected set; }
 
 		/// <summary>
-		/// Mean overall Density for all of the SatelliteBody. 
+		/// Mean overall Density for all of the SatelliteBody solid layers.
 		/// </summary>
 		public Density Density { get; protected set; }
 
-		public LayerStack Layers { get; protected set; } = new LayerStack();
+		public LayerStack Layers { get; protected set; }
+
+		public IEnumerable<Layer> Core { get => from l in Layers where l is SolidLayer select l; }
+
+		public IEnumerable<ValueTuple<Chemical, Ratio>> CoreComposition => ConsolidateComposition(Core);
 
 		#endregion
 
@@ -106,7 +112,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		public BodyType Type { get; protected set; }
 
-		public bool IsForming { get; protected set; } = false;
+		public bool IsForming { get; protected set; } = true;
 
 		public bool IsGasGiant => Type == BodyType.GasGiant ||
 								  Type == BodyType.SubGasGiant ||
@@ -114,9 +120,16 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		public bool IsTidallyLocked { get; protected set; }
 
-		public bool IsEarthlike { get; protected set; }
+		public bool IsEarthlike => Science.Planetology.TestIsEarthLike(Temperature,
+																 WaterCoverFraction,
+																 CloudCoverFraction,
+																 IceCoverFraction,
+																 SurfacePressure,
+																 SurfaceAcceleration,
+																 Breathability,
+																 Type);
 
-		public bool IsHabitable { get; protected set; }
+		public bool IsHabitable => Science.Planetology.TestIsHabitable(DayLength, OrbitalPeriod, Breathability, HasResonantPeriod, IsTidallyLocked);
 
 		public bool HasResonantPeriod { get; protected set; }
 
@@ -127,7 +140,14 @@ namespace Primoris.Universe.Stargen.Bodies
 
         #region Atmospheric data
 
-        public Atmosphere Atmosphere { get; protected set; }
+        public IEnumerable<Layer> Atmosphere { get => from l in Layers where l is GaseousLayer select l; }
+
+		/// <summary>
+		/// TODO: Create Unit Test.
+		/// </summary>
+		public IEnumerable<ValueTuple<Chemical, Ratio>> AtmosphereComposition => ConsolidateComposition(Atmosphere);
+
+		public IEnumerable<ValueTuple<Chemical, Ratio>> AtmospherePoisonousComposition => ConsolidatePoisonousComposition(from GaseousLayer l in Atmosphere where l.PoisonousComposition.Count() > 0 select l);
 
         /// <summary>
         /// The root-mean-square velocity of N2 at the planet's exosphere given
@@ -160,6 +180,10 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		public Ratio Albedo { get; protected set; }
 
+		public Pressure SurfacePressure { get; protected set; }
+
+		public Breathability Breathability => (from l in Layers where l is GaseousLayer select (l as GaseousLayer).Breathability).FirstOrDefault();
+
 		#endregion
 
 		#region Temperature data
@@ -168,7 +192,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// orbit. 1.0 is the amount of illumination received by an object 1 au
 		/// from the Sun.
 		/// </summary>
-		public Ratio Illumination { get; protected set; }
+		public Ratio Illumination => Science.Astronomy.GetMinimumIllumination(SemiMajorAxis, StellarBody.Luminosity);
 
 		/// <summary>
 		/// Temperature at the body's exosphere given in Kelvin.
@@ -232,207 +256,85 @@ namespace Primoris.Universe.Stargen.Bodies
         #endregion
 
 
-		//public SatelliteBody(StellarBody sun, Body parentBody, Atmosphere atmos) : this(Provider.Use().GetService<IScienceAstrophysics>(), sun, parentBody, atmos) { }
-        /*public SatelliteBody(IScienceAstrophysics phy, StellarBody sun, Body parentBody, Atmosphere atmos)
+		public SatelliteBody(Seed seed, StellarBody star, Body parentBody)
 		{
-            Science = phy;
-
-			Parent = parentBody;
-            StellarBody = sun;
-			Atmosphere = atmos;
-			atmos.Planet = this;
-			Check();
-		}*/
-
-		public SatelliteBody(StellarBody sun,
-					  Body parentBody,
-					  Length semiMajorAxisAU,
-					  Ratio eccentricity,
-					  Angle axialTilt,
-					  Duration dayLengthHours,
-					  Duration orbitalPeriodDays,
-					  Mass massSM,
-					  Mass gasMassSM,
-					  Length radius,
-					  Pressure surfPressure,
-					  Temperature dayTimeTempK,
-					  Temperature nightTimeTempK,
-					  Temperature surfTempK,
-					  Acceleration surfGrav) : this(Provider.Use().GetService<IScienceAstrophysics>(),
-									 sun,
-									 parentBody,
-									 semiMajorAxisAU,
-									 eccentricity,
-									 axialTilt,
-									 dayLengthHours,
-									 orbitalPeriodDays,
-									 massSM,
-									 gasMassSM,
-									 radius,
-									 surfPressure,
-									 dayTimeTempK,
-									 nightTimeTempK,
-									 surfTempK,
-									 surfGrav) { } 
-		public SatelliteBody(IScienceAstrophysics phy,
-                      StellarBody sun,
-                      Body parentBody,
-					  Length semiMajorAxisAU,
-					  Ratio eccentricity,
-					  Angle axialTilt,
-					  Duration dayLengthHours,
-					  Duration orbitalPeriodDays,
-					  Mass massSM,
-					  Mass gasMassSM,
-					  Length radius,
-					  Pressure surfPressure,
-					  Temperature dayTimeTempK,
-					  Temperature nightTimeTempK,
-					  Temperature surfTempK,
-					  Acceleration surfGrav)
-		{
-            Science = phy;
-
-			Parent = parentBody;
-            StellarBody = sun;
-
-			SemiMajorAxis = semiMajorAxisAU;
-			Eccentricity = eccentricity;
-			AxialTilt = axialTilt;
-			OrbitZone = Science.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
-			DayLength = dayLengthHours;
-			OrbitalPeriod = orbitalPeriodDays;
-
-			Mass = massSM;
-			GasMass = gasMassSM;
-			DustMass = Mass - GasMass;
-			Radius = radius;
-			Density = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
-			ExosphereTemperature = Science.Thermodynamics.GetExosphereTemperature(SemiMajorAxis, sun.EcosphereRadius, sun.Temperature);//Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(SemiMajorAxis / sun.EcosphereRadius));
-			SurfaceAcceleration = surfGrav; //Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * massSM.Grams / Utilities.Pow2(radius.Centimeters));
-			EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
-
-			DaytimeTemperature = dayTimeTempK;
-			NighttimeTemperature = nightTimeTempK;
-			Temperature = surfTempK;
-			//SurfaceGravityG = surfGrav;
-			MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, Mass, Radius, ExosphereTemperature, sun.Age);
-
-			//Atmosphere = new Atmosphere(this, surfPressure);
-
-			//AdjustSurfaceTemperatures(surfPressure);
-			//Check();
-		}
-
-		public SatelliteBody(StellarBody star, Body parentBody) : this(Provider.Use().GetService<IScienceAstrophysics>(), star, parentBody) { }
-		/// <summary>
-		/// TODO: This constructor do not work!!!
-		/// </summary>
-		/// <param name="phys"></param>
-		/// <param name="star"></param>
-		public SatelliteBody(IScienceAstrophysics phy, StellarBody star, Body parentBody)
-		{
-            Science = phy;
-
-            StellarBody = star;
+			StellarBody = star;
 			Parent = parentBody;
 
-			Check();
-		}
+			Seed = seed;
 
-		//public SatelliteBody(StellarBody star, Body parentBody, Gas[] atmosComp) : this(Provider.Use().GetService<IScienceAstrophysics>(), star, parentBody, atmosComp) { }
-		public SatelliteBody(IScienceAstrophysics phy, StellarBody star, Body parentBody, Gas[] atmosComp)
-		{
-            Science = phy;
-
-            StellarBody = star;
-			Parent = parentBody;
-
-			Atmosphere = new Atmosphere(this, atmosComp);
-
-			Check();
-		} 
-
-		public SatelliteBody(Seed seed,
-					   StellarBody star,
-					   Body parentBody,
-					   bool useRandomTilt,
-					   string planetID,
-					   SystemGenerationOptions genOptions) : this(Provider.Use().GetService<IScienceAstrophysics>(),
-												   seed, 
-												   star,
-												   parentBody,
-												   useRandomTilt,
-												   planetID,
-												   genOptions) { }
-		public SatelliteBody(IScienceAstrophysics phy,
-					   Seed seed,
-					   StellarBody star,
-					   Body parentBody,
-					   bool useRandomTilt,
-					   string planetID,
-					   SystemGenerationOptions genOptions)
-		{
-            Science = phy;
-
-            StellarBody = star;
-			Parent = parentBody;
-
-			SemiMajorAxis = seed.SemiMajorAxis;
-			Eccentricity = seed.Eccentricity;
 			Mass = seed.Mass;
-			DustMass = seed.DustMass;
 			GasMass = seed.GasMass;
+			DustMass = seed.DustMass;
+			Eccentricity = seed.Eccentricity;
+			SemiMajorAxis = seed.SemiMajorAxis;
 
-			Generate(seed, star, useRandomTilt, planetID, genOptions);
-			Satellites = GenerateSatellites(seed, star, this, useRandomTilt, genOptions);
-
-			Check();
+			Layers = new LayerStack(this);
 		}
 
-		/// <summary>
-		/// TODO: Change Atmosphere to multiple layers of GaseousLayers.
-		/// </summary>
-        private void Check()
+		public SatelliteBody(Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody)
 		{
-			Atmosphere ??= new Atmosphere(this);
-
-			Illumination = Science.Astronomy.GetMinimumIllumination(SemiMajorAxis, StellarBody.Luminosity);
-			IsHabitable = Science.Planetology.TestIsHabitable(DayLength, OrbitalPeriod, Atmosphere.Breathability, HasResonantPeriod, IsTidallyLocked);
-			IsEarthlike = Science.Planetology.TestIsEarthLike(Temperature,
-												   WaterCoverFraction,
-												   CloudCoverFraction,
-												   IceCoverFraction,
-												   Atmosphere.SurfacePressure,
-												   SurfaceAcceleration,
-												   Atmosphere.Breathability,
-												   Type);
+			Layers.Clear();
+			Layers.AddMany(layers);
 		}
 
-		protected abstract void AdjustPropertiesForRockyBody();
+		private IEnumerable<ValueTuple<Chemical, Ratio>> ConsolidateComposition(IEnumerable<Layer> layers)
+		{
+			var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
+			var amounts = (from l in layers
+						   select l.Composition.Select(
+										x =>
+										{
+											var chem = x.Item1;
+											var ratio = Ratio.FromDecimalFractions(Mass.FromSolarMasses(x.Item2.DecimalFractions * l.Mass.SolarMasses) / totmass);
 
+											return new ValueTuple<Chemical, Ratio>(chem, ratio);
+										})).SelectMany(x => x);
 
-		protected abstract void AdjustPropertiesForGasBody();
+			var grouped = from a in amounts
+						  group a by a.Item1 into g
+						  select new ValueTuple<Chemical, Ratio>(g.First().Item1, Ratio.FromDecimalFractions(g.Sum(x => x.Item2.DecimalFractions)));
+			return grouped;
+		}
 
+		private IEnumerable<ValueTuple<Chemical, Ratio>> ConsolidatePoisonousComposition(IEnumerable<Layer> layers)
+		{
+			var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
+			var amounts = (from GaseousLayer l in layers
+						   select l.PoisonousComposition.Select(
+										x =>
+										{
+											var chem = x.Item1;
+											var ratio = Ratio.FromDecimalFractions(Mass.FromSolarMasses(x.Item2.DecimalFractions * l.Mass.SolarMasses) / totmass);
 
-		protected abstract void Generate(Seed seed, StellarBody sun, bool useRandomTilt, string planetID, SystemGenerationOptions genOptions);
+											return new ValueTuple<Chemical, Ratio>(chem, ratio);
+										})).SelectMany(x => x);
 
-		protected abstract IEnumerable<SatelliteBody> GenerateSatellites(Seed seed, StellarBody star, SatelliteBody parentBody, bool useRandomTilt, SystemGenerationOptions genOptions);
+			var grouped = from a in amounts
+						  group a by a.Item1 into g
+						  select new ValueTuple<Chemical, Ratio>(g.First().Item1, Ratio.FromDecimalFractions(g.Sum(x => x.Item2.DecimalFractions)));
+			return grouped;
+		}
 
+		private Mass ConsolidateMass(IEnumerable<Layer> layers)
+		{
+			var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
+			return totmass;
+		}
 
-		// TODO write summary
-		// TODO parameter for number of iterations? does it matter?
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="planet"></param>
-		protected abstract void AdjustSurfaceTemperatures(Pressure surfpres);
+		protected abstract void Generate();
+
+		protected abstract IEnumerable<SatelliteBody> GenerateSatellites(Seed seed, SystemGenerationOptions genOptions);
 		
-
-		public void RecalculateGases(Chemical[] gasTable)
+		protected void Evolve(Duration time)
 		{
-			Atmosphere.RecalculateGases(gasTable);
+			if (IsForming)
+				throw new InvalidBodyOperationException("Body is still in formation stage.");
+
+			OnEvolve(time);
 		}
+
+		protected virtual void OnEvolve(Duration time) { }
 
 		public bool Equals(SatelliteBody other)
 		{

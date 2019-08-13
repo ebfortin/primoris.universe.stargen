@@ -122,16 +122,16 @@ namespace Primoris.Universe.Stargen.Display
             {
                 sb.Append(", Tidally Locked");
             }
-            if (planet.Atmosphere.SurfacePressure.Millibars > 0 && planet.HasGreenhouseEffect)
+            if (planet.SurfacePressure.Millibars > 0 && planet.HasGreenhouseEffect)
             {
                 sb.Append(", Runaway Greenhouse Effect");
             }
-            switch (planet.Atmosphere.Breathability)
+            switch (planet.Breathability)
             {
                 case Breathability.Breathable:
                 case Breathability.Unbreathable:
                 case Breathability.Poisonous:
-                    sb.AppendFormat(", {0} Atmosphere", planet.Atmosphere.Breathability);
+                    sb.AppendFormat(", {0} Atmosphere", planet.Breathability);
                     break;
                 default:
                     sb.Append(", No Atmosphere");
@@ -242,7 +242,7 @@ namespace Primoris.Universe.Stargen.Display
             {
                 return "Uh, a lot";
             }
-            return String.Format("{0:0.000} atm", UnitConversions.MillibarsToAtm(planet.Atmosphere.SurfacePressure.Millibars));
+            return String.Format("{0:0.000} atm", UnitConversions.MillibarsToAtm(planet.SurfacePressure.Millibars));
         }
 
         public static string GetAtmoStringPP(SatelliteBody planet)
@@ -251,12 +251,12 @@ namespace Primoris.Universe.Stargen.Display
             {
                 return "Yes";
             }
-            if (planet.Atmosphere.Composition.Count == 0)
+            if (planet.AtmosphereComposition.Count() == 0)
             {
                 return "None";
             }
             var str = "";
-            var orderedGases = planet.Atmosphere.Composition.OrderByDescending(g => g.SurfacePressure).ToArray();
+            var orderedGases = planet.AtmosphereComposition.OrderByDescending(g => g.Item2).ToArray();
             if (orderedGases.Length == 0)
             {
                 return "Trace gases only";
@@ -264,8 +264,8 @@ namespace Primoris.Universe.Stargen.Display
             for (var i = 0; i < orderedGases.Length; i++)
             {
                 var gas = orderedGases[i];
-                var curGas = gas.Chemical;
-                str += String.Format("{0} [{1:0.0000} mb]", curGas.Symbol, gas.SurfacePressure);
+                var curGas = gas.Item1;
+                str += String.Format("{0} [{1:0.0000} mb]", curGas.Symbol, gas.Item2);
                 if (i < orderedGases.Length - 1)
                 {
                     str += ", ";
@@ -274,22 +274,23 @@ namespace Primoris.Universe.Stargen.Display
             return str;
         }
 
+		// TODO: FIX. Doesn't work since changing to Ratio instead of Pressure for gas amount in atmosphere.
         public static string GetPoisonString(SatelliteBody planet)
         {
             var str = "";
-            var orderedGases = planet.Atmosphere.PoisonousGases.OrderByDescending(g => g.SurfacePressure).ToList();
-            for (var i = 0; i < orderedGases.Count; i++)
+            var orderedGases = planet.AtmospherePoisonousComposition.OrderByDescending(g => g.Item2.DecimalFractions).ToList();
+            for (var i = 0; i < orderedGases.Count(); i++)
             {
-                if (orderedGases[i].SurfacePressure.Millibars > 1)
+                if (orderedGases[i].Item2.DecimalFractions > 1)
                 {
-                    str += String.Format("{0:0.0000}mb {1}", orderedGases[i].SurfacePressure, orderedGases[i].Chemical.Symbol);
+                    str += String.Format("{0:0.0000}mb {1}", orderedGases[i].Item2.DecimalFractions, orderedGases[i].Item1.Symbol);
                 }
                 else
                 {
-                    var ppm = UnitConversions.MillibarsToPPM(orderedGases[i].SurfacePressure.Millibars);
-                    str += String.Format("{0:0.0000}ppm {1}", ppm, orderedGases[i].Chemical.Symbol);
+                    var ppm = UnitConversions.MillibarsToPPM(orderedGases[i].Item2.DecimalFractions);
+                    str += String.Format("{0:0.0000}ppm {1}", ppm, orderedGases[i].Item1.Symbol);
                 }
-                if (i < orderedGases.Count - 1)
+                if (i < orderedGases.Count() - 1)
                 {
                     str += ", ";
                 }
@@ -303,34 +304,34 @@ namespace Primoris.Universe.Stargen.Display
             {
                 return "Yes";
             }
-            if (planet.Atmosphere.Composition.Count == 0)
+            if (planet.AtmosphereComposition.Count() == 0)
             {
                 return "None";
             }
-            if (planet.Atmosphere.SurfacePressure.Millibars < 0.0005)
+            if (planet.SurfacePressure.Millibars < 0.0005)
             {
                 return "Almost None";
             }
 
             var str = "";
-            var orderedGases = planet.Atmosphere.Composition.Where(g => ((g.SurfacePressure / planet.Atmosphere.SurfacePressure) * 100) > minFraction).OrderByDescending(g => g.SurfacePressure).ToArray();
+            var orderedGases = planet.AtmosphereComposition.Where(g => ((g.Item2.DecimalFractions) * 100) > minFraction).OrderByDescending(g => g.Item2.DecimalFractions).ToArray();
             for (var i = 0; i < orderedGases.Length; i++)
             {
                 var gas = orderedGases[i];
-                var curGas = gas.Chemical;
-                var pct = (gas.SurfacePressure / planet.Atmosphere.SurfacePressure) * 100;
+                var curGas = gas.Item1;
+                var pct = (gas.Item2.DecimalFractions) * 100;
                 str += String.Format("{0:0.0}% {1}", pct, curGas.Symbol);
                 if (i < orderedGases.Length - 1)
                 {
                     str += ", ";
                 }
             }
-            if (orderedGases.Length < planet.Atmosphere.Composition.Count)
+            if (orderedGases.Length < planet.AtmosphereComposition.Count())
             {
                 var traceGasSum = 0.0;
-                foreach (var gas in planet.Atmosphere.Composition)
+                foreach (var gas in planet.AtmosphereComposition)
                 {
-                    var frac = (gas.SurfacePressure / planet.Atmosphere.SurfacePressure) * 100;
+                    var frac = (gas.Item2.DecimalFractions) * 100;
                     if (frac <= minFraction)
                     {
                         traceGasSum += frac;

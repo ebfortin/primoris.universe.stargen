@@ -5,33 +5,33 @@ using System.Text;
 using Primoris.Universe.Stargen.Astrophysics;
 using UnitsNet;
 
-
 namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
-	public class Atmosphere : GaseousLayer
+	public class BasicGaseousLayer : GaseousLayer
 	{
-		public Atmosphere(SatelliteBody parent, Pressure surfPressure) : base(parent, surfPressure)
+		public BasicGaseousLayer(Pressure surfPres) : base(surfPres)
 		{
 		}
 
-		public Atmosphere(IScienceAstrophysics phy, SatelliteBody parent, Pressure surfPressure) : base(phy, parent, surfPressure)
+		public BasicGaseousLayer(IEnumerable<(Chemical, Ratio)> composition, Pressure surfPres) : base(composition, surfPres)
 		{
+			Breathability = CalculateBreathability();
 		}
 
-		public override void CalculateComposition()
+		public override Layer Generate(SatelliteBody parentBody, Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
 		{
-			CalculateComposition(Chemical.Load());
-		}
+			if(curLayers.Count() != 1)
+			{
+				throw new InvalidBodyLayerSequenceException();
+			}
 
-		public override void CalculateComposition(IEnumerable<Chemical> availableChemicals)
-		{
-			var sun = StellarBody;
-			var planet = Parent;
-			var gasTable = availableChemicals.ToArray();
+			var sun = parentBody.StellarBody;
+			var planet = parentBody;
+			var gasTable = availableChems.ToArray();
 
 			if (!(LowerBoundaryPressure.Millibars > 0))
 			{
-				return;
+				return this;
 			}
 
 			double[] amount = new double[gasTable.Length];
@@ -70,7 +70,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				}
 			}
 
-			// For each gas present, calculate its partial pressure
+			// For each gas present, calculate its partial pressure. Was partial pressure, is now only a ratio that is "equivalentish" to mol/mol.
 			if (n > 0)
 			{
 				CompositionInternal.Clear();
@@ -81,13 +81,16 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					if (amount[i] > 0.0)
 					{
 						CompositionInternal.Add(
-							new ValueTuple<Chemical, Ratio>() { Item1 = gasTable[i], Item2 = Ratio.FromDecimalFractions(amount[i] / totamount) }
+								new ValueTuple<Chemical, Ratio>() { Item1 = gasTable[i], Item2 = Ratio.FromDecimalFractions(amount[i] / totamount) }
 							);
 					}
 				}
 			}
 
 			Breathability = CalculateBreathability();
+			Mass = availableMass;
+
+			return this;
 		}
 
 		/// <summary>
@@ -109,7 +112,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			}
 
 			var poisonous = false;
-			PoisonousChemicalInternal.Clear();
+			PoisonousCompositionInternal.Clear();
 			for (var index = 0; index < CompositionInternal.Count; index++)
 			{
 				var gas = CompositionInternal[index].Item1;
@@ -118,7 +121,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				if (ipp > gas.MaxIpp)
 				{
 					poisonous = true;
-					PoisonousChemicalInternal.Add(gas);
+					PoisonousCompositionInternal.Add(new ValueTuple<Chemical, Ratio>(gas, CompositionInternal[index].Item2));
 				}
 
 				// TODO why not just have a min_ipp for every gas, even if it's going to be zero for everything that's not oxygen?
@@ -169,5 +172,6 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				react = Math.Pow(1 / (1 + gas.Reactivity.Value), sun.Age.Years365 / 2e9 * pres2);
 			}
 		}
+
 	}
 }

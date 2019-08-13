@@ -12,14 +12,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		public Moon(Seed seed,
 					   StellarBody star,
 					   SatelliteBody parentBody,
-					   bool useRandomTilt,
 					   string planetID,
-					   SystemGenerationOptions genOptions) : base(seed,
-												   star,
-                                                   parentBody,
-												   useRandomTilt,
-												   planetID,
-												   genOptions)
+					   SystemGenerationOptions genOptions) : base(seed, star, parentBody)
 		{
 			var generatedMoon = this;
 
@@ -38,5 +32,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			}
 		}
 
+		protected override void Generate()
+		{
+			return;
+		}
 	}
 }
