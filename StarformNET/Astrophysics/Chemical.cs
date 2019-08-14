@@ -99,5 +99,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			}
 		}
 
+		public override string? ToString()
+		{
+			return Symbol;
+		}
 	}
 }

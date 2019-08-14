@@ -232,6 +232,9 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 							 Mass gasMassSM,
 							 Mass molecularWeightRetained)
 		{
+			if (massSM == gasMassSM)
+				return true;
+
 			return massSM.SolarMasses * GlobalConstants.SUN_MASS_IN_EARTH_MASSES > 1.0 && gasMassSM.SolarMasses / massSM.SolarMasses > 0.05 && molecularWeightRetained.Grams <= 4.0;
 		}
 
