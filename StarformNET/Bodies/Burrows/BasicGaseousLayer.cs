@@ -25,6 +25,11 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				throw new InvalidBodyLayerSequenceException();
 			}
 
+			if(availableMass == Mass.Zero)
+			{
+				throw new InvalidBodyOperationException("Layer can't have an available mass of Zero.");
+			}
+
 			var sun = parentBody.StellarBody;
 			var planet = parentBody;
 			var gasTable = availableChems.ToArray();

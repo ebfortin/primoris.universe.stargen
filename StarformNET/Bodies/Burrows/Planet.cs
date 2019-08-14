@@ -225,6 +225,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				Pressure surfpres = Science.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
 
+				// Calculate all atmosphere layers total mass.
+				Area surf = Area.FromSquareKilometers(4.0 * Math.PI * Math.Pow(planet.Radius.Kilometers, 2.0));
+				GasMass = Mass.FromKilograms(surf.SquareMeters * surfpres.NewtonsPerSquareMeter / planet.SurfaceAcceleration.MetersPerSecondSquared);
 
 				planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);
 
@@ -238,7 +241,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				Layers.Add(new BasicSolidLayer().Generate(this, DustMass, new Chemical[0], new Layer[0]));
 
 				// Generate complete atmosphere.
-				Layers.Add(new BasicGaseousLayer(surfpres).Generate(this, GasMass, Chemical.Load(), Layers));
+				if(surfpres.Millibars > 0.0 && GasMass.SolarMasses > 0.0)
+					Layers.Add(new BasicGaseousLayer(surfpres).Generate(this, GasMass, Chemical.Load(), Layers));
 				SurfacePressure = surfpres;
 
                 HasGreenhouseEffect = Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & SurfacePressure > Pressure.Zero;
