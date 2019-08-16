@@ -1,8 +1,10 @@
+using System;
 using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.Systems
 {
 
+	[Obsolete]
 	public class SystemGenerationOptions
 	{
 		public static SystemGenerationOptions DefaultOptions = new SystemGenerationOptions();

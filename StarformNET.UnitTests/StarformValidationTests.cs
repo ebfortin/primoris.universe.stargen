@@ -86,7 +86,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 planet.DustMassSM = planet.MassSM - planet.GasMassSM;
                 planet.RadiusKM = 6051.8;
                 planet.DensityGCC = Env.EmpiricalDensity(planet.MassSM, planet.SemiMajorAxisAU, planet.Star.EcosphereRadiusAU, true);
-                planet.ExosphereTempKelvin = GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(planet.SemiMajorAxisAU / planet.Star.EcosphereRadiusAU);
+                planet.ExosphereTempKelvin = GlobalConstants.EARTH_EXOSPHERE_TEMP / Extensions.Pow2(planet.SemiMajorAxisAU / planet.Star.EcosphereRadiusAU);
                 planet.SurfaceAccelerationCMSec2 = Env.Acceleration(planet.MassSM, planet.RadiusKM);
                 planet.EscapeVelocityCMSec = Env.EscapeVelocity(planet.MassSM, planet.RadiusKM);
 

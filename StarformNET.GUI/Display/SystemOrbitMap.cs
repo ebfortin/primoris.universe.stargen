@@ -24,7 +24,7 @@ namespace Primoris.Universe.Stargen.Display
             {
                 a = Math.Sqrt(planet.SemiMajorAxis.AstronomicalUnits);
                 e = planet.Eccentricity.Value;
-                b = Utilities.GetSemiMinorAxis(a, e);
+                b = Extensions.GetSemiMinorAxis(a, e);
                 this.angle = angle;
                 size = (float)(planet.Radius.Kilometers / GlobalConstants.KM_EARTH_RADIUS);
                 color = Brushes.White;
@@ -96,7 +96,7 @@ namespace Primoris.Universe.Stargen.Display
             _orbits.Clear();
             foreach (var planet in system)
             {
-                _orbits.Add(new OrbitParameters(planet, (float)(Utilities.RandomNumber() * 2 * Math.PI)));
+                _orbits.Add(new OrbitParameters(planet, (float)(Extensions.RandomNumber() * 2 * Math.PI)));
             }
             Refresh();
 

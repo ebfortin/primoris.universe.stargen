@@ -1,18 +1,23 @@
+using System;
+using Primoris.Universe.Stargen.Astrophysics;
+using Primoris.Universe.Stargen.Services;
+
+
 namespace Primoris.Universe.Stargen
 {
-	using Primoris.Universe.Stargen.Astrophysics;
-	using System;
 
-	public static class Utilities
-    {
+
+	public static class Extensions
+	{
+
         public static Random Random = new Random();
 
-        public static bool AlmostEqual(double v1, double v2, double diff=0.00001)
+        public static bool AlmostEqual(this double v1, double v2, double diff=0.00001)
         {
 			if (double.IsNaN(v1) && double.IsNaN(v2))
 				return true;
 
-            return Math.Abs(v1 - v2) <= Math.Abs(v1 * .00001);
+            return Math.Abs(v1 - v2) <= Math.Abs(v1 * diff);
         }
 
         public static void InitRandomSeed(int seed)
@@ -30,55 +35,55 @@ namespace Primoris.Universe.Stargen
             Random = new Random(seed);
         }
 
-        public static double Pow2(double a)
+        public static double Pow2(this double a)
         {
             return a * a;
         }
 
-        public static double Pow3(double a)
+        public static double Pow3(this double a)
         {
             return a * a * a;
         }
 
-        public static double Pow4(double a)
+        public static double Pow4(this double a)
         {
             return a * a * a * a;
         }
 
-        public static double Pow1_4(double a)
+        public static double Pow1_4(this double a)
         {
             return Math.Sqrt(Math.Sqrt(a));
         }
 
-        public static double Pow1_3(double a)
+        public static double Pow1_3(this double a)
         {
             return Math.Pow(a, (1.0 / 3.0));
         }
 
         public static double RandomNumber()
         {
-            return Random.NextDouble();
+            return Provider.Use().GetService<Random>().NextDouble();
         }
 
         public static int RandomInt(int lowerBound, int upperBound)
         {
-            return Random.Next(lowerBound, upperBound);
+            return Provider.Use().GetService<Random>().Next(lowerBound, upperBound);
         }
 
         public static double RandomNumber(double inner, double outer)
         {
             var range = outer - inner;
-            return Random.NextDouble() * range + inner;
+            return Provider.Use().GetService<Random>().NextDouble() * range + inner;
         }
 
-        public static double About(double value, double variation)
+        public static double About(this double value, double variation)
         {
             return (value + (value * RandomNumber(-variation, variation)));
         }
 
         public static double RandomEccentricity()
         {
-            return 1.0 - Math.Pow(Random.NextDouble(), GlobalConstants.ECCENTRICITY_COEFF);
+            return 1.0 - Math.Pow(RandomNumber(), GlobalConstants.ECCENTRICITY_COEFF);
         }
     }
 }

@@ -56,7 +56,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			DustMass = massSM - GasMass;
 			Radius = radius;
 			Density = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
-			ExosphereTemperature = Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Utilities.Pow2(SemiMajorAxis / sun.EcosphereRadius));
+			ExosphereTemperature = Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Extensions.Pow2(SemiMajorAxis / sun.EcosphereRadius));
 			SurfaceAcceleration = surfGrav; //Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * massSM.Grams / Utilities.Pow2(radius.Centimeters));
 			EscapeVelocity = Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, Radius);
 
@@ -148,7 +148,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			Temperature = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
 			GreenhouseRiseTemperature = TemperatureDelta.Zero;
-			Albedo = Ratio.FromDecimalFractions(Utilities.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1));
+			Albedo = Ratio.FromDecimalFractions(Extensions.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1));
 			WaterCoverFraction = Ratio.Zero;
 			CloudCoverFraction = Ratio.Zero;
 			IceCoverFraction = Ratio.Zero;
@@ -156,7 +156,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 		private Angle GetRandomInclination(Length semiMajorAxis)
 		{
-			var inclination = ((int)(Math.Pow(semiMajorAxis.Kilometers / GlobalConstants.ASTRONOMICAL_UNIT_KM, 0.2) * Utilities.About(GlobalConstants.EARTH_AXIAL_TILT, 0.4)) % 360);
+			var inclination = ((int)(Math.Pow(semiMajorAxis.Kilometers / GlobalConstants.ASTRONOMICAL_UNIT_KM, 0.2) * Extensions.About(GlobalConstants.EARTH_AXIAL_TILT, 0.4)) % 360);
 			return Angle.FromDegrees(inclination);
 		}
 
@@ -281,7 +281,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		/// <returns>Acceleration returned in units of cm/sec2</returns>
 		private Acceleration GetAcceleration(Mass mass, Length radius)
 		{
-			return Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * (mass.Grams) / Utilities.Pow2(radius.Centimeters));
+			return Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * (mass.Grams) / Extensions.Pow2(radius.Centimeters));
 		}
 
 		protected override IEnumerable<SatelliteBody> GenerateSatellites(Seed seed, SystemGenerationOptions genOptions)

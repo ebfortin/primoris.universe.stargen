@@ -21,8 +21,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			if (roche_limit * 3.0 < hill_sphere)
 			{
-				generatedMoon.SemiMajorAxis = Length.FromKilometers(Utilities.RandomNumber(roche_limit.Kilometers * 1.5, hill_sphere.Kilometers / 2.0));
-				generatedMoon.Eccentricity = Ratio.FromDecimalFractions(Utilities.RandomEccentricity());
+				generatedMoon.SemiMajorAxis = Length.FromKilometers(Extensions.RandomNumber(roche_limit.Kilometers * 1.5, hill_sphere.Kilometers / 2.0));
+				generatedMoon.Eccentricity = Ratio.FromDecimalFractions(Extensions.RandomEccentricity());
 			}
 			else
 			{

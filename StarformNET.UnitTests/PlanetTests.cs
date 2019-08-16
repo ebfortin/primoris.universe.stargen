@@ -24,10 +24,10 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestGeneratedEquality()
             {
-                Utilities.InitRandomSeed(0);
+                Extensions.InitRandomSeed(0);
                 var system1 = SystemGenerator.GenerateStellarSystem("system1").Planets;
 
-                Utilities.InitRandomSeed(0);
+                Extensions.InitRandomSeed(0);
                 var system2 = SystemGenerator.GenerateStellarSystem("system2").Planets;
 
                 Assert.IsTrue(system1.SequenceEqual(system2));
@@ -37,10 +37,10 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestGeneratedInequality()
             {
-                Utilities.InitRandomSeed(0);
+                Extensions.InitRandomSeed(0);
                 var system1 = SystemGenerator.GenerateStellarSystem("system1").Planets;
 
-                Utilities.InitRandomSeed(1);
+                Extensions.InitRandomSeed(1);
                 var system2 = SystemGenerator.GenerateStellarSystem("system2").Planets;
 
 				Assert.IsFalse(system1.SequenceEqual(system2));

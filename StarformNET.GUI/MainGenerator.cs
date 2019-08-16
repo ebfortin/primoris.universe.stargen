@@ -110,7 +110,7 @@ namespace Primoris.Universe.Stargen
 
         private void GenerateSystem()
         {
-            Utilities.InitRandomSeed((int)_seedSelector.Value);
+            Extensions.InitRandomSeed((int)_seedSelector.Value);
             var curIdx = _systemListBox.SelectedIndex;
             var newSystem = SystemGenerator.GenerateStellarSystem(_system.Name, GetSelectedOptions());
             _group.Systems[curIdx] = newSystem;

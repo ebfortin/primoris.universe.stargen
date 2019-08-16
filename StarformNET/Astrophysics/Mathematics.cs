@@ -33,7 +33,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		{
 			double mass = m.Grams;
 			double equatRadius = r.Centimeters;
-			double volume = (4.0 * Math.PI * Utilities.Pow3(equatRadius)) / 3.0;
+			double volume = (4.0 * Math.PI * Extensions.Pow3(equatRadius)) / 3.0;
 			return Density.FromGramsPerCubicCentimeter(mass / volume);
 		}
 

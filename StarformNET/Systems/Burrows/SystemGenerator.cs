@@ -9,12 +9,12 @@ using UnitsNet;
 namespace Primoris.Universe.Stargen.Systems.Burrows
 {
 
-
+	[Obsolete]
     public class SystemGenerator
 	{
 		public static StellarGroup GenerateStellarGroup(int seed, int numSystems, SystemGenerationOptions genOptions = null)
 		{
-			Utilities.InitRandomSeed(seed);
+			Extensions.InitRandomSeed(seed);
 			genOptions = genOptions ?? SystemGenerationOptions.DefaultOptions;
 			var group = new StellarGroup() { Seed = seed, GenOptions = genOptions, Systems = new List<StellarSystem>() };
 			for (var i = 0; i < numSystems; i++)
@@ -88,7 +88,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			double m2 = star.BinaryMass.SolarMasses;
 			double mu = m2 / (m1 + m2);
 			double e = star.BinarySemiMajorAxis.AstronomicalUnits;
-			double e2 = Utilities.Pow2(e);
+			double e2 = Extensions.Pow2(e);
 			double a = star.BinaryEccentricity.Value;
 
 			return (0.464 + -0.380 * mu + -0.631 * e + 0.586 * mu * e + 0.150 * e2 + -0.198 * mu * e2) * a;

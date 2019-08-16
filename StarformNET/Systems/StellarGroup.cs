@@ -1,7 +1,10 @@
-﻿namespace Primoris.Universe.Stargen.Systems
+﻿using System;
+
+namespace Primoris.Universe.Stargen.Systems
 {
 	using System.Collections.Generic;
 
+	[Obsolete]
 	public class StellarGroup
 	{
 		public int Seed;

@@ -353,39 +353,39 @@ namespace Primoris.Universe.Stargen.Bodies
 		public bool Equals(SatelliteBody other)
 		{
 			return Position == other.Position &&
-				Utilities.AlmostEqual(SemiMajorAxis.Value, other.SemiMajorAxis.Value) &&
-				Utilities.AlmostEqual(Eccentricity.Value, other.Eccentricity.Value) &&
-				Utilities.AlmostEqual(AxialTilt.Value, other.AxialTilt.Value) &&
+				Extensions.AlmostEqual(SemiMajorAxis.Value, other.SemiMajorAxis.Value) &&
+				Extensions.AlmostEqual(Eccentricity.Value, other.Eccentricity.Value) &&
+				Extensions.AlmostEqual(AxialTilt.Value, other.AxialTilt.Value) &&
 				OrbitZone == other.OrbitZone &&
-				Utilities.AlmostEqual(OrbitalPeriod.Value, other.OrbitalPeriod.Value) &&
-				Utilities.AlmostEqual(DayLength.Value, other.DayLength.Value) &&
-				Utilities.AlmostEqual(HillSphere.Value, other.HillSphere.Value) &&
-				Utilities.AlmostEqual(Mass.Value, other.Mass.Value) &&
-				Utilities.AlmostEqual(DustMass.Value, other.DustMass.Value) &&
-				Utilities.AlmostEqual(GasMass.Value, other.GasMass.Value) &&
-				Utilities.AlmostEqual(EscapeVelocity.CentimetersPerSecond, other.EscapeVelocity.CentimetersPerSecond) &&
-				Utilities.AlmostEqual(SurfaceAcceleration.CentimetersPerSecondSquared, other.SurfaceAcceleration.CentimetersPerSecondSquared) &&
-				Utilities.AlmostEqual(SurfaceAcceleration.StandardGravity, other.SurfaceAcceleration.StandardGravity) &&
-				Utilities.AlmostEqual(CoreRadius.Kilometers, other.CoreRadius.Kilometers) &&
-				Utilities.AlmostEqual(Radius.Kilometers, other.Radius.Kilometers) &&
-				Utilities.AlmostEqual(Density.GramsPerCubicCentimeter, other.Density.GramsPerCubicCentimeter) &&
+				Extensions.AlmostEqual(OrbitalPeriod.Value, other.OrbitalPeriod.Value) &&
+				Extensions.AlmostEqual(DayLength.Value, other.DayLength.Value) &&
+				Extensions.AlmostEqual(HillSphere.Value, other.HillSphere.Value) &&
+				Extensions.AlmostEqual(Mass.Value, other.Mass.Value) &&
+				Extensions.AlmostEqual(DustMass.Value, other.DustMass.Value) &&
+				Extensions.AlmostEqual(GasMass.Value, other.GasMass.Value) &&
+				Extensions.AlmostEqual(EscapeVelocity.CentimetersPerSecond, other.EscapeVelocity.CentimetersPerSecond) &&
+				Extensions.AlmostEqual(SurfaceAcceleration.CentimetersPerSecondSquared, other.SurfaceAcceleration.CentimetersPerSecondSquared) &&
+				Extensions.AlmostEqual(SurfaceAcceleration.StandardGravity, other.SurfaceAcceleration.StandardGravity) &&
+				Extensions.AlmostEqual(CoreRadius.Kilometers, other.CoreRadius.Kilometers) &&
+				Extensions.AlmostEqual(Radius.Kilometers, other.Radius.Kilometers) &&
+				Extensions.AlmostEqual(Density.GramsPerCubicCentimeter, other.Density.GramsPerCubicCentimeter) &&
 				Satellites.Count() == other.Satellites.Count() &&
-				Utilities.AlmostEqual(RMSVelocity.CentimetersPerSecond, other.RMSVelocity.CentimetersPerSecond) &&
-				Utilities.AlmostEqual(MolecularWeightRetained.Kilograms, other.MolecularWeightRetained.Kilograms) &&
-				Utilities.AlmostEqual(VolatileGasInventory.Value, other.VolatileGasInventory.Value) &&
-				Utilities.AlmostEqual(BoilingPointWater.Kelvins, other.BoilingPointWater.Kelvins) &&
-				Utilities.AlmostEqual(Albedo.Value, other.Albedo.Value) &&
-				Utilities.AlmostEqual(Illumination.Value, other.Illumination.Value) &&
-				Utilities.AlmostEqual(ExosphereTemperature.Kelvins, other.ExosphereTemperature.Kelvins) &&
-				Utilities.AlmostEqual(Temperature.Kelvins, other.Temperature.Kelvins) &&
-				Utilities.AlmostEqual(GreenhouseRiseTemperature.Kelvins, other.GreenhouseRiseTemperature.Kelvins) &&
-				Utilities.AlmostEqual(DaytimeTemperature.Kelvins, other.DaytimeTemperature.Kelvins) &&
-				Utilities.AlmostEqual(NighttimeTemperature.Kelvins, other.NighttimeTemperature.Kelvins) &&
-				Utilities.AlmostEqual(MaxTemperature.Kelvins, other.MaxTemperature.Kelvins) &&
-				Utilities.AlmostEqual(MinTemperature.Kelvins, other.MinTemperature.Kelvins) &&
-				Utilities.AlmostEqual(WaterCoverFraction.Value, other.WaterCoverFraction.Value) &&
-				Utilities.AlmostEqual(CloudCoverFraction.Value, other.CloudCoverFraction.Value) &&
-				Utilities.AlmostEqual(IceCoverFraction.Value, other.IceCoverFraction.Value);
+				Extensions.AlmostEqual(RMSVelocity.CentimetersPerSecond, other.RMSVelocity.CentimetersPerSecond) &&
+				Extensions.AlmostEqual(MolecularWeightRetained.Kilograms, other.MolecularWeightRetained.Kilograms) &&
+				Extensions.AlmostEqual(VolatileGasInventory.Value, other.VolatileGasInventory.Value) &&
+				Extensions.AlmostEqual(BoilingPointWater.Kelvins, other.BoilingPointWater.Kelvins) &&
+				Extensions.AlmostEqual(Albedo.Value, other.Albedo.Value) &&
+				Extensions.AlmostEqual(Illumination.Value, other.Illumination.Value) &&
+				Extensions.AlmostEqual(ExosphereTemperature.Kelvins, other.ExosphereTemperature.Kelvins) &&
+				Extensions.AlmostEqual(Temperature.Kelvins, other.Temperature.Kelvins) &&
+				Extensions.AlmostEqual(GreenhouseRiseTemperature.Kelvins, other.GreenhouseRiseTemperature.Kelvins) &&
+				Extensions.AlmostEqual(DaytimeTemperature.Kelvins, other.DaytimeTemperature.Kelvins) &&
+				Extensions.AlmostEqual(NighttimeTemperature.Kelvins, other.NighttimeTemperature.Kelvins) &&
+				Extensions.AlmostEqual(MaxTemperature.Kelvins, other.MaxTemperature.Kelvins) &&
+				Extensions.AlmostEqual(MinTemperature.Kelvins, other.MinTemperature.Kelvins) &&
+				Extensions.AlmostEqual(WaterCoverFraction.Value, other.WaterCoverFraction.Value) &&
+				Extensions.AlmostEqual(CloudCoverFraction.Value, other.CloudCoverFraction.Value) &&
+				Extensions.AlmostEqual(IceCoverFraction.Value, other.IceCoverFraction.Value);
 		}
 	}
 }

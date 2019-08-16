@@ -45,7 +45,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				var savedSystem = ((StellarSystem)formatter.Deserialize(stream)).Planets;
 				stream.Close();
 
-				Utilities.InitRandomSeed(0);
+				Extensions.InitRandomSeed(0);
 				var newSystem = SystemGenerator.GenerateStellarSystem("test").Planets;
 				Assert.AreEqual(savedSystem.Count(), newSystem.Count(), "Incorrect number of planets");
 				for (var i = 0; i < savedSystem.Count(); i++)
@@ -66,7 +66,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				var savedSystem = ((StellarSystem)formatter.Deserialize(stream)).Planets;
 				stream.Close();
 
-				Utilities.InitRandomSeed(1);
+				Extensions.InitRandomSeed(1);
 				var newSystem = SystemGenerator.GenerateStellarSystem("test").Planets;
 				var atleastOneDifferent = false;
 				if(savedSystem.Count() != newSystem.Count())

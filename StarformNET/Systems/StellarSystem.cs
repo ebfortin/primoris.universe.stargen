@@ -6,7 +6,7 @@ using Primoris.Universe.Stargen.Bodies;
 namespace Primoris.Universe.Stargen.Systems
 {
 
-
+	[Obsolete]
     [Serializable]
 	public class StellarSystem
 	{
