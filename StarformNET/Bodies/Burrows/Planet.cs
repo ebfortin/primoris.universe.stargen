@@ -226,9 +226,11 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				Pressure surfpres = Science.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
 
 				// Calculate all atmosphere layers total mass.
-				Area surf = Area.FromSquareKilometers(4.0 * Math.PI * Math.Pow(planet.Radius.Kilometers, 2.0));
-				GasMass = Mass.FromKilograms(surf.SquareMeters * surfpres.NewtonsPerSquareMeter / planet.SurfaceAcceleration.MetersPerSecondSquared);
-
+				if (GasMass == Mass.Zero)
+				{
+					Area surf = Area.FromSquareKilometers(4.0 * Math.PI * Math.Pow(planet.Radius.Kilometers, 2.0));
+					GasMass = Mass.FromKilograms(surf.SquareMeters * surfpres.NewtonsPerSquareMeter / planet.SurfaceAcceleration.MetersPerSecondSquared);
+				}
 				planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);
 
 				// Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
