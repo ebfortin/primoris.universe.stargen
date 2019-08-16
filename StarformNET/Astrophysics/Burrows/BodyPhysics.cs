@@ -1009,6 +1009,18 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
         {
             return Length.FromKilometers(Math.Sqrt(lum.SolarLuminosities) * GlobalConstants.ASTRONOMICAL_UNIT_KM);
         }
-    }
+
+
+		/// <summary>
+		/// Calculates the surface acceleration of the planet.
+		/// </summary>
+		/// <param name="mass">Mass of the planet in solar masses</param>
+		/// <param name="radius">Radius of the planet in km</param>
+		/// <returns>Acceleration returned in units of cm/sec2</returns>
+		public virtual Acceleration GetAcceleration(Mass mass, Length radius)
+		{
+			return Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * (mass.Grams / Utilities.Pow2(radius.Centimeters));
+		}
+	}
 
 }

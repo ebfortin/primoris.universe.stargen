@@ -24,7 +24,13 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <returns>Hill Sphere radius in AU.</returns>
 		Length GetHillSphere(Mass sunMass, Mass massSM, Length semiMajorAxisAU);
 
-        Length GetEcosphereRadius(Mass mass, Luminosity lum);
+		/// <summary>
+		/// Returns the radius (center?) of a star's ecosphere in au.
+		/// </summary>
+		/// <param name="luminosity">Luminosity of the star in solar luminosity
+		/// units.</param>
+		/// <returns>Star's ecosphere radius in au.</returns>
+		Length GetEcosphereRadius(Mass mass, Luminosity lum);
 
 		Ratio GetMinimumIllumination(Length a, Luminosity l);
 

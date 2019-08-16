@@ -42,6 +42,14 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		Ratio GetVolatileGasInventory(Mass massSM, Speed escapeVelocity, Speed rmsVelocity, Mass sunMass, Mass gasMassSM, int orbitZone, bool hasGreenhouse);
 
 		/// <summary>
+		/// Calculates the surface acceleration of the planet.
+		/// </summary>
+		/// <param name="mass">Mass of the planet in solar masses</param>
+		/// <param name="radius">Radius of the planet in km</param>
+		/// <returns>Acceleration returned in units of cm/sec2</returns>
+		Acceleration GetAcceleration(Mass mass, Length radius);
+
+		/// <summary>
 		/// Inspired partial pressure, taking into account humidification of the air in the nasal
 		/// passage and throat.
 		/// </summary>

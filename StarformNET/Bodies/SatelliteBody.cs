@@ -83,7 +83,20 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		public Mass GasMass { get; protected set; }
 
-		public override Mass Mass => ConsolidateMass(Core.Union(Atmosphere));
+		public override Mass Mass
+		{
+			get
+			{
+				if (!IsForming)
+					return ConsolidateMass(Core.Union(Atmosphere));
+				else
+					return base.Mass;
+			}
+			protected set
+			{
+				base.Mass = value;
+			}
+		}
 
         /// <summary>
         /// The gravitational acceleration felt at the surface of the planet. Given as a fraction of Earth gravity (Gs).
@@ -268,6 +281,8 @@ namespace Primoris.Universe.Stargen.Bodies
 			DustMass = seed.DustMass;
 			Eccentricity = seed.Eccentricity;
 			SemiMajorAxis = seed.SemiMajorAxis;
+
+
 
 			Layers = new LayerStack(this);
 		}
