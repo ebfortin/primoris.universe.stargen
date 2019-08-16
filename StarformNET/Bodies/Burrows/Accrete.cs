@@ -70,8 +70,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				Length a;
 				Ratio e;
-				a = semiMajorAxisAU == Length.Zero ? Length.FromAstronomicalUnits(Utilities.RandomNumber(planet_inner_bound.AstronomicalUnits, planet_outer_bound.AstronomicalUnits)) : semiMajorAxisAU;
-				e = ecc == Ratio.Zero ? Ratio.FromDecimalFractions(Utilities.RandomEccentricity()) : ecc;
+				a = semiMajorAxisAU == Length.Zero ? Length.FromAstronomicalUnits(Extensions.RandomNumber(planet_inner_bound.AstronomicalUnits, planet_outer_bound.AstronomicalUnits)) : semiMajorAxisAU;
+				e = ecc == Ratio.Zero ? Ratio.FromDecimalFractions(Extensions.RandomEccentricity()) : ecc;
 
 				Mass mass = GlobalConstants.PROTOPLANET_MASS;
 				Mass dust_mass = Mass.FromSolarMasses(0.0);

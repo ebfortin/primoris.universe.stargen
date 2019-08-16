@@ -268,8 +268,11 @@ namespace Primoris.Universe.Stargen.Bodies
         #endregion
 
 
-		public SatelliteBody(Seed seed, StellarBody star, Body parentBody)
+		public SatelliteBody(Seed seed, StellarBody star, Body parentBody) : this(null, seed, star, parentBody) { }
+		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody)
 		{
+			Science = phy;
+
 			StellarBody = star;
 			Parent = parentBody;
 
@@ -281,12 +284,11 @@ namespace Primoris.Universe.Stargen.Bodies
 			Eccentricity = seed.Eccentricity;
 			SemiMajorAxis = seed.SemiMajorAxis;
 
-
-
 			Layers = new LayerStack(this);
 		}
 
-		public SatelliteBody(Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody)
+		public SatelliteBody(StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(null, seed:, star, parentBody, layers) { }
+		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody)
 		{
 			Layers.Clear();
 			Layers.AddMany(layers);

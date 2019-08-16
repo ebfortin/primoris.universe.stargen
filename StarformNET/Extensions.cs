@@ -22,17 +22,12 @@ namespace Primoris.Universe.Stargen
 
         public static void InitRandomSeed(int seed)
         {
-            Random = new Random(seed);
+            Provider.Use().WithRandom(new Random(seed));
         }
 
         public static double GetSemiMinorAxis(double a, double e)
         {
             return a * Math.Sqrt(1 - Math.Pow(e, 2));
-        }
-
-        public static void InitWithSeed(int seed)
-        {
-            Random = new Random(seed);
         }
 
         public static double Pow2(this double a)
