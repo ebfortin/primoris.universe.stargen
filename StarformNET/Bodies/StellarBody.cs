@@ -6,7 +6,7 @@ using Primoris.Universe.Stargen.Services;
 using System.Drawing;
 using UnitsNet;
 using Primoris.Universe.Stargen.Astrophysics;
-using Environment = Primoris.Universe.Stargen.Astrophysics.Environment;
+
 
 namespace Primoris.Universe.Stargen.Bodies
 {

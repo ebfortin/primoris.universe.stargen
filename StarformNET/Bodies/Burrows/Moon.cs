@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Primoris.Universe.Stargen.Systems;
-using Environment = Primoris.Universe.Stargen.Astrophysics.Environment;
 using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Bodies.Burrows

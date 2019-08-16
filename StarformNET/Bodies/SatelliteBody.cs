@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Systems;
 using Primoris.Universe.Stargen.Services;
-using Environment = Primoris.Universe.Stargen.Astrophysics.Environment;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using UnitsNet;
 
