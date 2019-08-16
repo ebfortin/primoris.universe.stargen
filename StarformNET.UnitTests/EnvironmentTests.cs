@@ -90,7 +90,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestReturnNaNZeroTemp()
             {
-                Assert.ThrowsException<Exception>(ActionReturnNanZeroTemp);
+                Assert.ThrowsException<ArgumentException>(ActionReturnNanZeroTemp);
 				//(Mass molecularWeight, Temperature exoTempKelvin, Acceleration surfGravG, Length radiusKM);
 			}
 
@@ -98,7 +98,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void TestReturnNaNNegativeTemp()
             {
-                Assert.ThrowsException<Exception>(ActionReturnNanNegativeTemp);
+                Assert.ThrowsException<ArgumentException>(ActionReturnNanNegativeTemp);
             }
 
             private static void CheckGasValues(double exo, double surfG, double radius, 

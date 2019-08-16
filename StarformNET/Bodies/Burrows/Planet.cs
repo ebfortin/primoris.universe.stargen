@@ -52,6 +52,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			DayLength = dayLengthHours;
 			OrbitalPeriod = orbitalPeriodDays;
 
+			Mass = massSM;
 			GasMass = gasMassSM;
 			DustMass = massSM - GasMass;
 			Radius = radius;
@@ -86,6 +87,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				// Generate complete atmosphere.
 				Layers.Add(new BasicGaseousLayer(SurfacePressure).Generate(this, GasMass, Chemical.Load(), Layers));
 			}
+
+			IsForming = false;
 		}
 
 

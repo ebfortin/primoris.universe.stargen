@@ -276,7 +276,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 			Seed = seed;
 
-			//Mass = seed.Mass;
+			Mass = seed.Mass;
 			GasMass = seed.GasMass;
 			DustMass = seed.DustMass;
 			Eccentricity = seed.Eccentricity;

@@ -7,6 +7,7 @@ using Primoris.Universe.Stargen.Astrophysics;
 using Environment = Primoris.Universe.Stargen.Astrophysics.Environment;
 using Primoris.Universe.Stargen.Bodies.Burrows;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
+using Primoris.Universe.Stargen.Services;
 using UnitsNet;
 
 using Data = DLS.StarformNET.Data;
@@ -25,6 +26,12 @@ namespace Primoris.Universe.Stargen.UnitTests
             double HighDelta = 1e-4;
             double VeryHighDelta = 1e-2;
             double UnitDelta = 1.0;
+
+			[TestInitialize]
+			public void InitializeTests()
+			{
+				Provider.Use().WithAstrophysics(new BodyPhysics());
+			}
 
             private StellarBody GetTestStar()
             {
