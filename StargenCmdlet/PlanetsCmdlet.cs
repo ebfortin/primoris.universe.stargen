@@ -11,6 +11,8 @@ using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Bodies.Burrows;
 using Primoris.Universe.Stargen.Systems.Burrows;
+using UnitsNet;
+
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {
@@ -79,8 +81,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
                                         StellarBody star,
 										int pos,
                                         bool useRandomTilt,
-                                        string planetID,
-                                        SystemGenerationOptions genOptions)
+                                        string planetID)
         {
 			return new Planet(seed, star, star) { Position = pos };
         }
@@ -92,8 +93,10 @@ namespace Primoris.Universe.Stargen.Cmdlets
 
 			do
 			{
-                sun.BodyFormationScience = new Accrete(CloudEccentricity, GasDensityRatio);
-                sun.GenerateSystem(CreatePlanet, new SystemGenerationOptions(DustDensityCoeff, CloudEccentricity, GasDensityRatio));
+                sun.BodyFormationScience = new Accrete(Ratio.FromDecimalFractions(CloudEccentricity),
+													   Ratio.FromDecimalFractions(GasDensityRatio),
+													   Ratio.FromDecimalFractions(DustDensityCoeff));
+                sun.GenerateSystem(CreatePlanet);
                 findsys = (from p in sun.Satellites where p.IsHabitable select p).Count() > 0;
 			} while (!findsys && OnlyHabitableSystem);
 

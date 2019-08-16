@@ -15,8 +15,7 @@ namespace Primoris.Universe.Stargen.Bodies
                                                             StellarBody star,
 															int pos,
                                                             bool useRandomTilt,
-                                                            string planetID,
-                                                            SystemGenerationOptions genOptions);
+                                                            string planetID);
 
 
 	[Serializable]
@@ -287,7 +286,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			Layers = new LayerStack(this);
 		}
 
-		public SatelliteBody(StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(null, seed:, star, parentBody, layers) { }
+		public SatelliteBody(Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(null, seed, star, parentBody, layers) { }
 		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody)
 		{
 			Layers.Clear();
@@ -340,7 +339,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		protected abstract void Generate();
 
-		protected abstract IEnumerable<SatelliteBody> GenerateSatellites(Seed seed, SystemGenerationOptions genOptions);
+		protected abstract IEnumerable<SatelliteBody> GenerateSatellites(Seed seed);
 		
 		protected void Evolve(Duration time)
 		{

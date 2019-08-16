@@ -26,7 +26,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		public Star(Mass mass, Luminosity lum, Duration age) : base(mass, lum, age) { }
         public Star(IScienceAstrophysics phy, Mass mass, Luminosity lum, Duration age) : base(phy, mass, lum, age) { }
 
-        protected override IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc, bool useRandomTilt, SystemGenerationOptions genOptions)
+        protected override IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc, bool useRandomTilt)
         {
             var planets = new List<SatelliteBody>();
             var i = 0;
@@ -37,7 +37,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
                 string planet_id = planetNo.ToString();
 
-                var planet = createFunc(seed, this, i, useRandomTilt, planet_id, genOptions);
+                var planet = createFunc(seed, this, i, useRandomTilt, planet_id);
                 planets.Add(planet);
             }
 

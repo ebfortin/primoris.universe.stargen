@@ -284,7 +284,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			return Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * (mass.Grams) / Extensions.Pow2(radius.Centimeters));
 		}
 
-		protected override IEnumerable<SatelliteBody> GenerateSatellites(Seed seed, SystemGenerationOptions genOptions)
+		protected override IEnumerable<SatelliteBody> GenerateSatellites(Seed seed)
 		{
 			var planet = this;
 			var star = StellarBody;
@@ -325,7 +325,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 					string moon_id = string.Format("{0}.{1}", this.Position, n);
 
-					var generatedMoon = new Moon(curMoon, star, planet, moon_id, genOptions);
+					var generatedMoon = new Moon(curMoon, star, planet, moon_id);
 
 					sat.Add(generatedMoon);
 				}

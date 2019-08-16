@@ -5,16 +5,15 @@ namespace Primoris.Universe.Stargen.Bodies
 {
 	public interface IBodyFormationAlgorithm
 	{
-		double CloudEccentricity { get; set; }
-		double GasDustRatio { get; set; }
+		Ratio DustDensityCoefficient { get; }
+		Ratio CloudEccentricity { get; }
+		Ratio GasDustRatio { get; }
 
 		IEnumerable<Seed> CreateSeeds(Mass stellarMassRatio,
 								Luminosity stellarLumRatio,
 								Length innerDust,
 								Length outerDust,
 								Length outerPlanetLimit,
-								Ratio dustDensityCoeff,
-								Length semiMajorAxisAU,
-								Ratio ecc);
+								Length semiMajorAxisAU);
 	}
 }

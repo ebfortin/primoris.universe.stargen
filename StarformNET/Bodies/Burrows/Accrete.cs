@@ -19,24 +19,27 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			}
 		}
 
-		public double CloudEccentricity { get; set; }
-		public double GasDustRatio { get; set; }
+		public Ratio DustDensityCoefficient { get; }
+		public Ratio CloudEccentricity { get; }
+		public Ratio GasDustRatio { get; }
+		
 
 		private bool _dustLeft;
 		private double _rInner;
 		private double _rOuter;
 		private double _reducedMass;
 		private double _dustDensity;
-		private double _cloudEccentricity;
+		private Ratio _cloudEccentricity;
 		private DustRecord _dustHead;
 		private InnerSeed _planetHead;
 		private Generation _histHead;
 
 
-		public Accrete(double e, double gdr)
+		public Accrete(Ratio e, Ratio gdr, Ratio dust)
 		{
 			CloudEccentricity = e;
 			GasDustRatio = gdr;
+			DustDensityCoefficient = dust;
 		}
 
 		// TODO documentation
@@ -55,9 +58,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 										Length innerDust,
 										Length outerDust,
 										Length outerPlanetLimit,
-										Ratio dustDensityCoeff,
-										Length semiMajorAxisAU,
-										Ratio ecc)
+										Length semiMajorAxisAU)
 		{
 			SetInitialConditions(innerDust, outerDust);
 
@@ -71,7 +72,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				Length a;
 				Ratio e;
 				a = semiMajorAxisAU == Length.Zero ? Length.FromAstronomicalUnits(Extensions.RandomNumber(planet_inner_bound.AstronomicalUnits, planet_outer_bound.AstronomicalUnits)) : semiMajorAxisAU;
-				e = ecc == Ratio.Zero ? Ratio.FromDecimalFractions(Extensions.RandomEccentricity()) : ecc;
+				e = CloudEccentricity == Ratio.Zero ? Ratio.FromDecimalFractions(Extensions.RandomEccentricity()) : CloudEccentricity;
 
 				Mass mass = GlobalConstants.PROTOPLANET_MASS;
 				Mass dust_mass = Mass.FromSolarMasses(0.0);
@@ -80,7 +81,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 				if (DustAvailable(InnerEffectLimit(a.AstronomicalUnits, e.DecimalFractions, mass.SolarMasses), OuterEffectLimit(a.AstronomicalUnits, e.DecimalFractions, mass.SolarMasses)))
 				{
-					_dustDensity = (dustDensityCoeff * Math.Sqrt(stellarMassRatio.SolarMasses) * Math.Exp(-GlobalConstants.ALPHA * Math.Pow(a.AstronomicalUnits, 1.0 / GlobalConstants.N))).DecimalFractions;
+					_dustDensity = (DustDensityCoefficient * Math.Sqrt(stellarMassRatio.SolarMasses) * Math.Exp(-GlobalConstants.ALPHA * Math.Pow(a.AstronomicalUnits, 1.0 / GlobalConstants.N))).DecimalFractions;
 					Mass crit_mass = Mass.FromSolarMasses(CriticalLimit(a.AstronomicalUnits, e.DecimalFractions, stellarLumRatio.SolarLuminosities));
 					AccreteDust(ref mass, ref dust_mass, ref gas_mass, a, e, crit_mass, planet_inner_bound, planet_outer_bound);
 
@@ -151,12 +152,12 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 		private double InnerEffectLimit(double a, double e, double mass)
 		{
-			return a * (1.0 - e) * (1.0 - mass) / (1.0 + _cloudEccentricity);
+			return a * (1.0 - e) * (1.0 - mass) / (1.0 + _cloudEccentricity.DecimalFractions);
 		}
 
 		private double OuterEffectLimit(double a, double e, double mass)
 		{
-			return a * (1.0 + e) * (1.0 + mass) / (1.0 - _cloudEccentricity);
+			return a * (1.0 + e) * (1.0 + mass) / (1.0 - _cloudEccentricity.DecimalFractions);
 		}
 
 		private bool DustAvailable(double inside_range, double outside_range)
@@ -346,7 +347,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				}
 				else
 				{
-					mass_density = GasDustRatio * temp_density / (1.0 + Math.Sqrt(crit_mass / last_mass) * (GasDustRatio - 1.0));
+					mass_density = GasDustRatio.DecimalFractions * temp_density / (1.0 + Math.Sqrt(crit_mass / last_mass) * (GasDustRatio.DecimalFractions - 1.0));
 					gas_density = mass_density - temp_density;
 				}
 

@@ -138,12 +138,11 @@ namespace Primoris.Universe.Stargen.Bodies
         /// </summary>
         public Ratio BinaryEccentricity { get; protected set; } = Ratio.Zero;
 
-        public virtual void GenerateSystem(CreateSatelliteBodyDelegate createFunc, SystemGenerationOptions genOptions)
+        public virtual void GenerateSystem(CreateSatelliteBodyDelegate createFunc)
         {
             var phy = Science;
             var frm = BodyFormationScience;
 
-            genOptions ??= new SystemGenerationOptions();
             var sun = this;
             var useRandomTilt = true;
 
@@ -154,14 +153,12 @@ namespace Primoris.Universe.Stargen.Bodies
                             Length.Zero,
                             outer_dust_limit,
                             outer_planet_limit,
-                            Ratio.FromDecimalFractions(genOptions.DustDensityCoeff),
-                            Length.Zero,
-                            Ratio.Zero);
+                            Length.Zero);
 
-            Satellites = GenerateSatellites(seedSystem, createFunc, useRandomTilt, genOptions);
+            Satellites = GenerateSatellites(seedSystem, createFunc, useRandomTilt);
         }
 
-        protected abstract IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc, bool useRandomTilt, SystemGenerationOptions genOptions);
+        protected abstract IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc, bool useRandomTilt);
 
         public override string ToString()
         {

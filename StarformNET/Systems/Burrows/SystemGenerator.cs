@@ -33,12 +33,13 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			sun ??= new Star() { Science = phy };
 			var useRandomTilt = seedSystem == null;
 
-			var accrete = new Accrete(genOptions.CloudEccentricity, genOptions.GasDensityRatio);
+			var accrete = new Accrete(Ratio.FromDecimalFractions(genOptions.CloudEccentricity), 
+									  Ratio.FromDecimalFractions(genOptions.GasDensityRatio), 
+									  Ratio.FromDecimalFractions(genOptions.DustDensityCoeff));
 			double outer_planet_limit = GetOuterLimit(sun);
 			double outer_dust_limit = GetStellarDustLimit(sun.Mass.SolarMasses);
 			seedSystem = seedSystem ?? accrete.CreateSeeds(sun.Mass,
-				sun.Luminosity, Length.FromAstronomicalUnits(0.0), Length.FromAstronomicalUnits(outer_dust_limit), Length.FromAstronomicalUnits(outer_planet_limit),
-				Ratio.FromDecimalFractions(genOptions.DustDensityCoeff), Length.Zero, Ratio.Zero);
+				sun.Luminosity, Length.FromAstronomicalUnits(0.0), Length.FromAstronomicalUnits(outer_dust_limit), Length.FromAstronomicalUnits(outer_planet_limit), Length.Zero);
 			
 			// Todo: swing that to Star.
 			var planets = GeneratePlanets(sun, seedSystem, useRandomTilt, genOptions);

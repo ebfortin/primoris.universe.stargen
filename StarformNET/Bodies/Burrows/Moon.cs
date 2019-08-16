@@ -11,8 +11,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		public Moon(Seed seed,
 					   StellarBody star,
 					   SatelliteBody parentBody,
-					   string planetID,
-					   SystemGenerationOptions genOptions) : base(seed, star, parentBody)
+					   string planetID) : base(seed, star, parentBody)
 		{
 			var generatedMoon = this;
 

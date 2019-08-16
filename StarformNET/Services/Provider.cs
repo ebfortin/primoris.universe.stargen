@@ -5,6 +5,7 @@ using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using Primoris.Universe.Stargen.Bodies.Burrows;
+using UnitsNet;
 
 
 namespace Primoris.Universe.Stargen.Services
@@ -14,7 +15,9 @@ namespace Primoris.Universe.Stargen.Services
 		static Provider()
 		{
 			_services.Add(typeof(IScienceAstrophysics), new BodyPhysics());
-			_services.Add(typeof(IBodyFormationAlgorithm), new Accrete(GlobalConstants.CLOUD_ECCENTRICITY, GlobalConstants.K));
+			_services.Add(typeof(IBodyFormationAlgorithm), new Accrete(Ratio.FromDecimalFractions(GlobalConstants.CLOUD_ECCENTRICITY),
+																	Ratio.FromDecimalFractions(GlobalConstants.K),
+																	Ratio.FromDecimalFractions(GlobalConstants.DUST_DENSITY_COEFF)));
 			_services.Add(typeof(Random), new Random());
 		}
 
