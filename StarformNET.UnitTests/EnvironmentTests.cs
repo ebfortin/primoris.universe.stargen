@@ -34,6 +34,12 @@ namespace Primoris.Universe.Stargen.UnitTests
                 GlobalConstants.WATER_VAPOR
             };
 
+			[TestInitialize]
+			public void InitializeTests()
+			{
+				Provider.Use().WithAstrophysics(new BodyPhysics());
+			}
+
             [TestCategory("GasLife")]
             [TestMethod]
             public void TestGasesEarth()
@@ -66,20 +72,33 @@ namespace Primoris.Universe.Stargen.UnitTests
                 CheckGasValues(4500, 0.5, 2440, expected, Weights);
             }
 
+			private void ActionReturnNanZeroTemp()
+			{
+				Provider.Use().GetService<IScienceAstrophysics>().Physics.GetGasLife(Mass.FromGrams(GlobalConstants.ATOMIC_NITROGEN),
+																														 Temperature.FromKelvins(0.0),
+																														 Acceleration.FromStandardGravity(0.5),
+																														 Length.FromKilometers(2440));
+			}
+
+			private void ActionReturnNanNegativeTemp()
+			{
+				Provider.Use().GetService<IScienceAstrophysics>().Physics.GetGasLife(
+					Mass.FromGrams(GlobalConstants.ATOMIC_NITROGEN), Temperature.FromKelvins(-100), Acceleration.FromStandardGravity(0.5), Length.FromKilometers(2440));
+			}
+
             [TestCategory("GasLife")]
             [TestMethod]
             public void TestReturnNaNZeroTemp()
             {
-                Assert.AreEqual(double.NaN, Environment.GasLife(
-                    GlobalConstants.ATOMIC_NITROGEN, 0, 0.5, 2440));
-            }
+                Assert.ThrowsException<Exception>(ActionReturnNanZeroTemp);
+				//(Mass molecularWeight, Temperature exoTempKelvin, Acceleration surfGravG, Length radiusKM);
+			}
 
             [TestCategory("GasLife")]
             [TestMethod]
             public void TestReturnNaNNegativeTemp()
             {
-                Assert.AreEqual(double.NaN, Environment.GasLife(
-                    GlobalConstants.ATOMIC_NITROGEN, -100, 0.5, 2440));
+                Assert.ThrowsException<Exception>(ActionReturnNanNegativeTemp);
             }
 
             private static void CheckGasValues(double exo, double surfG, double radius, 
@@ -89,8 +108,8 @@ namespace Primoris.Universe.Stargen.UnitTests
                 {
                     var e = expected[i];
                     var w = weights[i];
-                    Assert.AreEqual(e, Environment.GasLife(
-                        w, exo, surfG, radius), 0.000001);
+                    Assert.AreEqual(e, Provider.Use().GetService<IScienceAstrophysics>().Physics.GetGasLife(
+                        Mass.FromGrams(w), Temperature.FromKelvins(exo), Acceleration.FromStandardGravity(surfG), Length.FromKilometers(radius)).Years365, 0.000001);
                 }
             }
         }

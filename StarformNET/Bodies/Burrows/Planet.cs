@@ -88,23 +88,6 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			}
 		}
 
-		private double GasLife(double molecularWeight, double exoTempKelvin, double surfGravG, double radiusKM)
-		{
-			// Taken from Dole p. 34. He cites Jeans (1916) & Jones (1923)
-
-			var v = RMSVelocity(molecularWeight, exoTempKelvin);
-			var g = surfGravG * GlobalConstants.EARTH_ACCELERATION;
-			var r = radiusKM * GlobalConstants.CM_PER_KM;
-			var t = (Utilities.Pow3(v) / (2.0 * Utilities.Pow2(g) * r)) * Math.Exp((3.0 * g * r) / Utilities.Pow2(v));
-			var years = t / (GlobalConstants.SECONDS_PER_HOUR * 24.0 * GlobalConstants.DAYS_IN_A_YEAR);
-
-			if (years > 2.0E10)
-			{
-				years = double.MaxValue;
-			}
-
-			return years;
-		}
 
 		private void AdjustPropertiesForRockyBody()
 		{
@@ -122,10 +105,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				var h2Mass = gasMassSM * 0.85;
 				var heMass = (gasMassSM - h2Mass) * 0.999;
 
-				var h2Life = GasLife(GlobalConstants.MOL_HYDROGEN, exosphereTemperature,
-					surfaceGravityG, radius);
-				var heLife = GasLife(GlobalConstants.HELIUM, exosphereTemperature,
-					surfaceGravityG, radius);
+				var h2Life = Science.Physics.GetGasLife(Mass.FromGrams(GlobalConstants.MOL_HYDROGEN), ExosphereTemperature, SurfaceAcceleration, Radius).Years365;
+				var heLife = Science.Physics.GetGasLife(Mass.FromGrams(GlobalConstants.HELIUM), ExosphereTemperature, SurfaceAcceleration, Radius).Years365;
 
 				if (h2Life < age)
 				{
@@ -135,7 +116,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					//Mass -= Mass.FromSolarMasses(h2Loss);
 
 					//SurfaceAccelerationCMSec2 = Environment.Acceleration(massSM, radius);
-					SurfaceAcceleration = Acceleration.FromCentimetersPerSecondSquared(Environment.GetAcceleration(massSM, radius));
+					//SurfaceAcceleration = Acceleration.FromCentimetersPerSecondSquared(Environment.GetAcceleration(massSM, radius));
+					SurfaceAcceleration = Science.Physics.GetAcceleration(Mass, Radius);
 					//SurfaceGravityG = Environment.Gravity(SurfaceAcceleration);
 				}
 
@@ -147,7 +129,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					//Mass -= Mass.FromSolarMasses(heLoss);
 
 					//SurfaceAccelerationCMSec2 = Environment.Acceleration(massSM, radius);
-					SurfaceAcceleration = Acceleration.FromCentimetersPerSecondSquared(Environment.GetAcceleration(massSM, radius));
+					//SurfaceAcceleration = Acceleration.FromCentimetersPerSecondSquared(Environment.GetAcceleration(massSM, radius));
+					SurfaceAcceleration = Science.Physics.GetAcceleration(Mass, Radius);
 					//SurfaceGravityG = Environment.Gravity(SurfaceAcceleration);
 				}
 			}

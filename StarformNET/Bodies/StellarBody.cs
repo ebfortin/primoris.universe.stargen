@@ -38,7 +38,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
             if (lum.SolarLuminosities == 0.0)
             {
-                lum = Luminosity.FromSolarLuminosities(Environment.MassToLuminosity(mass));
+                lum = Science.Astronomy.GetLuminosityFromMass(mass);
             }
 
             StellarType = StellarType.FromLuminosityAndRadius(lum, Length.FromSolarRadiuses(1.0));

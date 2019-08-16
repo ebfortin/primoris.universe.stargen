@@ -1019,7 +1019,36 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <returns>Acceleration returned in units of cm/sec2</returns>
 		public virtual Acceleration GetAcceleration(Mass mass, Length radius)
 		{
-			return Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * (mass.Grams / Utilities.Pow2(radius.Centimeters));
+			return Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * (mass.Grams / Utilities.Pow2(radius.Centimeters)));
+		}
+
+
+		public virtual Luminosity GetLuminosityFromMass(Mass m)
+		{
+			var massRatio = m.SolarMasses;
+
+			//var massRatio = massRatioParam.SolarMasses;
+
+			if (massRatio <= 0.6224)
+			{
+				return Luminosity.FromSolarLuminosities(0.3815 * Math.Pow(massRatio, 2.5185));
+			}
+			else if (massRatio <= 1.0)
+			{
+				return Luminosity.FromSolarLuminosities(Math.Pow(massRatio, 4.551));
+			}
+			else if (massRatio <= 3.1623)
+			{
+				return Luminosity.FromSolarLuminosities(Math.Pow(massRatio, 4.351));
+			}
+			else if (massRatio <= 16.0)
+			{
+				return Luminosity.FromSolarLuminosities(2.7563 * Math.Pow(massRatio, 3.4704));
+			}
+			else
+			{
+				return Luminosity.FromSolarLuminosities(42.321 * Math.Pow(massRatio, 2.4853));
+			}
 		}
 	}
 

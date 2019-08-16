@@ -57,5 +57,12 @@ namespace Primoris.Universe.Stargen.Astrophysics
         Length GetOuterLimit(Mass mass, Mass otherMass, Length otherSemiMajorAxis, Ratio ecc);
 
         Length GetStellarDustLimit(Mass mass);
+
+		/// <summary>
+		/// Returns the luminosity of a star using the Mass-Luminosity relationship.
+		/// </summary>
+		/// <param name="massRatio">Mass of the star</param>
+		/// <returns>Luminosity ratio</returns>
+		Luminosity GetLuminosityFromMass(Mass mass);
     }
 }
