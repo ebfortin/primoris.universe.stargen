@@ -25,8 +25,31 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// Combined mass of all layers should equal SatelliteBody mass. There is currently no automated way to do this.
 		/// </remarks>
 		public Mass Mass { get; protected set; }
-		public virtual Density MeanDensity { get; protected set; }
+		public virtual Density MeanDensity
+		{
+			get
+			{
+				return Mass / Volume;
+			}
+		}
+
 		public virtual Temperature MeanTemperature { get; protected set; }
+
+		/// <summary>
+		/// TODO: Add Unit Test.
+		/// </summary>
+		public virtual Volume Volume
+		{
+			get
+			{
+				var belowrad = Parent.Layers.ComputeThicknessBelow(this).Kilometers;
+				var aboverad = belowrad + Thickness.Kilometers;
+				var outer = 4.0 / 3.0 * Math.PI * Math.Pow(aboverad, 3.0);
+				var inner = 4.0 / 3.0 * Math.PI * Math.Pow(belowrad, 3.0);
+
+				return Volume.FromCubicKilometers(outer - inner);
+			}
+		}
 
 		protected IList<ValueTuple<Chemical, Ratio>> CompositionInternal { get; } = new List<ValueTuple<Chemical, Ratio>>();
 		public IEnumerable<ValueTuple<Chemical, Ratio>> Composition { get => CompositionInternal; }
@@ -54,7 +77,6 @@ namespace Primoris.Universe.Stargen.Bodies
 				   EqualityComparer<SatelliteBody>.Default.Equals(Parent, other.Parent) &&
 				   Thickness.Equals(other.Thickness) &&
 				   Mass.Equals(other.Mass) &&
-				   MeanDensity.Equals(other.MeanDensity) &&
 				   MeanTemperature.Equals(other.MeanTemperature) &&
 				   EqualityComparer<IList<(Chemical, Ratio)>>.Default.Equals(CompositionInternal, other.CompositionInternal) &&
 				   EqualityComparer<IEnumerable<(Chemical, Ratio)>>.Default.Equals(Composition, other.Composition);
@@ -62,7 +84,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(StellarBody, Parent, Thickness, Mass, MeanDensity, MeanTemperature, CompositionInternal, Composition);
+			return HashCode.Combine(StellarBody, Parent, Thickness, Mass, MeanTemperature, CompositionInternal, Composition);
 		}
 
 		public static bool operator ==(Layer left, Layer right)

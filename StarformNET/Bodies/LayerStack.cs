@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Text;
 using Primoris.Universe.Stargen.Astrophysics;
+using UnitsNet;
 
 
 namespace Primoris.Universe.Stargen.Bodies
@@ -96,6 +98,29 @@ namespace Primoris.Universe.Stargen.Bodies
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return ((IList<Layer>)_layers).GetEnumerator();
+		}
+
+		/// <summary>
+		/// TODO: Add unit test.
+		/// </summary>
+		/// <param name="layer"></param>
+		/// <returns></returns>
+		public Length ComputeThicknessBelow(Layer layer)
+		{
+			if (!Contains(layer))
+				throw new ArgumentException("Layer not in LayerStack.");
+
+			var index = _layers.FindIndex(x => x == layer);
+			if (index == 0)
+				return Length.Zero;
+
+			var thick = Length.Zero;
+			foreach(var l in _layers.GetRange(0, index))
+			{
+				thick += l.Thickness;
+			}
+
+			return thick;
 		}
 	}
 }

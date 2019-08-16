@@ -16,7 +16,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		public override Layer Generate(SatelliteBody parentBody, Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
 		{
 			Thickness = parentBody.CoreRadius;
-			MeanDensity = parentBody.Density;
+			//MeanDensity = parentBody.Density;
 			MeanTemperature = parentBody.Temperature;
 			Mass = availableMass;
 
