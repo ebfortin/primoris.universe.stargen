@@ -1,4 +1,6 @@
-﻿namespace Primoris.Universe.Stargen
+﻿using System;
+
+namespace Primoris.Universe.Stargen
 {
     // TODO should maybe consider doing some sanity checking for negative distances and mass?
     // maybe? I dunno. Nah.
@@ -6,7 +8,8 @@
     /// <summary>
     /// Simple helper methods for converting between different unit types.
     /// </summary>
-    public static class UnitConversions
+    [Obsolete]
+	public static class UnitConversions
     {
         private const double MB_IN_MMHG = 1.3332239;
         private const double CM_PER_KM = 1.0E5;

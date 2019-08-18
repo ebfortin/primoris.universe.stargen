@@ -50,16 +50,16 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		public static readonly double PPM_PRSSURE = EARTH_SURF_PRES_IN_MILLIBARS / 1000000.0;
 
 		// Maximum inspired partial pressures in mmHg for common atmospheric gases - Dole pg. 15-16
-		public static readonly double MIN_O2_IPP = UnitConversions.MMHGToMillibars(72.0);
-		public static readonly double MAX_O2_IPP = UnitConversions.MMHGToMillibars(400.0);
-		public static readonly double MAX_HE_IPP = UnitConversions.MMHGToMillibars(61000.0);
-		public static readonly double MAX_NE_IPP = UnitConversions.MMHGToMillibars(3900.0);
-		public static readonly double MAX_N2_IPP = UnitConversions.MMHGToMillibars(2330.0);
-		public static readonly double MAX_AR_IPP = UnitConversions.MMHGToMillibars(1220.0);
-		public static readonly double MAX_KR_IPP = UnitConversions.MMHGToMillibars(350.0);
-		public static readonly double MAX_XE_IPP = UnitConversions.MMHGToMillibars(160.0);
-		public static readonly double MAX_CO2_IPP = UnitConversions.MMHGToMillibars(7.0);
-		public static readonly double MAX_HABITABLE_PRESSURE = UnitConversions.MMHGToMillibars(118);
+		public static readonly double MIN_O2_IPP = Pressure.FromMillimetersOfMercury(72.0).Millibars;
+		public static readonly double MAX_O2_IPP = Pressure.FromMillimetersOfMercury(400.0).Millibars; 
+		public static readonly double MAX_HE_IPP = Pressure.FromMillimetersOfMercury(61000.0).Millibars; 
+		public static readonly double MAX_NE_IPP = Pressure.FromMillimetersOfMercury(3900.0).Millibars; 
+		public static readonly double MAX_N2_IPP = Pressure.FromMillimetersOfMercury(2330.0).Millibars; 
+		public static readonly double MAX_AR_IPP = Pressure.FromMillimetersOfMercury(1220.0).Millibars; 
+		public static readonly double MAX_KR_IPP = Pressure.FromMillimetersOfMercury(350.0).Millibars; 
+		public static readonly double MAX_XE_IPP = Pressure.FromMillimetersOfMercury(160.0).Millibars; 
+		public static readonly double MAX_CO2_IPP = Pressure.FromMillimetersOfMercury(7.0).Millibars; 
+		public static readonly double MAX_HABITABLE_PRESSURE = Pressure.FromMillimetersOfMercury(118).Millibars; 
 
 		// The next gases are listed as poisonous in parts per million by volume at 1 atm:
 		public static readonly double MAX_F_IPP = UnitConversions.PPMToMillibars(0.1);
