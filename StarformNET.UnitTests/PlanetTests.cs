@@ -1,8 +1,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Primoris.Universe.Stargen.Bodies;
+using Primoris.Universe.Stargen.Bodies.Burrows;
 using System.Linq;
 using Primoris.Universe.Stargen.Systems.Burrows;
 using Primoris.Universe.Stargen.Services;
+using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
 
 
@@ -20,28 +22,41 @@ namespace Primoris.Universe.Stargen.UnitTests
 				Provider.Use().WithAstrophysics(new BodyPhysics());
 			}
 
+			private SatelliteBody CreatePlanet(Seed seed, StellarBody star, int pos, bool useRandomTilt, string planetID)
+			{
+				return new Planet(seed, star, star) { Position = pos, Name = planetID };
+			}
+
 			[TestCategory("Planet.Equals")]
             [TestMethod]
             public void TestGeneratedEquality()
             {
                 Extensions.InitRandomSeed(0);
-                var system1 = SystemGenerator.GenerateStellarSystem("system1").Planets;
+				var star = new Star();
+				star.GenerateSystem(CreatePlanet);
+				var system1 = star.Satellites;
 
-                Extensions.InitRandomSeed(0);
-                var system2 = SystemGenerator.GenerateStellarSystem("system2").Planets;
+				Extensions.InitRandomSeed(0);
+				var star2 = new Star();
+				star.GenerateSystem(CreatePlanet);
+				var system2 = star.Satellites;
 
-                Assert.IsTrue(system1.SequenceEqual(system2));
+				Assert.IsTrue(system1.SequenceEqual(system2));
             }
 
             [TestCategory("Planet.Equals")]
             [TestMethod]
             public void TestGeneratedInequality()
             {
-                Extensions.InitRandomSeed(0);
-                var system1 = SystemGenerator.GenerateStellarSystem("system1").Planets;
+				Extensions.InitRandomSeed(0);
+				var star = new Star();
+				star.GenerateSystem(CreatePlanet);
+				var system1 = star.Satellites;
 
-                Extensions.InitRandomSeed(1);
-                var system2 = SystemGenerator.GenerateStellarSystem("system2").Planets;
+				Extensions.InitRandomSeed(1);
+				var star2 = new Star();
+				star.GenerateSystem(CreatePlanet);
+				var system2 = star.Satellites;
 
 				Assert.IsFalse(system1.SequenceEqual(system2));
             }

@@ -15,7 +15,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
         public int Position { get; set; }
 
-        public string Name { get; protected set; }
+        public string Name { get; set; }
 
         public Body Parent { get; protected set; }
 

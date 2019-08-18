@@ -19,13 +19,13 @@ namespace Primoris.Universe.Stargen.Bodies
         public static readonly Duration MinSunAge = Duration.FromYears365(1.0E9);
         public static readonly Duration MaxSunAge = Duration.FromYears365(6.0E9);
 
-		public StellarBody() : this(Provider.Use().GetService<IScienceAstrophysics>()) { }
+		public StellarBody() : this(null as IScienceAstrophysics) { }
         public StellarBody(IScienceAstrophysics phy) : this(phy, Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4))) { }
 
-		public StellarBody(Mass mass) : this(Provider.Use().GetService<IScienceAstrophysics>(), mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
+		public StellarBody(Mass mass) : this(null, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
         public StellarBody(IScienceAstrophysics phy, Mass mass) : this(phy, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
 
-		public StellarBody(Mass mass, Luminosity lum, Duration age) : this(Provider.Use().GetService<IScienceAstrophysics>(), mass, lum, age) { }
+		public StellarBody(Mass mass, Luminosity lum, Duration age) : this(null, mass, lum, age) { }
         public StellarBody(IScienceAstrophysics phy, Mass mass, Luminosity lum, Duration age)
         {
             Science = phy;
