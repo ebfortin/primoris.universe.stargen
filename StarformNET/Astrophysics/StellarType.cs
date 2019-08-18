@@ -11,7 +11,7 @@ using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
-	public class StellarType
+	public sealed class StellarType
 	{
 
 		private class StellarTypeRow
