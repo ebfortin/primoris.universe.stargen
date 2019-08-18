@@ -144,7 +144,6 @@ namespace Primoris.Universe.Stargen.Bodies
             var frm = BodyFormationScience;
 
             var sun = this;
-            var useRandomTilt = true;
 
             Length outer_planet_limit = phy.Astronomy.GetOuterLimit(Mass, BinaryMass, BinarySemiMajorAxis, BinaryEccentricity);
             Length outer_dust_limit = phy.Astronomy.GetStellarDustLimit(Mass);
@@ -155,10 +154,10 @@ namespace Primoris.Universe.Stargen.Bodies
                             outer_planet_limit,
                             Length.Zero);
 
-            Satellites = GenerateSatellites(seedSystem, createFunc, useRandomTilt);
+            Satellites = GenerateSatellites(seedSystem, createFunc);
         }
 
-        protected abstract IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc, bool useRandomTilt);
+        protected abstract IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc);
 
         public override string ToString()
         {

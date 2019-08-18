@@ -22,7 +22,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 				Provider.Use().WithAstrophysics(new BodyPhysics());
 			}
 
-			private SatelliteBody CreatePlanet(Seed seed, StellarBody star, int pos, bool useRandomTilt, string planetID)
+			private SatelliteBody CreatePlanet(Seed seed, StellarBody star, int pos, string planetID)
 			{
 				return new Planet(seed, star, star) { Position = pos, Name = planetID };
 			}

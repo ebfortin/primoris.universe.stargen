@@ -14,7 +14,6 @@ namespace Primoris.Universe.Stargen.Bodies
     public delegate SatelliteBody CreateSatelliteBodyDelegate(Seed seed,
                                                             StellarBody star,
 															int pos,
-                                                            bool useRandomTilt,
                                                             string planetID);
 
 
@@ -268,6 +267,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 
 		public SatelliteBody(Seed seed, StellarBody star, Body parentBody) : this(null, seed, star, parentBody) { }
+
 		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody)
 		{
 			Science = phy;
