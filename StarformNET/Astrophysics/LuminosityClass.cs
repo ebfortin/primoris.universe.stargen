@@ -9,14 +9,41 @@ namespace Primoris.Universe.Stargen.Astrophysics
 	{
 		Undefined,
 		O,
-		Ia0, // Very luminous supergiants
-		Ia,  // Very luminous supergiants
-		Ib,  // Less luminous supergiants
-		II,  // Luminous giants
-		III, // Giants
-		IV,  // Subgiants
-		V,   // Main sequence stars (dwarf stars)
-		VI,  // Subdwarf
-		VII  // White Dwarf
+		/// <summary>
+		/// Very luminous supergiants.
+		/// </summary>
+		Ia0,
+		/// <summary>
+		/// Very luminous supergiants.
+		/// </summary>
+		Ia,
+		/// <summary>
+		/// Less luminous supergiants.
+		/// </summary>
+		Ib,
+		/// <summary>
+		/// Luminous giants.
+		/// </summary>
+		II,
+		/// <summary>
+		/// Giants.
+		/// </summary>
+		III,
+		/// <summary>
+		/// Subgiants.
+		/// </summary>
+		IV,
+		/// <summary>
+		/// Main sequence stars (dwarf stars)
+		/// </summary>
+		V,
+		/// <summary>
+		/// Subdwarf.
+		/// </summary>
+		VI,
+		/// <summary>
+		/// White Dwarf.
+		/// </summary>
+		VII
 	}
 }

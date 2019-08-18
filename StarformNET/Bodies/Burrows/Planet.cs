@@ -171,7 +171,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			planet.AxialTilt = GetRandomInclination(SemiMajorAxis);
 
-			planet.ExosphereTemperature = Science.Thermodynamics.GetExosphereTemperature(SemiMajorAxis, sun.EcosphereRadius, sun.Temperature);
+			planet.ExosphereTemperature = Science.Thermodynamics.GetEstimatedExosphereTemperature(SemiMajorAxis, sun.EcosphereRadius, sun.Temperature);
 			planet.RMSVelocity = Science.Physics.GetRMSVelocity(Mass.FromGrams(GlobalConstants.MOL_NITROGEN), ExosphereTemperature);
 			planet.CoreRadius = Science.Planetology.GetCoreRadius(DustMass, OrbitZone, false);
 
@@ -342,7 +342,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		/// <param name="planet"></param>
 		private void AdjustSurfaceTemperatures(Pressure surfpres)
 		{
-			var initTemp = Science.Thermodynamics.GetEstimatedTemperature(StellarBody.EcosphereRadius, SemiMajorAxis, Albedo);
+			var initTemp = Science.Thermodynamics.GetEstimatedAverageTemperature(StellarBody.EcosphereRadius, SemiMajorAxis, Albedo);
 
 			//var h2Life = GasLife(GlobalConstants.MOL_HYDROGEN, planet);
 			//var h2oLife = GasLife(GlobalConstants.WATER_VAPOR, planet);
@@ -399,7 +399,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				planet.Albedo = Ratio.FromDecimalFractions(GlobalConstants.EARTH_ALBEDO);
 
-				effectiveTemp = Science.Thermodynamics.GetEffectiveTemperature(planet.StellarBody.EcosphereRadius, planet.SemiMajorAxis, planet.Albedo);
+				effectiveTemp = Science.Thermodynamics.GetEstimatedEffectiveTemperature(planet.StellarBody.EcosphereRadius, planet.SemiMajorAxis, planet.Albedo);
 				greenhouseTemp = Science.Thermodynamics.GetGreenhouseTemperatureRise(Science.Planetology.GetOpacity(planet.MolecularWeightRetained, surfpres), effectiveTemp, surfpres);
 				planet.Temperature = effectiveTemp + greenhouseTemp;
 
@@ -452,7 +452,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			planet.Albedo = Science.Planetology.GetAlbedo(planet.WaterCoverFraction, planet.CloudCoverFraction, planet.IceCoverFraction, surfpres);
 
-			effectiveTemp = Science.Thermodynamics.GetEffectiveTemperature(planet.StellarBody.EcosphereRadius, planet.SemiMajorAxis, planet.Albedo);
+			effectiveTemp = Science.Thermodynamics.GetEstimatedEffectiveTemperature(planet.StellarBody.EcosphereRadius, planet.SemiMajorAxis, planet.Albedo);
 			greenhouseTemp = Science.Thermodynamics.GetGreenhouseTemperatureRise(
 				Science.Planetology.GetOpacity(planet.MolecularWeightRetained, surfpres),
 				effectiveTemp, surfpres);

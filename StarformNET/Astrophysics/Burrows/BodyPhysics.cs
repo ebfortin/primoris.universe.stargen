@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Primoris.Universe.Stargen.Bodies;
+﻿using Primoris.Universe.Stargen.Bodies;
+using System;
 using UnitsNet;
 
 
@@ -20,13 +18,11 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 
 		public IScienceThermodynamics Thermodynamics => this;
 
-		/// <summary>
-		/// Fogg eq. 12
-		/// </summary>
-		/// <param name="massSM"></param>
-		/// <param name="radiusKM"></param>
-		/// <param name="isGasGiant"></param>
-		/// <returns></returns>
+		/// <summary>Fogg eq. 12</summary>
+		/// <param name="massSM">Mass of the body.</param>
+		/// <param name="radiusKM">Radius of the body.</param>
+		/// <param name="isGasGiant">Is the body a gas giant?</param>
+		/// <returns>Angular velocity.</returns>
 		public virtual RotationalSpeed GetBaseAngularVelocity(Mass massSM,
 									   Length radiusKM,
 									   bool isGasGiant)
@@ -58,6 +54,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 				   (1.0 / Math.Pow(semiMajorAxisAU.AstronomicalUnits, 6.0)));
 		}
 
+
 		public virtual RotationalSpeed GetAngularVelocity(Mass massSM,
 								   Length radiusKM,
 								   Density densityGCC,
@@ -86,7 +83,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="ecosphereRadiusAU"></param>
 		/// <param name="sunTemperature"></param>
 		/// <returns></returns>
-		public virtual Temperature GetExosphereTemperature(Length semiMajorAxisAu,
+		public virtual Temperature GetEstimatedExosphereTemperature(Length semiMajorAxisAu,
 										Length ecosphereRadiusAU,
 										Temperature sunTemperature)
 		{
@@ -262,7 +259,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		public virtual bool TestHasGreenhouseEffect(Length ecosphereRadius,
 									  Length semiAxisMajorAU)
 		{
-			var temp = GetEffectiveTemperature(ecosphereRadius, semiAxisMajorAU, Ratio.FromDecimalFractions(GlobalConstants.GREENHOUSE_TRIGGER_ALBEDO));
+			var temp = GetEstimatedEffectiveTemperature(ecosphereRadius, semiAxisMajorAU, Ratio.FromDecimalFractions(GlobalConstants.GREENHOUSE_TRIGGER_ALBEDO));
 			return temp.Kelvins > GlobalConstants.FREEZING_POINT_OF_WATER;
 		}
 
@@ -659,7 +656,7 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 		/// <param name="orbitalRadius"></param>
 		/// <param name="albedo"></param>
 		/// <returns></returns>
-		public virtual Temperature GetEffectiveTemperature(Length ecosphereRadius, Length orbitalRadius, Ratio albedo)
+		public virtual Temperature GetEstimatedEffectiveTemperature(Length ecosphereRadius, Length orbitalRadius, Ratio albedo)
 		{
 			// This is Fogg's eq.19.
 			return Temperature.FromKelvins(Math.Sqrt(ecosphereRadius / orbitalRadius)
@@ -940,15 +937,15 @@ namespace Primoris.Universe.Stargen.Astrophysics.Burrows
 			return Pressure.FromMillibars((surf_pressure.Millibars - pH2O) * fraction);
 		}
 
-		// TODO figure out how this function differs from EffTemp, write summary
 		/// <summary>
-		/// 
+		/// Returns the estimated temperature based on orbit position, albedo, ecosphere radius and
+		/// AVERAGE temperature of Earth.
 		/// </summary>
 		/// <param name="ecosphereRadius"></param>
 		/// <param name="orbitalRadius"></param>
 		/// <param name="albedo"></param>
 		/// <returns></returns>
-		public virtual Temperature GetEstimatedTemperature(Length ecosphereRadius, Length orbitalRadius, Ratio albedo)
+		public virtual Temperature GetEstimatedAverageTemperature(Length ecosphereRadius, Length orbitalRadius, Ratio albedo)
 		{
 			return Temperature.FromKelvins(Math.Sqrt(ecosphereRadius / orbitalRadius)
 				  * Extensions.Pow1_4((1.0 - albedo.DecimalFractions) / (1.0 - GlobalConstants.EARTH_ALBEDO))
