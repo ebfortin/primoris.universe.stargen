@@ -34,7 +34,7 @@ namespace Primoris.Universe.Stargen
                 5, 6);
             _systemMap.SpriteSheet = _planetSprites;
             _systemMap.PlanetPadding = 10;
-            _gases = Chemical.Load();
+			_gases = Chemical.All.Values.ToArray();
             
             _seedSelector.Value = 0;
             _eccentricitySelector.Value = 0.25M;

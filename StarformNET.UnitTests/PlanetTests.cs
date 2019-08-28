@@ -1,4 +1,6 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Bodies.Burrows;
 using System.Linq;
@@ -6,6 +8,7 @@ using Primoris.Universe.Stargen.Systems.Burrows;
 using Primoris.Universe.Stargen.Services;
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
+using UnitsNet;
 
 
 namespace Primoris.Universe.Stargen.UnitTests
@@ -60,6 +63,25 @@ namespace Primoris.Universe.Stargen.UnitTests
 
 				Assert.IsFalse(system1.SequenceEqual(system2));
             }
+
+			[TestCategory("Planet.Atmosphere")]
+			[TestMethod]
+			public void TestAtmosphereComposition()
+			{
+				var star = new Star();
+				var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.Zero);
+
+				var layers = new List<Layer>()
+				{
+					new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), new (Chemical, Ratio)[0]),
+					new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>() { (Chemical.All["N"], Ratio.FromDecimalFractions(0.50)) }, Pressure.FromBars(0.5)),
+					new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>() { (Chemical.All["N"], Ratio.FromDecimalFractions(0.25)) }, Pressure.FromBars(0.25))
+				};
+				var planet = new Planet(seed, star, star, layers);
+
+				var ele = planet.AtmosphereComposition.ElementAt(0);
+				Assert.AreEqual(Math.Round((0.50 * 0.5 + 0.25 * 0.25) / 0.75, 2, MidpointRounding.ToNegativeInfinity), Math.Round(ele.Item2.DecimalFractions, 2, MidpointRounding.ToNegativeInfinity));
+			}
         }
     }
 }

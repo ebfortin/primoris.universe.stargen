@@ -28,7 +28,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		public static readonly double CHANGE_IN_EARTH_ANG_VEL = -1.3E-15;                    // Units of radians/sec/year
 		public static readonly double SOLAR_MASS_IN_GRAMS = 1.989E33;                    // Units of grams			
 		public static readonly double SOLAR_MASS_IN_KILOGRAMS = 1.989E30;                    // Units of kg				
-		public static readonly double EARTH_MASS_IN_GRAMS = 5.977E27;                    // Units of grams			
+		public static readonly double EARTH_MASS_IN_GRAMS = 5.977E27;                    // Units of grams
+		public static readonly double EARTH_MASS_ATMOSPHERE_IN_GRAMS = 5.1480E21;       // Units of grams.
+		public static readonly double EARTH_THICKNESS_ATMOSPHERE_KILOMETERS = 480.0;	// Units of km.
 		public static readonly double EARTH_RADIUS = 6.378E8;                     // Units of cm				
 		public static readonly double EARTH_DENSITY = 5.52;                        // Units of g/cc			
 		public static readonly double KM_EARTH_RADIUS = 6378.0;                      // Units of km	

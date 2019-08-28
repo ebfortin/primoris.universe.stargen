@@ -80,7 +80,6 @@ namespace Primoris.Universe.Stargen.Cmdlets
         private SatelliteBody CreatePlanet(Seed seed,
                                         StellarBody star,
 										int pos,
-                                        bool useRandomTilt,
                                         string planetID)
         {
 			return new Planet(seed, star, star) { Position = pos };

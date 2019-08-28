@@ -14,6 +14,23 @@ namespace Primoris.Universe.Stargen.Astrophysics
 	// TODO break out abundance into a separate class for star/planet profiles
 	public class Chemical
 	{
+		private static IReadOnlyDictionary<string, Chemical> _all = null;
+		public static IReadOnlyDictionary<string, Chemical> All 
+		{ 
+			get
+			{
+				if (_all == null)
+					_all = Load();
+				
+				return _all;
+			} 
+
+			protected set
+			{
+				_all = value;
+			} 
+		}
+
 		public int Num { get; set; }
 		public string Symbol { get; set; }
 		public string DisplaySymbol { get; set; }
@@ -43,8 +60,17 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			MaxIpp = Pressure.FromMillibars(mipp);
 		}
 
-		public static Chemical[] Load()
+		public static IReadOnlyDictionary<string, Chemical> Reload()
 		{
+			All = null;
+			return Load();
+		}
+
+		public static IReadOnlyDictionary<string, Chemical> Load()
+		{
+			if (_all != null)
+				return _all;
+
 			var a = Assembly.GetExecutingAssembly();
 			var s = a.GetManifestResourceStream("Primoris.Universe.Stargen.Resources.elements.dat");
 
@@ -54,7 +80,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			}
 		}
 
-		public static Chemical[] Load(Stream s)
+		public static IReadOnlyDictionary<string, Chemical> Load(Stream s)
 		{
 			using (var r = new StreamReader(s))
 			{
@@ -62,9 +88,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			}
 		}
 
-		public static Chemical[] Load(TextReader r)
+		public static IReadOnlyDictionary<string, Chemical> Load(TextReader r)
 		{
-			var chemTable = new List<Chemical>();
+			var chemTable = new Dictionary<string, Chemical>();
 
 			var json = r.ReadToEnd();
 			var items = JsonConvert.DeserializeObject<List<List<object>>>(json);
@@ -85,13 +111,14 @@ namespace Primoris.Universe.Stargen.Astrophysics
 				var maxIPP = (item.Count == 11 ? Convert.ToDouble(item[10]) : 0) * GlobalConstants.MMHG_TO_MILLIBARS;
 
 
-				chemTable.Add(new Chemical(num, sym, sym, name, weight, melt, boil, dens, abunde, abunds, rea, maxIPP));
+				chemTable.Add(sym, new Chemical(num, sym, sym, name, weight, melt, boil, dens, abunde, abunds, rea, maxIPP));
 			}
 
-			return (from row in chemTable orderby row.Weight ascending select row).ToArray();
+			All = chemTable;
+			return All;
 		}
 
-		public static Chemical[] Load(string file)
+		public static IReadOnlyDictionary<string, Chemical> Load(string file)
 		{
 			using (StreamReader r = new StreamReader(file))
 			{

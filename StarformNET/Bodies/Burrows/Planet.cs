@@ -77,14 +77,14 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			if(Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained))
 			{
-				Layers.Add(new BasicGiantGaseousLayer().Generate(this, Mass, Chemical.Load(), Layers));
+				Layers.Add(new BasicGiantGaseousLayer(Radius).Generate(this, Mass, Chemical.All.Values.ToArray(), Layers));
 			} else
 			{
 				// Add basic Burrows layer.
-				Layers.Add(new BasicSolidLayer().Generate(this, DustMass, new Chemical[0], new Layer[0]));
+				Layers.Add(new BasicSolidLayer(CoreRadius).Generate(this, DustMass, new Chemical[0], new Layer[0]));
 
 				// Generate complete atmosphere.
-				Layers.Add(new BasicGaseousLayer(SurfacePressure).Generate(this, GasMass, Chemical.Load(), Layers));
+				Layers.Add(new BasicGaseousLayer(Radius - CoreRadius, SurfacePressure).Generate(this, GasMass, Chemical.All.Values.ToArray(), Layers));
 			}
 
 			IsForming = false;
@@ -195,7 +195,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				AdjustPropertiesForGasBody();
 				SurfacePressure = Pressure.Zero;
 				Layers.Clear();
-				Layers.Add(new BasicGiantGaseousLayer().Generate(this, GasMass, new Chemical[0], Layers));
+				Layers.Add(new BasicGiantGaseousLayer(Radius).Generate(this, GasMass, new Chemical[0], Layers));
 			}
 			else // If not, it's rocky.
 			{
@@ -249,11 +249,11 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				planet.IsTidallyLocked = Science.Planetology.TestIsTidallyLocked(DayLength, OrbitalPeriod);
 
 				// Add basic Burrows layer.
-				Layers.Add(new BasicSolidLayer().Generate(this, DustMass, new Chemical[0], new Layer[0]));
+				Layers.Add(new BasicSolidLayer(CoreRadius).Generate(this, DustMass, new Chemical[0], new Layer[0]));
 
 				// Generate complete atmosphere.
 				if(surfpres.Millibars > 0.0 && GasMass.SolarMasses > 0.0)
-					Layers.Add(new BasicGaseousLayer(surfpres).Generate(this, GasMass, Chemical.Load(), Layers));
+					Layers.Add(new BasicGaseousLayer(Radius - CoreRadius, surfpres).Generate(this, GasMass, Chemical.All.Values.ToArray(), Layers));
 				SurfacePressure = surfpres;
 
                 HasGreenhouseEffect = Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & SurfacePressure > Pressure.Zero;

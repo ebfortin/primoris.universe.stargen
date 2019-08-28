@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.Systems
@@ -17,7 +18,7 @@ namespace Primoris.Universe.Stargen.Systems
 			CloudEccentricity = ecc;
 			GasDensityRatio = dens;
 
-			GasTable = Chemical.Load();
+			GasTable = Chemical.All.Values.ToArray();
 		}
 
 		public double DustDensityCoeff { get; set; }

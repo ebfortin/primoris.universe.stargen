@@ -8,11 +8,11 @@ namespace Primoris.Universe.Stargen.Bodies
 {
 	public abstract class HomogeneousLayer : Layer
 	{
-		public HomogeneousLayer() : base()
+		public HomogeneousLayer(Length thickness) : base(thickness)
 		{
 		}
 
-		public HomogeneousLayer(IEnumerable<(Chemical, Ratio)> composition) : base(composition)
+		public HomogeneousLayer(Length thickness, IEnumerable<(Chemical, Ratio)> composition) : base(thickness, composition)
 		{
 		}
 	}

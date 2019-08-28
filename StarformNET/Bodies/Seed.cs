@@ -5,7 +5,6 @@ using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
-	// TODO: Transform to collection and enumerators. 
 	public class Seed
 	{
 		//public Seed NextBody { get; set; } = null;

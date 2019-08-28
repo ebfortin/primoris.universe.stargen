@@ -47,6 +47,11 @@ namespace Primoris.Universe.Stargen.Bodies
 			{
 				Add(item);
 			}
+
+			foreach(var item in items)
+			{
+				item.OnAddedToStack();
+			}
 		}
 
 		public void Clear()
@@ -121,6 +126,33 @@ namespace Primoris.Universe.Stargen.Bodies
 			}
 
 			return thick;
+		}
+
+		public Mass ComputeMassBelow(Layer layer)
+		{
+			if (!Contains(layer))
+				throw new ArgumentException("Layer not in LayerStack.");
+
+			var index = _layers.FindIndex(x => x == layer);
+			if (index == 0)
+				return Mass.Zero;
+
+			var m = Mass.Zero;
+			foreach (var l in _layers.GetRange(0, index))
+			{
+				m += l.Mass;
+			}
+
+			return m;
+		}
+
+		public Acceleration ComputeAccelerationAt(Layer layer)
+		{
+			var mbelow = ComputeMassBelow(layer);
+			var rbelow = ComputeThicknessBelow(layer);
+			var acc = layer.Parent.Science.Physics.GetAcceleration(mbelow, rbelow);
+
+			return acc;
 		}
 	}
 }

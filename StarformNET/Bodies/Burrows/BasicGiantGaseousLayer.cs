@@ -7,22 +7,19 @@ using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
-	public class BasicGiantGaseousLayer : GaseousLayer
+	public class BasicGiantGaseousLayer : BasicGaseousLayer
 	{
-		public BasicGiantGaseousLayer() : base(Pressure.Zero) { }
+		public BasicGiantGaseousLayer(Length thickness) : base(thickness, Pressure.Zero) 
+		{ 
+		}
 
-		public BasicGiantGaseousLayer(Pressure surfPres) : base(surfPres)
+		public BasicGiantGaseousLayer(Length thickness, Pressure surfPres) : base(thickness, surfPres)
 		{
 		}
 
 		public override Layer Generate(SatelliteBody parentBody, Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
 		{
-			if (curLayers.Count() != 0)
-				throw new InvalidBodyLayerSequenceException();
-
-			Mass = availableMass;
-
-			return this;
+			return base.Generate(parentBody, availableMass, availableChems, curLayers);
 		}
 	}
 }

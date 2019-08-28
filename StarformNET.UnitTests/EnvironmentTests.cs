@@ -351,11 +351,11 @@ namespace Primoris.Universe.Stargen.UnitTests
             {
 				var layers = new List<Layer>()
 				{
-					new BasicSolidLayer(),
-					new BasicGaseousLayer(new List<ValueTuple<Chemical, Ratio>>()
+					new BasicSolidLayer(Length.FromKilometers(10000.0)),
+					new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
 					{
-						new ValueTuple<Chemical, Ratio>(TestGases["O"], Ratio.FromDecimalFractions(0.21)),
-						new ValueTuple<Chemical, Ratio>(TestGases["N"], Ratio.FromDecimalFractions(0.78))
+						(TestGases["O"], Ratio.FromDecimalFractions(0.21)),
+						(TestGases["N"], Ratio.FromDecimalFractions(0.78))
 					}, Pressure.FromBars(1.0))
 				};
 
@@ -371,10 +371,10 @@ namespace Primoris.Universe.Stargen.UnitTests
             {
 				var layers = new List<Layer>()
 				{
-					new BasicSolidLayer(),
-					new BasicGaseousLayer(new List<ValueTuple<Chemical, Ratio>>()
+					new BasicSolidLayer(Length.FromKilometers(10000.0)),
+					new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
 					{
-						new ValueTuple<Chemical, Ratio>(TestGases["CO2"], Ratio.FromDecimalFractions(1.0))
+						(TestGases["CO2"], Ratio.FromDecimalFractions(1.0))
 					}, Pressure.FromBars(1.0))
 				};
 
@@ -390,10 +390,10 @@ namespace Primoris.Universe.Stargen.UnitTests
             {
 				var layers = new List<Layer>()
 				{
-					new BasicSolidLayer(),
-					new BasicGaseousLayer(new List<ValueTuple<Chemical, Ratio>>()
+					new BasicSolidLayer(Length.FromKilometers(10000.0)),
+					new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
 					{
-						new ValueTuple<Chemical, Ratio>(TestGases["N"], Ratio.FromDecimalFractions(1.0))
+						(TestGases["N"], Ratio.FromDecimalFractions(1.0))
 					}, Pressure.FromBars(1.0))
 				};
 
@@ -409,7 +409,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             {
 				var layers = new List<Layer>()
 				{
-					new BasicSolidLayer()
+					new BasicSolidLayer(Length.FromKilometers(10000.0))
 				};
 
 				return layers;

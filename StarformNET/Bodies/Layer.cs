@@ -14,6 +14,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		private IScienceAstrophysics _phy = null;
 		public IScienceAstrophysics Science { get => _phy is null ? Provider.Use().GetService<IScienceAstrophysics>() : _phy; set => _phy = value; }
 
+		public bool IsDefined { get; protected set; } = false;
 		public StellarBody StellarBody { get => Parent.StellarBody; }
 		public SatelliteBody Parent { get; internal set; }
 		public Length Thickness { get; protected set; }
@@ -24,7 +25,8 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <remarks>
 		/// Combined mass of all layers should equal SatelliteBody mass. There is currently no automated way to do this.
 		/// </remarks>
-		public Mass Mass { get; protected set; }
+		public virtual Mass Mass { get; protected set; }
+
 		public virtual Density MeanDensity
 		{
 			get
@@ -33,7 +35,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			}
 		}
 
-		public virtual Temperature MeanTemperature { get; protected set; }
+		public virtual Temperature MeanTemperature { get; set; } = Temperature.Zero;
 
 		/// <summary>
 		/// TODO: Add Unit Test.
@@ -51,19 +53,50 @@ namespace Primoris.Universe.Stargen.Bodies
 			}
 		}
 
-		protected IList<ValueTuple<Chemical, Ratio>> CompositionInternal { get; } = new List<ValueTuple<Chemical, Ratio>>();
-		public IEnumerable<ValueTuple<Chemical, Ratio>> Composition { get => CompositionInternal; }
-
-		public Layer()
+		public virtual Area UpperBoundaryArea
 		{
+			get
+			{
+				if (Parent is null)
+					return Area.Zero;
+
+				var aboverad = Parent.Layers.ComputeThicknessBelow(this).Kilometers + Thickness.Kilometers;
+				var outer = 4.0 * Math.PI * Math.Pow(aboverad, 2.0);
+
+				return Area.FromSquareKilometers(outer);
+			}
 		}
 
-		public Layer(IEnumerable<ValueTuple<Chemical, Ratio>> composition)
+		public virtual Area LowerBoundaryArea
 		{
-			CompositionInternal = new List<ValueTuple<Chemical, Ratio>>(composition);
+			get
+			{
+				if (Parent is null)
+					return Area.Zero;
+
+				var belowrad = Parent.Layers.ComputeThicknessBelow(this).Kilometers;
+				var inner = 4.0 * Math.PI * Math.Pow(belowrad, 2.0);
+
+				return Area.FromSquareKilometers(inner);
+			}
+		}
+
+		protected IList<(Chemical, Ratio)> CompositionInternal { get; set; } = new List<ValueTuple<Chemical, Ratio>>();
+		public IEnumerable<ValueTuple<Chemical, Ratio>> Composition { get => CompositionInternal; }
+
+		public Layer(Length thickness)
+		{
+			Thickness = thickness;
+		}
+
+		public Layer(Length thickness, IEnumerable<(Chemical, Ratio)> composition) : this(thickness)
+		{
+			CompositionInternal = new List<(Chemical, Ratio)>(composition);
 		}
 
 		public abstract Layer Generate(SatelliteBody parentBody, Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers);
+
+		protected internal abstract void OnAddedToStack();
 
 		public override bool Equals(object obj)
 		{

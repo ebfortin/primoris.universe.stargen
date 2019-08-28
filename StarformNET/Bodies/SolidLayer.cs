@@ -9,12 +9,19 @@ namespace Primoris.Universe.Stargen.Bodies
 {
 	public abstract class SolidLayer : HomogeneousLayer
 	{
-		public SolidLayer() : base()
+		public SolidLayer(Length thickness) : base(thickness)
 		{
 		}
 
-		public SolidLayer(IEnumerable<(Chemical, Ratio)> composition) : base(composition)
+		public SolidLayer(Length thickness, Mass mass, IEnumerable<(Chemical, Ratio)> composition) : base(thickness, composition)
 		{
+			Mass = mass;
+		}
+
+		protected internal override void OnAddedToStack()
+		{
+			if (Mass == Mass.Zero)
+				throw new ArgumentException("A SolidLayer added to a Stack without calling Generate() must have a non zero Mass specified in its constructor.");
 		}
 	}
 }

@@ -9,7 +9,11 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
 	public class BasicSolidLayer : SolidLayer
 	{
-		public BasicSolidLayer() : base()
+		public BasicSolidLayer(Length thickness) : base(thickness)
+		{
+		}
+
+		public BasicSolidLayer(Length thickness, Mass mass, IEnumerable<(Chemical, Ratio)> composition) : base(thickness, mass, composition)
 		{
 		}
 
@@ -18,6 +22,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			Thickness = parentBody.CoreRadius;
 			//MeanDensity = parentBody.Density;
 			MeanTemperature = parentBody.Temperature;
+			if (Mass > Mass.Zero && Mass != availableMass)
+				throw new ArgumentException("Available Mass must be equal to specified mass.");
+		
 			Mass = availableMass;
 
 			return this;

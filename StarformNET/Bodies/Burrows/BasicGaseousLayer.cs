@@ -9,26 +9,36 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
 	public class BasicGaseousLayer : GaseousLayer
 	{
-		public BasicGaseousLayer(Pressure surfPres) : base(surfPres)
+		public BasicGaseousLayer(Length thickness, Pressure surfPres) : base(thickness, surfPres)
 		{
 		}
 
-		public BasicGaseousLayer(IEnumerable<(Chemical, Ratio)> composition, Pressure surfPres) : base(composition, surfPres)
+		public BasicGaseousLayer(Length thickness, IEnumerable<(Chemical, Ratio)> composition, Pressure surfPres) : base(thickness, composition, surfPres)
 		{
 			Breathability = CalculateBreathability();
 		}
 
+		/// <summary>
+		/// Generates the gaseous layer.
+		/// </summary>
+		/// <remarks>
+		/// There can be only one BasicGaseousLayer and one BasicSolidLayer. Available mass is ignored since Mass is
+		/// determined by Pressure.
+		/// </remarks>
+		/// <param name="parentBody">The parent body.</param>
+		/// <param name="availableMass">The available mass. This parameter is ignored.</param>
+		/// <param name="availableChems">The available chems.</param>
+		/// <param name="curLayers">The current layers.</param>
+		/// <returns>This Layer.</returns>
+		/// <exception cref="InvalidBodyLayerSequenceException"></exception>
 		public override Layer Generate(SatelliteBody parentBody, Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
 		{
-			if(curLayers.Count() != 1)
+			/*if(curLayers.Count() != 1)
 			{
 				throw new InvalidBodyLayerSequenceException();
-			}
+			}*/
 
-			if(availableMass == Mass.Zero)
-			{
-				throw new InvalidBodyOperationException("Layer can't have an available mass of Zero.");
-			}
+			// We just ignore availableMass. It was determined by Pressure.
 
 			var sun = parentBody.StellarBody;
 			var planet = parentBody;
@@ -86,14 +96,14 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					if (amount[i] > 0.0)
 					{
 						CompositionInternal.Add(
-								new ValueTuple<Chemical, Ratio>() { Item1 = gasTable[i], Item2 = Ratio.FromDecimalFractions(amount[i] / totamount) }
+								//new ValueTuple<Chemical, Ratio>() { Item1 = gasTable[i], Item2 = Ratio.FromDecimalFractions(amount[i] / totamount) }
+								(gasTable[i], Ratio.FromDecimalFractions(amount[i] / totamount))
 							);
 					}
 				}
 			}
 
 			Breathability = CalculateBreathability();
-			Mass = availableMass;
 
 			return this;
 		}
@@ -126,7 +136,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				if (ipp > gas.MaxIpp)
 				{
 					poisonous = true;
-					PoisonousCompositionInternal.Add(new ValueTuple<Chemical, Ratio>(gas, CompositionInternal[index].Item2));
+					PoisonousCompositionInternal.Add((gas, CompositionInternal[index].Item2));
 				}
 
 				// TODO why not just have a min_ipp for every gas, even if it's going to be zero for everything that's not oxygen?

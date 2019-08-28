@@ -114,7 +114,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 		public IEnumerable<Layer> Core { get => from l in Layers where l is SolidLayer select l; }
 
-		public IEnumerable<ValueTuple<Chemical, Ratio>> CoreComposition => ConsolidateComposition(Core);
+		public IEnumerable<(Chemical, Ratio)> CoreComposition => ConsolidateComposition(Core);
 
 		#endregion
 
@@ -155,9 +155,9 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <summary>
 		/// TODO: Create Unit Test.
 		/// </summary>
-		public IEnumerable<ValueTuple<Chemical, Ratio>> AtmosphereComposition => ConsolidateComposition(Atmosphere);
+		public IEnumerable<(Chemical, Ratio)> AtmosphereComposition => ConsolidateComposition(Atmosphere);
 
-		public IEnumerable<ValueTuple<Chemical, Ratio>> AtmospherePoisonousComposition => ConsolidatePoisonousComposition(from GaseousLayer l in Atmosphere where l.PoisonousComposition.Count() > 0 select l);
+		public IEnumerable<(Chemical, Ratio)> AtmospherePoisonousComposition => ConsolidatePoisonousComposition(from GaseousLayer l in Atmosphere where l.PoisonousComposition.Count() > 0 select l);
 
         /// <summary>
         /// The root-mean-square velocity of N2 at the planet's exosphere given
@@ -289,13 +289,18 @@ namespace Primoris.Universe.Stargen.Bodies
 		public SatelliteBody(Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(null, seed, star, parentBody, layers) { }
 		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody)
 		{
+			Science = phy;
+
 			Layers.Clear();
 			Layers.AddMany(layers);
 		}
 
-		private IEnumerable<ValueTuple<Chemical, Ratio>> ConsolidateComposition(IEnumerable<Layer> layers)
+		private IEnumerable<(Chemical, Ratio)> ConsolidateComposition(IEnumerable<Layer> layers)
 		{
 			var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
+			if (totmass == Mass.Zero)
+				return new (Chemical, Ratio)[0];
+
 			var amounts = (from l in layers
 						   select l.Composition.Select(
 										x =>
@@ -303,16 +308,16 @@ namespace Primoris.Universe.Stargen.Bodies
 											var chem = x.Item1;
 											var ratio = Ratio.FromDecimalFractions(Mass.FromSolarMasses(x.Item2.DecimalFractions * l.Mass.SolarMasses) / totmass);
 
-											return new ValueTuple<Chemical, Ratio>(chem, ratio);
+											return (chem, ratio);
 										})).SelectMany(x => x);
 
 			var grouped = from a in amounts
 						  group a by a.Item1 into g
-						  select new ValueTuple<Chemical, Ratio>(g.First().Item1, Ratio.FromDecimalFractions(g.Sum(x => x.Item2.DecimalFractions)));
+						  select (g.First().Item1, Ratio.FromDecimalFractions(g.Sum(x => x.Item2.DecimalFractions)));
 			return grouped;
 		}
 
-		private IEnumerable<ValueTuple<Chemical, Ratio>> ConsolidatePoisonousComposition(IEnumerable<Layer> layers)
+		private IEnumerable<(Chemical, Ratio)> ConsolidatePoisonousComposition(IEnumerable<Layer> layers)
 		{
 			var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
 			var amounts = (from GaseousLayer l in layers
@@ -322,12 +327,12 @@ namespace Primoris.Universe.Stargen.Bodies
 											var chem = x.Item1;
 											var ratio = Ratio.FromDecimalFractions(Mass.FromSolarMasses(x.Item2.DecimalFractions * l.Mass.SolarMasses) / totmass);
 
-											return new ValueTuple<Chemical, Ratio>(chem, ratio);
+											return (chem, ratio);
 										})).SelectMany(x => x);
 
 			var grouped = from a in amounts
 						  group a by a.Item1 into g
-						  select new ValueTuple<Chemical, Ratio>(g.First().Item1, Ratio.FromDecimalFractions(g.Sum(x => x.Item2.DecimalFractions)));
+						  select (g.First().Item1, Ratio.FromDecimalFractions(g.Sum(x => x.Item2.DecimalFractions)));
 			return grouped;
 		}
 
