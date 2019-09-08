@@ -15,6 +15,13 @@ namespace Primoris.Universe.Stargen.Astrophysics
 	public class Chemical
 	{
 		private static IReadOnlyDictionary<string, Chemical> _all = null;
+
+		/// <summary>
+		/// Gets or sets all chemical available for the current simulation.
+		/// </summary>
+		/// <value>
+		/// All.
+		/// </value>
 		public static IReadOnlyDictionary<string, Chemical> All 
 		{ 
 			get
@@ -31,19 +38,102 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			} 
 		}
 
+		/// <summary>
+		/// Gets or sets the atomic number.
+		/// </summary>
+		/// <value>
+		/// The atomic number.
+		/// </value>
 		public int Num { get; set; }
+
+		/// <summary>
+		/// Gets or sets the chemical symbol.
+		/// </summary>
+		/// <value>
+		/// The chemical symbol.
+		/// </value>
 		public string Symbol { get; set; }
+
+		/// <summary>
+		/// Gets or sets the display symbol.
+		/// </summary>
+		/// <value>
+		/// The display symbol.
+		/// </value>
 		public string DisplaySymbol { get; set; }
+
+		/// <summary>
+		/// Gets or sets the name.
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
 		public string Name { get; set; }
+
+		/// <summary>
+		/// Gets or sets the weight.
+		/// </summary>
+		/// <value>
+		/// The weight.
+		/// </value>
 		public Mass Weight { get; set; }
+
+		/// <summary>
+		/// Gets or sets the melting Temperature.
+		/// </summary>
+		/// <value>
+		/// The melting Temperature.
+		/// </value>
 		public Temperature Melt { get; set; }
+
+		/// <summary>
+		/// Gets or sets the boiling Temperature.
+		/// </summary>
+		/// <remarks>
+		/// This value is valid at Earth's atmospheric pressure.
+		/// </remarks>
+		/// <value>
+		/// The boiling Temperature.
+		/// </value>
 		public Temperature Boil { get; set; }
+
+		/// <summary>
+		/// Gets or sets the density.
+		/// </summary>
+		/// <remarks>
+		/// This value is valid at Earth's atmospheric pressure. 
+		/// </remarks>
+		/// <value>
+		/// The density.
+		/// </value>
 		public Density Density { get; set; }
 		public Ratio Abunde { get; set; }
 		public Ratio Abunds { get; set; }  // Solar system abundance
 		public Ratio Reactivity { get; set; }
+
+		/// <summary>
+		/// Gets or sets the maximum ipp (inspired partial pressure).
+		/// </summary>
+		/// <value>
+		/// The maximum ipp.
+		/// </value>
 		public Pressure MaxIpp { get; set; } // Max inspired partial pressure im millibars
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Chemical"/> class.
+		/// </summary>
+		/// <param name="an">An.</param>
+		/// <param name="sym">The sym.</param>
+		/// <param name="htmlsym">The htmlsym.</param>
+		/// <param name="name">The name.</param>
+		/// <param name="w">The w.</param>
+		/// <param name="m">The m.</param>
+		/// <param name="b">The b.</param>
+		/// <param name="dens">The dens.</param>
+		/// <param name="ae">The ae.</param>
+		/// <param name="abs">The abs.</param>
+		/// <param name="rea">The rea.</param>
+		/// <param name="mipp">The mipp.</param>
 		public Chemical(int an, string sym, string htmlsym, string name, double w, double m, double b, double dens, double ae, double abs, double rea, double mipp)
 		{
 			Num = an;
@@ -60,12 +150,20 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			MaxIpp = Pressure.FromMillibars(mipp);
 		}
 
+		/// <summary>
+		/// Reloads this instance.
+		/// </summary>
+		/// <returns></returns>
 		public static IReadOnlyDictionary<string, Chemical> Reload()
 		{
 			All = null;
 			return Load();
 		}
 
+		/// <summary>
+		/// Loads this instance.
+		/// </summary>
+		/// <returns>Dictionary of Chemicals.</returns>
 		public static IReadOnlyDictionary<string, Chemical> Load()
 		{
 			if (_all != null)
@@ -80,6 +178,11 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			}
 		}
 
+		/// <summary>
+		/// Loads chemicals from the specified stream.
+		/// </summary>
+		/// <param name="s">The source stream.</param>
+		/// <returns>Dictionary of Chemicals</returns>
 		public static IReadOnlyDictionary<string, Chemical> Load(Stream s)
 		{
 			using (var r = new StreamReader(s))
@@ -88,6 +191,11 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			}
 		}
 
+		/// <summary>
+		/// Loads the chemicals from the specified TextReader.
+		/// </summary>
+		/// <param name="r">The source TextReader.</param>
+		/// <returns>Dictionary of Chemicals.</returns>
 		public static IReadOnlyDictionary<string, Chemical> Load(TextReader r)
 		{
 			var chemTable = new Dictionary<string, Chemical>();
@@ -118,6 +226,11 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			return All;
 		}
 
+		/// <summary>
+		/// Loads chemicals from the specified file.
+		/// </summary>
+		/// <param name="file">The file path.</param>
+		/// <returns>Dictionary of chemicals.</returns>
 		public static IReadOnlyDictionary<string, Chemical> Load(string file)
 		{
 			using (StreamReader r = new StreamReader(file))
@@ -126,6 +239,12 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			}
 		}
 
+		/// <summary>
+		/// Converts to string.
+		/// </summary>
+		/// <returns>
+		/// A string that represents the current object.
+		/// </returns>
 		public override string? ToString()
 		{
 			return Symbol;

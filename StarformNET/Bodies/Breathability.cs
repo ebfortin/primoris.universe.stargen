@@ -1,6 +1,9 @@
 namespace Primoris.Universe.Stargen.Bodies
 {
-    public enum Breathability
+	/// <summary>
+	/// Breathability of a body. 
+	/// </summary>
+	public enum Breathability
     {
         None,
         Breathable,

@@ -2,6 +2,9 @@
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
+	/// <summary>
+	/// Main interface of science providers.
+	/// </summary>
 	public interface IScienceAstrophysics 
 	{
 		IScienceAstronomy Astronomy { get; }

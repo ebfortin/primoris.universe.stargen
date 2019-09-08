@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
+	/// <summary>
+	/// Luminosity classes enumeration.
+	/// </summary>
 	public enum LuminosityClass
 	{
 		Undefined,

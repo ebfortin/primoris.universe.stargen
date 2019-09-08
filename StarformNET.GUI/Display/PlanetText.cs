@@ -83,17 +83,17 @@ namespace Primoris.Universe.Stargen.Display
             {
                 return "-";
             }
-            return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.BoilingPointWater.Kelvins));
+            return String.Format("{0:0.00} F", planet.BoilingPointWater.DegreesFahrenheit);
         }
 
         public static string GetGreenhouseRise(SatelliteBody planet)
         {
-            return String.Format("{0:0.00} F", UnitConversions.KelvinToFahrenheit(planet.GreenhouseRiseTemperature.Kelvins));
+            return String.Format("{0:0.00} F", planet.GreenhouseRiseTemperature.DegreesFahrenheit);
         }
 
         public static string GetEscapeVelocity(SatelliteBody planet)
         {
-            return String.Format("{0:0.00} km/sec", UnitConversions.CMToKM(planet.EscapeVelocity.CentimetersPerSecond));
+            return String.Format("{0:0.00} km/sec", planet.EscapeVelocity.KilometersPerSecond);
         }
 
         public static string GetPlanetTypeText(SatelliteBody planet)
@@ -233,7 +233,7 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetMassStringEM(SatelliteBody planet)
         {
-            return String.Format("{0:0.00} EM", UnitConversions.SolarMassesToEarthMasses(planet.Mass.SolarMasses));
+            return String.Format("{0:0.00} EM", planet.Mass.EarthMasses);
         }
 
         public static string GetSurfacePressureStringAtm(SatelliteBody planet)
@@ -242,7 +242,7 @@ namespace Primoris.Universe.Stargen.Display
             {
                 return "Uh, a lot";
             }
-            return String.Format("{0:0.000} atm", UnitConversions.MillibarsToAtm(planet.SurfacePressure.Millibars));
+            return String.Format("{0:0.000} atm", planet.SurfacePressure.Atmospheres);
         }
 
         public static string GetAtmoStringPP(SatelliteBody planet)

@@ -22,19 +22,49 @@ namespace Primoris.Universe.Stargen.Bodies
 			//Mass = GetMassFromPressure(surfPres);
 		}
 
+		/// <summary>
+		/// Gets or sets the lower boundary pressure.
+		/// </summary>
+		/// <remarks>
+		/// The pressure at the inner surface of the layer. 
+		/// </remarks>
+		/// <value>
+		/// The lower boundary pressure.
+		/// </value>
 		public Pressure LowerBoundaryPressure { get; protected set; }
 
+		/// <summary>
+		/// Gets or sets the breathability.
+		/// </summary>
+		/// <value>
+		/// The breathability.
+		/// </value>
 		public Breathability Breathability { get; protected set; } = Breathability.None;
 
 		// TODO: Have poisonous gas being put in the list. Right now doesn't work.
-		protected IList<(Chemical, Ratio)> PoisonousCompositionInternal { get; } = new List<ValueTuple<Chemical, Ratio>>();
-		public IEnumerable<(Chemical, Ratio)> PoisonousComposition { get; protected set; } = new ValueTuple<Chemical, Ratio>[0];
+		protected IList<(Chemical, Ratio)> PoisonousCompositionInternal { get; } = new List<(Chemical, Ratio)>();
 
+		/// <summary>
+		/// Gets or sets the poisonous composition.
+		/// </summary>
+		/// <value>
+		/// The poisonous composition.
+		/// </value>
+		public IEnumerable<(Chemical, Ratio)> PoisonousComposition { get; protected set; } = new (Chemical, Ratio)[0];
+
+		/// <summary>
+		/// Called when [added to stack].
+		/// </summary>
 		protected internal override void OnAddedToStack()
 		{
 			Mass = GetMassFromPressure(LowerBoundaryPressure);
 		}
 
+		/// <summary>
+		/// Gets the mass from pressure.
+		/// </summary>
+		/// <param name="pres">The pressure.</param>
+		/// <returns>Mass</returns>
 		protected virtual Mass GetMassFromPressure(Pressure pres)
 		{
 			if (Parent is null)

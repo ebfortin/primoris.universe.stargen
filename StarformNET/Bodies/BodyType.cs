@@ -1,6 +1,9 @@
 namespace Primoris.Universe.Stargen.Bodies
 {
-    public enum BodyType
+	/// <summary>
+	/// Types of body, planet or satellite.
+	/// </summary>
+	public enum BodyType
     {
         Undefined,
         Barren,

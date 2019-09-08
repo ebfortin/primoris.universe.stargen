@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
+	/// <summary>
+	/// StellarBody Spectral Class enumeration.
+	/// </summary>
 	public enum SpectralClass
 	{
 		Undefined,

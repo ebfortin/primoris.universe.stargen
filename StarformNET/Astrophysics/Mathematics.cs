@@ -6,6 +6,9 @@ using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
+	/// <summary>
+	/// Common maths functions.
+	/// </summary>
 	public static class Mathematics
 	{
 		/// <summary>
