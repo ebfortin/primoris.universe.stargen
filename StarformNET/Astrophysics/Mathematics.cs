@@ -12,7 +12,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 	public static class Mathematics
 	{
 		/// <summary>
-		/// Calculates the radius of a planet.
+		/// Calculates the radius of a planet from a Mass and a Density.
 		/// </summary>
 		/// <param name="mass">Mass in units of solar masses</param>
 		/// <param name="density">Density in units of grams/cc</param>
@@ -27,7 +27,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		}
 
 		/// <summary>
-		/// Density returned in units of grams/cc
+		/// Density given a Volume and a Mass.
 		/// </summary>
 		/// <param name="mass">Mass in units of solar masses</param>
 		/// <param name="equatRadius">Equatorial radius in km</param>

@@ -8,14 +8,29 @@ using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
+	/// <summary>
+	/// Body Layer that contains gas.
+	/// </summary>
+	/// <seealso cref="Primoris.Universe.Stargen.Bodies.HomogeneousLayer" />
 	public abstract class GaseousLayer : HomogeneousLayer
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GaseousLayer"/> class.
+		/// </summary>
+		/// <param name="thickness">The thickness.</param>
+		/// <param name="surfPres">The surface pressure at the lower boundary with the layer below.</param>
 		public GaseousLayer(Length thickness, Pressure surfPres) : base(thickness)
 		{
 			LowerBoundaryPressure = surfPres;
 			//Mass = GetMassFromPressure(surfPres);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GaseousLayer"/> class.
+		/// </summary>
+		/// <param name="thickness">The thickness.</param>
+		/// <param name="composition">The composition.</param>
+		/// <param name="surfPres">The surface pressure at the lower boundary with the layer below.</param>
 		public GaseousLayer(Length thickness, IEnumerable<(Chemical, Ratio)> composition, Pressure surfPres) : base(thickness, composition)
 		{
 			LowerBoundaryPressure = surfPres;
@@ -41,7 +56,13 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </value>
 		public Breathability Breathability { get; protected set; } = Breathability.None;
 
-		// TODO: Have poisonous gas being put in the list. Right now doesn't work.
+		// TODO: Have poisonous gas being put in the list. Right now doesn't work.		
+		/// <summary>
+		/// Gets the poisonous composition internal.
+		/// </summary>
+		/// <value>
+		/// The poisonous composition internal IList.
+		/// </value>
 		protected IList<(Chemical, Ratio)> PoisonousCompositionInternal { get; } = new List<(Chemical, Ratio)>();
 
 		/// <summary>
@@ -63,6 +84,10 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <summary>
 		/// Gets the mass from pressure.
 		/// </summary>
+		/// <remarks>
+		/// This methods is virtual to allow for more complex algorithm to get Mass from Pressure. Right now it uses
+		/// pres * LowerBoundaryArea / "Acceleration at lower boundary".
+		/// </remarks>
 		/// <param name="pres">The pressure.</param>
 		/// <returns>Mass</returns>
 		protected virtual Mass GetMassFromPressure(Pressure pres)
@@ -74,3 +99,4 @@ namespace Primoris.Universe.Stargen.Bodies
 		}
 	}
 }
+

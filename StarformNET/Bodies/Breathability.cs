@@ -5,9 +5,21 @@ namespace Primoris.Universe.Stargen.Bodies
 	/// </summary>
 	public enum Breathability
     {
-        None,
-        Breathable,
-        Unbreathable,
-        Poisonous
-    }
+		/// <summary>
+		/// No atmosphere.
+		/// </summary>
+		None,
+		/// <summary>
+		/// Atmosphere is breathable.
+		/// </summary>
+		Breathable,
+		/// <summary>
+		/// Atmosphere is not breathable.
+		/// </summary>
+		Unbreathable,
+		/// <summary>
+		/// Atmosphere is breathable but poisonous.
+		/// </summary>
+		Poisonous
+	}
 }

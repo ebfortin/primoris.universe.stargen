@@ -9,6 +9,13 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
+	/// <summary>
+	/// Body layer.
+	/// </summary>
+	/// <remarks>
+	/// Bodies are formed from different layers one on top of the other.
+	/// </remarks>
+	/// <seealso cref="System.IEquatable{Primoris.Universe.Stargen.Bodies.Layer}" />
 	public abstract class Layer : IEquatable<Layer>
 	{
 		private IScienceAstrophysics _phy = null;

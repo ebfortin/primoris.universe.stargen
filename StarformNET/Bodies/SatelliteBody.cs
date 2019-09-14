@@ -10,13 +10,28 @@ using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
-
-    public delegate SatelliteBody CreateSatelliteBodyDelegate(Seed seed,
+	/// <summary>
+	/// Delegate used for body creation functions given a StellarBody and a Seed.
+	/// </summary>
+	/// <remarks>
+	/// This delegate is referenced by the StellarBody class. It's used only to create satellites of StellarBody, not satellites of 
+	/// SatelliteBody. 
+	/// </remarks>
+	/// <param name="seed">The seed.</param>
+	/// <param name="star">The star.</param>
+	/// <param name="pos">The position.</param>
+	/// <param name="planetID">The planet identifier.</param>
+	/// <returns>A SatelliteBody created.</returns>
+	public delegate SatelliteBody CreateSatelliteBodyDelegate(Seed seed,
                                                             StellarBody star,
 															int pos,
                                                             string planetID);
 
-
+	/// <summary>
+	/// A Body orbiting another Body. 
+	/// </summary>
+	/// <seealso cref="Primoris.Universe.Stargen.Bodies.Body" />
+	/// <seealso cref="System.IEquatable{Primoris.Universe.Stargen.Bodies.SatelliteBody}" />
 	[Serializable]
 	public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 	{

@@ -40,17 +40,79 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		}
 		#endregion
 
+		/// <summary>
+		/// Gets the spectral class.
+		/// </summary>
+		/// <value>
+		/// The spectral class.
+		/// </value>
 		public SpectralClass SpectralClass { get; private set; }
+
+		/// <summary>
+		/// Gets the subtype of the StellarBody.
+		/// </summary>
+		/// <value>
+		/// The subtype.
+		/// </value>
 		public int SubType { get; private set; }
+
+		/// <summary>
+		/// Gets the luminosity class.
+		/// </summary>
+		/// <value>
+		/// The luminosity class.
+		/// </value>
 		public LuminosityClass LuminosityClass { get; private set; }
+
+		/// <summary>
+		/// Gets the temperature.
+		/// </summary>
+		/// <value>
+		/// The temperature.
+		/// </value>
 		public Temperature Temperature { get; private set; }
+
+		/// <summary>
+		/// Gets the mass.
+		/// </summary>
+		/// <value>
+		/// The mass.
+		/// </value>
 		public Mass Mass { get; private set; }
+
+		/// <summary>
+		/// Gets the luminosity.
+		/// </summary>
+		/// <value>
+		/// The luminosity.
+		/// </value>
 		public Luminosity Luminosity { get; private set; }
+
+		/// <summary>
+		/// Gets the radius.
+		/// </summary>
+		/// <value>
+		/// The radius.
+		/// </value>
 		public Length Radius { get; private set; }
+
+		/// <summary>
+		/// Gets the color.
+		/// </summary>
+		/// <value>
+		/// The color.
+		/// </value>
 		public Color Color { get; private set; }
+
 
 		private static List<StellarTypeRow> _types;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarType"/> class.
+		/// </summary>
+		/// <param name="sc">The SpectralClass of the StellarBody.</param>
+		/// <param name="lc">The LuminosityClass of the StellarBody.</param>
+		/// <param name="subType">Type subtype of the StellarBody.</param>
 		public StellarType(SpectralClass sc, LuminosityClass lc, int subType = 0)
 		{
 			SpectralClass = sc;
@@ -70,16 +132,30 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
 		private StellarType() { }
 
+		/// <summary>
+		/// Changes the luminosity.
+		/// </summary>
+		/// <param name="lum">The new luminosity.</param>
 		public void ChangeLuminosity(Luminosity lum)
 		{
 			Change(Mass, lum, Temperature, Radius);
 		}
 
+
+		/// <summary>
+		/// Changes the mass.
+		/// </summary>
+		/// <param name="mass">The new mass.</param>
 		public void ChangeMass(Mass mass)
 		{
 			Change(mass, Luminosity, Temperature, Radius);
 		}
 
+
+		/// <summary>
+		/// Changes the temperature.
+		/// </summary>
+		/// <param name="temp">The temporary.</param>
 		public void ChangeTemperature(Temperature temp)
 		{
 			Change(Mass, Luminosity, temp, Radius);
@@ -90,13 +166,20 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			Change(Mass, Luminosity, Temperature, radius);
 		}
 
-        /// <summary>
-        /// TODO: Add more check to prevent impossible values like Temperature = 1K. Could be by calculating typical distance per components instead of global.
-        /// </summary>
-        /// <param name="mass"></param>
-        /// <param name="lum"></param>
-        /// <param name="temp"></param>
-        /// <param name="radius"></param>
+		/// <summary>
+		/// Change all the parameters of the StellarClass.
+		/// TODO: Add more check to prevent impossible values like Temperature = 1K. Could be by calculating typical distance per components instead of global.
+		/// </summary>
+		/// <remarks>
+		/// This method search for the nearest existing StellarType and then adjust the parameters with the values specified. Right now impossible values are
+		/// allowed, like a star with a 1K Temperature.
+		/// 
+		/// TODO: Add more check to prevent impossible values like Temperature = 1K. Could be by calculating typical distance per components instead of global.
+		/// </remarks>
+		/// <param name="mass">The new Mass.</param>
+		/// <param name="lum">The new luminosity.</param>
+		/// <param name="temp">The new Temperature.</param>
+		/// <param name="radius">The new Radius.</param>
 		public void Change(Mass mass, Luminosity lum, Temperature temp, Length radius)
 		{
 			var data = (from row in _types
@@ -133,7 +216,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// </remarks>
 		/// <param name="lum">Luminosity ratio to Earth's sun.</param>
 		/// <param name="radius">Radius ratio to Earth's sun.</param>
-		/// <returns></returns>
+		/// <returns>Nearest StellarType with modified parameters.</returns>
 		public static StellarType FromLuminosityAndRadius(Luminosity lum, Length radius)
 		{
 			var data = (from row in _types
@@ -150,6 +233,12 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			return st;
 		}
 
+		/// <summary>
+		/// Returns a StellarType given a mass and temperature.
+		/// </summary>
+		/// <param name="mass">The mass.</param>
+		/// <param name="temp">The temperature.</param>
+		/// <returns>Nearest StellarType with modified parameters.</returns>
 		public static StellarType FromMassAndTemperature(Mass mass, Temperature temp)
 		{
 			var data = (from row in _types
@@ -166,13 +255,21 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			return st;
 		}
 
-		public static StellarType FromMassAndRadius(Mass mass)
+		/// <summary>
+		/// Returns a StellarType given a mass.
+		/// </summary>
+		/// <remarks>
+		/// Assume a Mass of one solar mass.
+		/// </remarks>
+		/// <param name="mass">The mass.</param>
+		/// <returns>Nearest StellarType with modified parameters.</returns>
+		public static StellarType FromMass(Mass mass)
 		{
 			return FromMassAndRadius(mass, Length.FromSolarRadiuses(1.0));
 		}
 
 		/// <summary>
-		/// Give the SpectralType given a star mass ratio to Earth's sun.
+		/// Give the StellarType given a star mass ratio to Earth's sun.
 		/// </summary>
 		/// <remarks>
 		/// Reference: http://homepage.physics.uiowa.edu/~pkaaret/s09/L12_starsmainseq.pdf
@@ -180,7 +277,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// </remarks>
 		/// <param name="mass">Mass ratio to earth's sun.</param>
 		/// <param name="radius">Radius ratio to earth's sun.</param>
-		/// <returns></returns>
+		/// <returns>Nearest StellarType with modified parameters.</returns>
 		public static StellarType FromMassAndRadius(Mass mass, Length radius)
 		{
 			var data = (from row in _types
@@ -197,11 +294,26 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			return st;
 		}
 
-		public static StellarType FromTemperatureAndLuminosity(Temperature eff_temp)
+		/// <summary>
+		/// Give the StellarType given a Temperature.
+		/// </summary>
+		/// <remarks>
+		/// Assume a Luminosity of 0.0 Solar luminosity.
+		/// </remarks>
+		/// <param name="eff_temp">The eff temperature.</param>
+		/// <returns>Nearest StellarType with modified parameters.</returns>
+		public static StellarType FromTemperature(Temperature eff_temp)
 		{
 			return FromTemperatureAndLuminosity(eff_temp, Luminosity.FromSolarLuminosities(0.0));
 		}
 
+
+		/// <summary>
+		/// Give the StellarType given the temperature and luminosity.
+		/// </summary>
+		/// <param name="eff_temp">The eff temperature.</param>
+		/// <param name="luminosity">The luminosity.</param>
+		/// <returns>Nearest StellarType with modified parameters.</returns>
 		public static StellarType FromTemperatureAndLuminosity(Temperature eff_temp, Luminosity luminosity)
 		{
 			var data = (from row in _types
@@ -225,6 +337,12 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			return Color.FromArgb(int.Parse(gs.Groups[1].Value), int.Parse(gs.Groups[2].Value), int.Parse(gs.Groups[3].Value));
 		}
 
+		/// <summary>
+		/// Give a StellarType given a standardized StellarType string.
+		/// </summary>
+		/// <param name="st">The StellarType string.</param>
+		/// <returns>Nearest StellarType with modified parameters.</returns>
+		/// <exception cref="ArgumentException">String given is of the wrong format.</exception>
 		public static StellarType FromString(string st)
 		{
 			if (string.IsNullOrEmpty(st))
@@ -249,6 +367,12 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			}
 		}
 
+		/// <summary>
+		/// Converts to string.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String" /> that represents this instance.
+		/// </returns>
 		public override string ToString()
 		{
 			return Enum.GetName(typeof(SpectralClass), SpectralClass) +
