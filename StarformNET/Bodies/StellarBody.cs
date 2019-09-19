@@ -11,22 +11,65 @@ using Primoris.Universe.Stargen.Astrophysics;
 namespace Primoris.Universe.Stargen.Bodies
 {
 
-    // UGLY Not comfortable with binary systems just having a second mass value
+	// UGLY Not comfortable with binary systems just having a second mass value
 
-    [Serializable]
+	/// <summary>
+	/// Represents a StellarBody, ie a Star or similar Bodies.
+	/// </summary>
+	/// <seealso cref="Primoris.Universe.Stargen.Bodies.Body" />
+	[Serializable]
     public abstract class StellarBody : Body
     {
-        public static readonly Duration MinSunAge = Duration.FromYears365(1.0E9);
-        public static readonly Duration MaxSunAge = Duration.FromYears365(6.0E9);
+		/// <summary>
+		/// The minimum sun age.
+		/// </summary>
+		public static readonly Duration MinSunAge = Duration.FromYears365(1.0E9);
 
+		/// <summary>
+		/// The maximum sun age
+		/// </summary>
+		public static readonly Duration MaxSunAge = Duration.FromYears365(6.0E9);
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarBody"/> class.
+		/// </summary>
 		public StellarBody() : this(null as IScienceAstrophysics) { }
-        public StellarBody(IScienceAstrophysics phy) : this(phy, Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4))) { }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarBody"/> class.
+		/// </summary>
+		/// <param name="phy">The Science interface to use.</param>
+		public StellarBody(IScienceAstrophysics phy) : this(phy, Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4))) { }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarBody"/> class.
+		/// </summary>
+		/// <param name="mass">The mass.</param>
 		public StellarBody(Mass mass) : this(null, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
-        public StellarBody(IScienceAstrophysics phy, Mass mass) : this(phy, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarBody"/> class.
+		/// </summary>
+		/// <param name="phy">The Science interface to use.</param>
+		/// <param name="mass">The mass.</param>
+		public StellarBody(IScienceAstrophysics phy, Mass mass) : this(phy, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarBody"/> class.
+		/// </summary>
+		/// <param name="mass">The mass.</param>
+		/// <param name="lum">The luminosity.</param>
+		/// <param name="age">The age of the Body.</param>
 		public StellarBody(Mass mass, Luminosity lum, Duration age) : this(null, mass, lum, age) { }
-        public StellarBody(IScienceAstrophysics phy, Mass mass, Luminosity lum, Duration age)
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarBody"/> class.
+		/// </summary>
+		/// <param name="phy">The Science interface to use.</param>
+		/// <param name="mass">The mass.</param>
+		/// <param name="lum">The lumuminosity.</param>
+		/// <param name="age">The age of the Body.</param>
+		public StellarBody(IScienceAstrophysics phy, Mass mass, Luminosity lum, Duration age)
         {
             Science = phy;
             Parent = null;
@@ -58,8 +101,18 @@ namespace Primoris.Universe.Stargen.Bodies
             EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
         }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarBody"/> class.
+		/// </summary>
+		/// <param name="st">The StellarType of the Body to construct.</param>
 		public StellarBody(StellarType st) : this(Provider.Use().GetService<IScienceAstrophysics>(), st) { }
-        public StellarBody(IScienceAstrophysics phy, StellarType st)
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarBody"/> class.
+		/// </summary>
+		/// <param name="phy">The Science interface to use.</param>
+		/// <param name="st">The StellarType of the Body to construct.</param>
+		public StellarBody(IScienceAstrophysics phy, StellarType st)
         {
             Science = phy;
             Parent = null;
@@ -75,21 +128,60 @@ namespace Primoris.Universe.Stargen.Bodies
             EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
         }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarBody"/> class.
+		/// </summary>
+		/// <param name="st">The StellarType of the Body to construct.</param>
+		/// <param name="name">The name.</param>
 		public StellarBody(StellarType st, string name) : this(Provider.Use().GetService<IScienceAstrophysics>(), st, name) { }
-        public StellarBody(IScienceAstrophysics phy, StellarType st, string name) : this(phy, st)
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="StellarBody"/> class.
+		/// </summary>
+		/// <param name="phy">The Science interface to use.</param>
+		/// <param name="st">The StellarType of the Body to construct.</param>
+		/// <param name="name">The name.</param>
+		public StellarBody(IScienceAstrophysics phy, StellarType st, string name) : this(phy, st)
         {
             Name = name;
         }
 
 
         private IBodyFormationAlgorithm _frm = null;
-        public virtual IBodyFormationAlgorithm BodyFormationScience { get => _frm is null ? Provider.Use().GetService<IBodyFormationAlgorithm>() : _frm; set => _frm = value; }
 
-        //public override Body Parent { get => null; protected set { } }
+		/// <summary>
+		/// Gets or sets the body formation algorithm interface.
+		/// </summary>
+		/// <value>
+		/// The body formation algorithm interface.
+		/// </value>
+		public virtual IBodyFormationAlgorithm BodyFormationScience { get => _frm is null ? Provider.Use().GetService<IBodyFormationAlgorithm>() : _frm; set => _frm = value; }
 
-        public StellarType StellarType { get; protected set; }
-        public Color Color { get => StellarType.Color; }
-        public double DistanceFromTypical
+		//public override Body Parent { get => null; protected set { } }
+
+		/// <summary>
+		/// Gets or sets the type of the stellar.
+		/// </summary>
+		/// <value>
+		/// The type of the stellar.
+		/// </value>
+		public StellarType StellarType { get; protected set; }
+
+		/// <summary>
+		/// Gets the color.
+		/// </summary>
+		/// <value>
+		/// The color.
+		/// </value>
+		public Color Color { get => StellarType.Color; }
+
+		/// <summary>
+		/// Gets the distance from a well known star.
+		/// </summary>
+		/// <value>
+		/// The distance from typical.
+		/// </value>
+		public double DistanceFromTypical
         {
             get
             {
@@ -108,20 +200,28 @@ namespace Primoris.Universe.Stargen.Bodies
 		//public Duration Age { get; protected set; }
 
         /// <summary>
-        /// The maximum lifetime of the star in years.
+        /// The maximum lifetime of the star before going to a Supernovae.
         /// </summary>
         public Duration Life { get; protected set; }
 
-        public Length EcosphereRadius { get => Science.Astronomy.GetEcosphereRadius(Mass, Luminosity); }
+		/// <summary>
+		/// Gets the ecosphere radius.
+		/// </summary>
+		/// <remarks>
+		/// The ecosphere radius is the distance from the StellarBody that habitable planets can exist.
+		/// </remarks>
+		/// <value>
+		/// The ecosphere radius.
+		/// </value>
+		public Length EcosphereRadius { get => Science.Astronomy.GetEcosphereRadius(Mass, Luminosity); }
 
         /// <summary>
-        /// Luminosity of the star in solar luminosity units (L<sub>☉</sub>).
-        /// The luminosity of the sun is 1.0.
+        /// Luminosity of the star.
         /// </summary>
         public Luminosity Luminosity { get; protected set; }
 
 
-
+		// TODO: Have companion stars treated as satellites.
         /// <summary>
         /// The mass of this star's companion star (if any) in solar mass
         /// units (M<sub>☉</sub>). 
@@ -138,7 +238,11 @@ namespace Primoris.Universe.Stargen.Bodies
         /// </summary>
         public Ratio BinaryEccentricity { get; protected set; } = Ratio.Zero;
 
-        public virtual void GenerateSystem(CreateSatelliteBodyDelegate createFunc)
+		/// <summary>
+		/// Generates the system.
+		/// </summary>
+		/// <param name="createFunc">The SatelliteBody creation function.</param>
+		public virtual void GenerateSystem(CreateSatelliteBodyDelegate createFunc)
         {
             var phy = Science;
             var frm = BodyFormationScience;
@@ -157,9 +261,21 @@ namespace Primoris.Universe.Stargen.Bodies
             Satellites = GenerateSatellites(seedSystem, createFunc);
         }
 
-        protected abstract IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc);
+		/// <summary>
+		/// Generates the satellites.
+		/// </summary>
+		/// <param name="seeds">The seeds.</param>
+		/// <param name="createFunc">The create function.</param>
+		/// <returns>IEnumerable of SatelliteBody.</returns>
+		protected abstract IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc);
 
-        public override string ToString()
+		/// <summary>
+		/// Converts to string.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String" /> that represents this instance.
+		/// </returns>
+		public override string ToString()
         {
             return Name + " (" + StellarType + ")";
         }
