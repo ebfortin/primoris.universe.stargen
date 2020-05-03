@@ -119,6 +119,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			LuminosityClass = lc;
 			SubType = subType;
 
+			if (sc == SpectralClass.Undefined || lc == LuminosityClass.Undefined)
+				return;
+
 			var str = Enum.GetName(typeof(SpectralClass), sc) + SubType.ToString() + (lc != LuminosityClass.O ? Enum.GetName(typeof(LuminosityClass), lc) : "");
 			var data = (from row in _types
 						where row.Type == str
@@ -345,7 +348,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <exception cref="ArgumentException">String given is of the wrong format.</exception>
 		public static StellarType FromString(string st)
 		{
-			if (string.IsNullOrEmpty(st))
+			if (string.IsNullOrEmpty(st) || st == "Unk")
 				return new StellarType(SpectralClass.Undefined, LuminosityClass.Undefined);
 
 			try
@@ -375,6 +378,9 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// </returns>
 		public override string ToString()
 		{
+			if (SpectralClass == SpectralClass.Undefined || LuminosityClass == LuminosityClass.Undefined)
+				return "Unk";
+
 			return Enum.GetName(typeof(SpectralClass), SpectralClass) +
 					SubType.ToString() +
 					(LuminosityClass != LuminosityClass.O ? Enum.GetName(typeof(LuminosityClass), LuminosityClass) : "");
