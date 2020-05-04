@@ -1,5 +1,9 @@
-assembly-versioning-scheme: MajorMinorPatch
+assembly-versioning-scheme: MajorMinorPatchTag
+major-version-bump-message: '\+semver:\s?(breaking|major)'
+minor-version-bump-message: '\+semver:\s?(feature|minor)'
+patch-version-bump-message: '\+semver:\s?(fix|patch)'
 mode: ContinuousDelivery
+increment: Inherit
 next-version: 0.2.2
 branches:
   master:
