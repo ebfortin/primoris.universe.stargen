@@ -14,7 +14,7 @@
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StarformNet\Primoris.Universe.Stargen.csproj" />
+    <ProjectReference Include="..\StarformNet\Stargen.csproj" />
   </ItemGroup>
 
   <ItemGroup>
