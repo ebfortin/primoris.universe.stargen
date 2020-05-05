@@ -2,12 +2,14 @@
 using System.IO;
 using System.Drawing;
 using System.Reflection;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using CsvHelper;
 using UnitsNet;
+using CsvHelper.Configuration;
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
@@ -35,7 +37,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
 			var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.Resources.stellartypes.csv");
 			var reader = new StreamReader(stream);
-			var csv = new CsvReader(reader);
+			var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
 			_types = csv.GetRecords<StellarTypeRow>().ToList();
 		}
 		#endregion
