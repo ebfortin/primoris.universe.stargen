@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnitsNet;
 
 
+
 namespace Primoris.Universe.Stargen.Bodies
 {
 	public class Seed
