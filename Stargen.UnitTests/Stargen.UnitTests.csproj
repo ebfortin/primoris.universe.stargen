@@ -30,7 +30,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\StarformNet\Stargen.csproj" />
+    <ProjectReference Include="..\Stargen\Stargen.csproj" />
   </ItemGroup>
   
   <ItemGroup>

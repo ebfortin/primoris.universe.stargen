@@ -5,6 +5,11 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Primoris.Universe.Stargen</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Etienne Fortin</Authors>
+    <Company>Primoris Sigma</Company>
+    <Product>Primoris Stargen</Product>
+    <PackageId>Primoris.Universe.Stargen</PackageId>
+    <AssemblyName>Primoris.Universe.Stargen</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
