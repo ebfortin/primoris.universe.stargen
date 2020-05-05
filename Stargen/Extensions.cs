@@ -3,6 +3,7 @@ using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Services;
 
 
+
 namespace Primoris.Universe.Stargen
 {
 
