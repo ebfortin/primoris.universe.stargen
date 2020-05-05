@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Management.Automation;
 using Primoris.Universe.Stargen;
@@ -83,7 +84,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
             }
             else
             {
-				var conf = new Configuration();
+				var conf = new CsvConfiguration(CultureInfo.InvariantCulture);
 				conf.RegisterClassMap<StarMap>();
 
 				var f = new FileStream(CsvOutputPath, FileMode.Create);
