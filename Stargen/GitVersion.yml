@@ -1,73 +1,74 @@
 assembly-versioning-scheme: MajorMinorPatchTag
+mode: ContinuousDelivery
+next-version: 0.3.0
 major-version-bump-message: '\+semver:\s?(breaking|major)'
 minor-version-bump-message: '\+semver:\s?(feature|minor)'
 patch-version-bump-message: '\+semver:\s?(fix|patch)'
-mode: ContinuousDelivery
-increment: Inherit
 branches:
   master:
-    regex: master
     mode: ContinuousDelivery
     tag: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
+    regex: master
     tracks-release-branches: false
     is-release-branch: false
   release:
-    regex: releases?[/-]
     mode: ContinuousDelivery
     tag: beta
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
+    regex: releases?[/-]
     tracks-release-branches: false
     is-release-branch: true
   feature:
-    regex: features?[/-]
     mode: ContinuousDelivery
     tag: useBranchName
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
+    regex: features?[/-]
     tracks-release-branches: false
     is-release-branch: false
   pull-request:
-    regex: (pull|pull\-requests|pr)[/-]
     mode: ContinuousDelivery
     tag: PullRequest
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     tag-number-pattern: '[/-](?<number>\d+)[-/]'
     track-merge-target: false
+    regex: (pull|pull\-requests|pr)[/-]
     tracks-release-branches: false
     is-release-branch: false
   hotfix:
-    regex: hotfix(es)?[/-]
     mode: ContinuousDelivery
     tag: beta
     increment: Patch
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
+    regex: hotfix(es)?[/-]
     tracks-release-branches: false
     is-release-branch: false
   support:
-    regex: support[/-]
     mode: ContinuousDelivery
     tag: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
+    regex: support[/-]
     tracks-release-branches: false
     is-release-branch: false
   develop:
-    regex: dev(elop)?(ment)?$
     mode: ContinuousDeployment
     tag: unstable
     increment: Minor
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
+    regex: dev(elop)?(ment)?$
     tracks-release-branches: true
     is-release-branch: false
 ignore:
   sha: []
+increment: Inherit
