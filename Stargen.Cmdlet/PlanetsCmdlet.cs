@@ -108,11 +108,11 @@ namespace Primoris.Universe.Stargen.Cmdlets
             else
             {
 				var conf = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture);
-				conf.RegisterClassMap<PlanetMap>();
 
 				var f = new FileStream(CsvOutputPath, FileMode.Create);
 				var w = new StreamWriter(f);
 				var cw = new CsvWriter(w, conf);
+				cw.Context.RegisterClassMap<PlanetMap>();
 
 				cw.WriteHeader<SatelliteBody>();
 				cw.NextRecord();
