@@ -38,7 +38,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <exception cref="ArgumentException">A SolidLayer added to a Stack without calling Generate() must have a non zero Mass specified in its constructor.</exception>
 		protected internal override void OnAddedToStack()
 		{
-			if (Mass == Mass.Zero)
+			if (Mass.Equals(Mass.Zero, 0.0, ComparisonType.Absolute))
 				throw new ArgumentException("A SolidLayer added to a Stack without calling Generate() must have a non zero Mass specified in its constructor.");
 		}
 	}

@@ -19,7 +19,7 @@ using UnitsNet;
 namespace Primoris.Universe.Stargen.UnitTests
 {
 
-    class GeneratorTests
+    public class GeneratorTests
 	{
 		[TestClass]
 		public class GenerateStellarSystemTests
@@ -77,7 +77,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 			{
 				var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.Zero);
                 var star = GetTestStar();
-				var planet = new Planet(seed, star, star, new List<Layer>() { new BasicSolidLayer(Length.FromKilometers(10000.0)) });
+				var planet = new Planet(seed, star, star, new List<Layer>() { new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()) });
 				return planet;
 			}
 

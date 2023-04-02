@@ -15,6 +15,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
     [Serializable]
 	public class Planet : SatelliteBody
 	{
+
 		public Planet(Seed seed, StellarBody star, Body parentBody) : base(seed, star, parentBody)
 		{
 			Generate();
@@ -54,17 +55,19 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			Mass = massSM;
 			GasMass = gasMassSM;
 			DustMass = massSM - GasMass;
+			var planetRadius = radius;
 			Radius = radius;
+
 			Density = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
 			ExosphereTemperature = Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Extensions.Pow2(SemiMajorAxis / sun.EcosphereRadius));
 			SurfaceAcceleration = surfGrav; //Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * massSM.Grams / Utilities.Pow2(radius.Centimeters));
-			EscapeVelocity = Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, Radius);
+			EscapeVelocity = Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, planetRadius);
 
 			DaytimeTemperature = dayTimeTempK;
 			NighttimeTemperature = nightTimeTempK;
 			Temperature = surfTempK;
 			//SurfaceGravityG = surfGrav;
-			MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, GasMass + DustMass, Radius, ExosphereTemperature, sun.Age);
+			MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, GasMass + DustMass, planetRadius, ExosphereTemperature, sun.Age);
 
 			VolatileGasInventory = Science.Physics.GetVolatileGasInventory(GasMass + DustMass,
 																  EscapeVelocity,
@@ -73,18 +76,21 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 																  GasMass,
 																  OrbitZone,
 																  Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis));
-			SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, Radius, SurfaceAcceleration);
+			SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, planetRadius, SurfaceAcceleration);
 
 			if(Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained))
 			{
-				Layers.Add(new BasicGiantGaseousLayer(Radius).Generate(this, Mass, Chemical.All.Values.ToArray(), Layers));
+				//CoreRadius = Science.Planetology.GetCoreRadius(Mass, OrbitZone, true);
+				Layers.Add(new BasicGiantGaseousLayer(planetRadius).Generate(this, Mass, Chemical.All.Values.ToArray(), Layers));
 			} else
 			{
+				var coreRadius = Science.Planetology.GetCoreRadius(Mass, OrbitZone, false);
+
 				// Add basic Burrows layer.
-				Layers.Add(new BasicSolidLayer(CoreRadius).Generate(this, DustMass, new Chemical[0], new Layer[0]));
+				Layers.Add(new BasicSolidLayer(coreRadius).Generate(this, DustMass, new Chemical[0], new Layer[0]));
 
 				// Generate complete atmosphere.
-				Layers.Add(new BasicGaseousLayer(Radius - CoreRadius, SurfacePressure).Generate(this, GasMass, Chemical.All.Values.ToArray(), Layers));
+				Layers.Add(new BasicGaseousLayer(planetRadius - coreRadius, SurfacePressure).Generate(this, GasMass, Chemical.All.Values.ToArray(), Layers));
 			}
 
 			IsForming = false;
@@ -173,19 +179,19 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			planet.ExosphereTemperature = Science.Thermodynamics.GetEstimatedExosphereTemperature(SemiMajorAxis, sun.EcosphereRadius, sun.Temperature);
 			planet.RMSVelocity = Science.Physics.GetRMSVelocity(Mass.FromGrams(GlobalConstants.MOL_NITROGEN), ExosphereTemperature);
-			planet.CoreRadius = Science.Planetology.GetCoreRadius(DustMass, OrbitZone, false);
 
 			// Calculate the radius as a gas giant, to verify it will retain gas.
 			// Then if mass > Earth, it's at least 5% gas and retains He, it's
 			// some flavor of gas giant.
 
 			planet.Density = Science.Physics.GetDensityFromStar(mass, SemiMajorAxis, sun.EcosphereRadius, true);
-			planet.Radius = Mathematics.GetRadiusFromVolume(mass, Density);
+			Length planetRadius = Mathematics.GetRadiusFromDensity(mass, Density);
+			Radius = planetRadius;
 
-			planet.SurfaceAcceleration = GetAcceleration(mass, Radius);
+			planet.SurfaceAcceleration = GetAcceleration(mass, planetRadius);
 			//planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAcceleration);
 
-			planet.MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, mass, Radius, ExosphereTemperature, sun.Age);
+			planet.MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, mass, planetRadius, ExosphereTemperature, sun.Age);
 
 			// Is the planet a gas giant?
 			if (Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
@@ -195,24 +201,23 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				AdjustPropertiesForGasBody();
 				SurfacePressure = Pressure.Zero;
 				Layers.Clear();
-				Layers.Add(new BasicGiantGaseousLayer(Radius).Generate(this, GasMass, new Chemical[0], Layers));
+				Layers.Add(new BasicGiantGaseousLayer(planetRadius).Generate(this, GasMass, new Chemical[0], Layers));
 			}
 			else // If not, it's rocky.
 			{
-				Radius = Science.Planetology.GetCoreRadius(mass, OrbitZone, false);
-				Density = Science.Physics.GetDensityFromBody(mass, Radius);
+				Density = Science.Physics.GetDensityFromBody(mass, planetRadius);
 
 				// Radius has changed, we need to adjust Surfa
-				SurfaceAcceleration = GetAcceleration(mass, Radius);
+				SurfaceAcceleration = GetAcceleration(mass, planetRadius);
 				//SurfaceGravityG = Environment.Gravity(SurfaceAcceleration);
 
 				AdjustPropertiesForRockyBody();
 
-				MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, mass, Radius, ExosphereTemperature, sun.Age);
+				MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, mass, planetRadius, ExosphereTemperature, sun.Age);
 			}
 
 			planet.AngularVelocity = Science.Dynamics.GetAngularVelocity(mass,
-																  Radius,
+																  planetRadius,
 																  Density,
 																  SemiMajorAxis,
 																  Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained),
@@ -220,7 +225,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 																  sun.Age);
 			planet.DayLength = Science.Astronomy.GetDayLength(planet.AngularVelocity, planet.OrbitalPeriod, planet.Eccentricity);
 			planet.HasResonantPeriod = Science.Planetology.TestHasResonantPeriod(planet.AngularVelocity, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
-			planet.EscapeVelocity = Science.Dynamics.GetEscapeVelocity(mass, planet.Radius);
+			planet.EscapeVelocity = Science.Dynamics.GetEscapeVelocity(mass, planetRadius);
 			planet.VolatileGasInventory = Science.Physics.GetVolatileGasInventory(mass,
 																	   EscapeVelocity,
 																	   RMSVelocity,
@@ -232,12 +237,12 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			if (!Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
 			{
-				Pressure surfpres = Science.Physics.GetSurfacePressure(planet.VolatileGasInventory, planet.Radius, planet.SurfaceAcceleration);
+				Pressure surfpres = Science.Physics.GetSurfacePressure(planet.VolatileGasInventory, planetRadius, planet.SurfaceAcceleration);
 
 				// Calculate all atmosphere layers total mass.
-				if (GasMass == Mass.Zero)
+				if (GasMass.Equals(Mass.Zero, 1e-9, ComparisonType.Relative))
 				{
-					Area surf = Area.FromSquareKilometers(4.0 * Math.PI * Math.Pow(planet.Radius.Kilometers, 2.0));
+					Area surf = Area.FromSquareKilometers(4.0 * Math.PI * Math.Pow(planetRadius.Kilometers, 2.0));
 					GasMass = Mass.FromKilograms(surf.SquareMeters * surfpres.NewtonsPerSquareMeter / planet.SurfaceAcceleration.MetersPerSecondSquared);
 				}
 				planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);
@@ -249,11 +254,12 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				planet.IsTidallyLocked = Science.Planetology.TestIsTidallyLocked(DayLength, OrbitalPeriod);
 
 				// Add basic Burrows layer.
-				Layers.Add(new BasicSolidLayer(CoreRadius).Generate(this, DustMass, new Chemical[0], new Layer[0]));
+				var coreRadius = Science.Planetology.GetCoreRadius(Mass, OrbitZone, false);
+				Layers.Add(new BasicSolidLayer(coreRadius).Generate(this, DustMass, new Chemical[0], new Layer[0]));
 
 				// Generate complete atmosphere.
 				if(surfpres.Millibars > 0.0 && GasMass.SolarMasses > 0.0)
-					Layers.Add(new BasicGaseousLayer(Radius - CoreRadius, surfpres).Generate(this, GasMass, Chemical.All.Values.ToArray(), Layers));
+					Layers.Add(new BasicGaseousLayer(Radius - coreRadius, surfpres).Generate(this, GasMass, Chemical.All.Values.ToArray(), Layers));
 				SurfacePressure = surfpres;
 
                 HasGreenhouseEffect = Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & SurfacePressure > Pressure.Zero;
@@ -268,7 +274,6 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 										 MaxTemperature,
 										 BoilingPointWater,
 										 Temperature);
-
 
 			IsForming = false;
 		}
