@@ -9,7 +9,7 @@ using UnitsNet;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
-	class SpectralTypeTests
+	public class SpectralTypeTests
 	{
 		[TestClass]
 		public class StellarConversionTests

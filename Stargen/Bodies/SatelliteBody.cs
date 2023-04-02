@@ -168,11 +168,46 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </value>
         public Acceleration SurfaceAcceleration { get; protected set; }
 
+		Length _initialRadius = default;
+		public override Length Radius
+		{
+			get
+			{
+				if (Layers.Count == 0)
+					return _initialRadius;
+
+				Length radius = Length.Zero;
+				foreach (var l in Layers)
+				{
+					radius += l.Thickness;
+				}
+				return radius;
+			}
+
+			protected set
+			{
+				if (Layers.Count == 0)
+					_initialRadius = value;
+			}
+		}
+
 		// TODO: Integrates it into layers.
 		/// <summary>
 		/// The radius of the planet's core in km.
 		/// </summary>
-		public Length CoreRadius { get; protected set; }
+		public Length CoreRadius 
+		{ 
+			get
+			{
+				Length radius = Length.Zero;
+				foreach (var l in Layers)
+				{
+					if(l is SolidLayer)
+						radius += l.Thickness;
+				}
+				return radius;
+			} 
+		}
 
 		// TODO Integrates it into layers.
 		/// <summary>

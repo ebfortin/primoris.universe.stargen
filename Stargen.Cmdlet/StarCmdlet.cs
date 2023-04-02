@@ -85,15 +85,15 @@ namespace Primoris.Universe.Stargen.Cmdlets
             else
             {
 				var conf = new CsvConfiguration(CultureInfo.InvariantCulture);
-				conf.RegisterClassMap<StarMap>();
 
 				var f = new FileStream(CsvOutputPath, FileMode.Create);
 				var w = new StreamWriter(f);
 				var cw = new CsvWriter(w, conf);
+				cw.Context.RegisterClassMap<StarMap>();
 
 				cw.WriteHeader<StellarBody>();
 				cw.NextRecord();
-				cw.WriteRecord<StellarBody>(sun);
+				cw.WriteRecord(sun);
 				cw.Flush();
 
 				w.Close();

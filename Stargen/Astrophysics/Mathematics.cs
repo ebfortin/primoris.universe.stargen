@@ -17,7 +17,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <param name="mass">Mass in units of solar masses</param>
 		/// <param name="density">Density in units of grams/cc</param>
 		/// <returns>Radius in units of km</returns>
-		public static Length GetRadiusFromVolume(Mass m, Density density)
+		public static Length GetRadiusFromDensity(Mass m, Density density)
 		{
 			double volume;
 

@@ -72,6 +72,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			item.Parent = _parent;
 
 			((IList<Layer>)_layers).Add(item);
+			item.OnAddedToStack();
 		}
 
 		/// <summary>
@@ -83,11 +84,6 @@ namespace Primoris.Universe.Stargen.Bodies
 			foreach(var item in items)
 			{
 				Add(item);
-			}
-
-			foreach(var item in items)
-			{
-				item.OnAddedToStack();
 			}
 		}
 
@@ -251,7 +247,16 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			var mbelow = ComputeMassBelow(layer);
 			var rbelow = ComputeThicknessBelow(layer);
-			var acc = layer.Parent.Science.Physics.GetAcceleration(mbelow, rbelow);
+
+			Acceleration acc = default;
+			if(rbelow.Equals(Length.Zero, 0.00001, ComparisonType.Relative))
+			{
+				acc = Acceleration.Zero;
+			}
+			else 
+			{
+				acc = layer.Parent.Science.Physics.GetAcceleration(mbelow, rbelow);
+			}
 
 			return acc;
 		}

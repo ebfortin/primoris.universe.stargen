@@ -15,7 +15,7 @@ using Env = DLS.StarformNET.Environment;
 
 namespace Primoris.Universe.Stargen.UnitTests
 {
-    class StarformValidationTests
+    public class StarformValidationTests
     {
         [TestClass]
         public class AstrophysicsTest
@@ -34,7 +34,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 
             private StellarBody GetTestStar()
             {
-                return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10)) { Science = new BodyPhysics() };
+                return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(4.6e9)) { Science = new BodyPhysics() };
             }
 
             private SatelliteBody GetTestPlanetAtmosphere()
@@ -65,7 +65,7 @@ namespace Primoris.Universe.Stargen.UnitTests
                 {
                     Luminosity = 1.0,
                     Mass = 1.0,
-                    AgeYears = 4600000000
+                    AgeYears = 4_600_000_000
                 };
             }
 

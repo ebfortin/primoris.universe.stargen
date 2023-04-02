@@ -4,56 +4,64 @@ next-version: 0.3.0
 major-version-bump-message: '\+semver:\s?(breaking|major)'
 minor-version-bump-message: '\+semver:\s?(feature|minor)'
 patch-version-bump-message: '\+semver:\s?(fix|patch)'
+mode: ContinuousDelivery
+increment: Inherit
+label-prefix: '[vV]'
 branches:
   master:
     mode: ContinuousDelivery
-    tag: ''
+    label: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
     regex: master
     tracks-release-branches: false
     is-release-branch: false
+    source-branches: ['develop', 'release']
   release:
     mode: ContinuousDelivery
-    tag: beta
+    label: beta
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
     regex: releases?[/-]
     tracks-release-branches: false
     is-release-branch: true
+    source-branches: [ 'develop', 'master', 'support', 'release' ]
   feature:
     mode: ContinuousDelivery
-    tag: useBranchName
+    label: useBranchName
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
     regex: features?[/-]
     tracks-release-branches: false
     is-release-branch: false
+    source-branches: [ 'develop', 'master', 'release', 'feature', 'support', 'hotfix' ]
   pull-request:
     mode: ContinuousDelivery
-    tag: PullRequest
+    label: PullRequest
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
-    tag-number-pattern: '[/-](?<number>\d+)[-/]'
+    label-number-pattern: '[/-](?<number>\d+)[-/]'
     track-merge-target: false
     regex: (pull|pull\-requests|pr)[/-]
     tracks-release-branches: false
     is-release-branch: false
+    source-branches: [ 'develop', 'master', 'release', 'feature', 'support', 'hotfix' ]
   hotfix:
     mode: ContinuousDelivery
-    tag: beta
+    label: beta
     increment: Patch
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
     regex: hotfix(es)?[/-]
     tracks-release-branches: false
     is-release-branch: false
+    source-branches: [ 'develop', 'master', 'support' ]
   support:
     mode: ContinuousDelivery
-    tag: ''
+    label: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
@@ -62,13 +70,14 @@ branches:
     is-release-branch: false
   develop:
     mode: ContinuousDeployment
-    tag: unstable
+    label: unstable
     increment: Minor
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
     regex: dev(elop)?(ment)?$
     tracks-release-branches: true
     is-release-branch: false
+    source-branches: [ 'master' ]
 ignore:
   sha: []
 increment: Inherit

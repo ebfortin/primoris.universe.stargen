@@ -13,7 +13,7 @@ using UnitsNet;
 namespace Primoris.Universe.Stargen.UnitTests
 {
 
-    class BurrowsPhysicsTests
+    public class BurrowsPhysicsTests
     {
         [TestClass]
         public class GasLifeTest
@@ -351,7 +351,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             {
 				var layers = new List<Layer>()
 				{
-					new BasicSolidLayer(Length.FromKilometers(10000.0)),
+					new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()),
 					new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
 					{
 						(TestGases["O"], Ratio.FromDecimalFractions(0.21)),
@@ -371,7 +371,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             {
 				var layers = new List<Layer>()
 				{
-					new BasicSolidLayer(Length.FromKilometers(10000.0)),
+					new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()),
 					new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
 					{
 						(TestGases["CO2"], Ratio.FromDecimalFractions(1.0))
@@ -390,7 +390,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             {
 				var layers = new List<Layer>()
 				{
-					new BasicSolidLayer(Length.FromKilometers(10000.0)),
+					new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty <(Chemical, Ratio) >()),
 					new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
 					{
 						(TestGases["N"], Ratio.FromDecimalFractions(1.0))
@@ -409,7 +409,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             {
 				var layers = new List<Layer>()
 				{
-					new BasicSolidLayer(Length.FromKilometers(10000.0))
+					new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(0.5), Array.Empty<(Chemical, Ratio)>())
 				};
 
 				return layers;
