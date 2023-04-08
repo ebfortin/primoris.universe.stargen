@@ -18,7 +18,7 @@
     <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
     <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="UnitsNet" Version="5.9.0" />
+    <PackageReference Include="UnitsNet" Version="5.10.0" />
   </ItemGroup>
   
   <ItemGroup>

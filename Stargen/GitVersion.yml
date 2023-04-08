@@ -1,16 +1,14 @@
 assembly-versioning-scheme: MajorMinorPatchTag
 mode: ContinuousDelivery
-next-version: 0.3.0
 major-version-bump-message: '\+semver:\s?(breaking|major)'
 minor-version-bump-message: '\+semver:\s?(feature|minor)'
 patch-version-bump-message: '\+semver:\s?(fix|patch)'
-mode: ContinuousDelivery
 increment: Inherit
-label-prefix: '[vV]'
+tag-prefix: '[vV]'
 branches:
   master:
     mode: ContinuousDelivery
-    label: ''
+    tag: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
@@ -20,7 +18,7 @@ branches:
     source-branches: ['develop', 'release']
   release:
     mode: ContinuousDelivery
-    label: beta
+    tag: beta
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
@@ -30,7 +28,7 @@ branches:
     source-branches: [ 'develop', 'master', 'support', 'release' ]
   feature:
     mode: ContinuousDelivery
-    label: useBranchName
+    tag: useBranchName
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
@@ -40,10 +38,10 @@ branches:
     source-branches: [ 'develop', 'master', 'release', 'feature', 'support', 'hotfix' ]
   pull-request:
     mode: ContinuousDelivery
-    label: PullRequest
+    tag: PullRequest
     increment: Inherit
     prevent-increment-of-merged-branch-version: false
-    label-number-pattern: '[/-](?<number>\d+)[-/]'
+    tag-number-pattern: '[/-](?<number>\d+)[-/]'
     track-merge-target: false
     regex: (pull|pull\-requests|pr)[/-]
     tracks-release-branches: false
@@ -51,7 +49,7 @@ branches:
     source-branches: [ 'develop', 'master', 'release', 'feature', 'support', 'hotfix' ]
   hotfix:
     mode: ContinuousDelivery
-    label: beta
+    tag: beta
     increment: Patch
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
@@ -61,7 +59,7 @@ branches:
     source-branches: [ 'develop', 'master', 'support' ]
   support:
     mode: ContinuousDelivery
-    label: ''
+    tag: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
@@ -70,7 +68,7 @@ branches:
     is-release-branch: false
   develop:
     mode: ContinuousDeployment
-    label: unstable
+    tag: unstable
     increment: Minor
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
@@ -80,4 +78,4 @@ branches:
     source-branches: [ 'master' ]
 ignore:
   sha: []
-increment: Inherit
+
