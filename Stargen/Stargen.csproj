@@ -11,6 +11,7 @@
     <PackageId>Primoris.Universe.Stargen</PackageId>
     <AssemblyName>Primoris.Universe.Stargen</AssemblyName>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<Nullable>warnings</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
