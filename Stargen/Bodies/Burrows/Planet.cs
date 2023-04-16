@@ -1,9 +1,5 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
+
 using Primoris.Universe.Stargen.Astrophysics;
-using Primoris.Universe.Stargen.Systems;
-using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Bodies.Burrows
@@ -172,7 +168,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			var sun = StellarBody;
 			var mass = GasMass + DustMass;
 
-			planet.OrbitZone = Science!.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
+			planet.OrbitZone = Science.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
 			planet.OrbitalPeriod = Science.Astronomy.GetPeriod(SemiMajorAxis, mass, sun.Mass);
 
 			planet.AxialTilt = GetRandomInclination(SemiMajorAxis);
@@ -404,7 +400,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				planet.Albedo = Ratio.FromDecimalFractions(GlobalConstants.EARTH_ALBEDO);
 
-				effectiveTemp = Science!.Thermodynamics.GetEstimatedEffectiveTemperature(planet.StellarBody.EcosphereRadius, planet.SemiMajorAxis, planet.Albedo);
+				effectiveTemp = Science.Thermodynamics.GetEstimatedEffectiveTemperature(planet.StellarBody.EcosphereRadius, planet.SemiMajorAxis, planet.Albedo);
 				greenhouseTemp = Science.Thermodynamics.GetGreenhouseTemperatureRise(Science.Planetology.GetOpacity(planet.MolecularWeightRetained, surfpres), effectiveTemp, surfpres);
 				planet.Temperature = effectiveTemp + greenhouseTemp;
 

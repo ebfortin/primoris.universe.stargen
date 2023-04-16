@@ -299,7 +299,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </value>
 		public bool IsTidallyLocked { get; protected set; }
 
-		public bool IsEarthlike => Science!.Planetology.TestIsEarthLike(Temperature,
+		public bool IsEarthlike => Science.Planetology.TestIsEarthLike(Temperature,
 																 WaterCoverFraction,
 																 CloudCoverFraction,
 																 IceCoverFraction,
@@ -314,7 +314,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		///   <c>true</c> if this instance is habitable; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsHabitable => Science!.Planetology.TestIsHabitable(DayLength, OrbitalPeriod, Breathability, HasResonantPeriod, IsTidallyLocked);
+		public bool IsHabitable => Science.Planetology.TestIsHabitable(DayLength, OrbitalPeriod, Breathability, HasResonantPeriod, IsTidallyLocked);
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance has resonant period.
@@ -431,7 +431,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// Illumination Ratio.
 		/// </value>
-		public Ratio Illumination => Science!.Astronomy.GetMinimumIllumination(SemiMajorAxis, StellarBody.Luminosity);
+		public Ratio Illumination => Science.Astronomy.GetMinimumIllumination(SemiMajorAxis, StellarBody.Luminosity);
 
 		/// <summary>
 		/// Temperature at the body's exosphere.
@@ -526,19 +526,8 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="seed">Source Seed to create the Body.</param>
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
-		public SatelliteBody(Seed seed, StellarBody star, Body parentBody) : this(null, seed, star, parentBody) { }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="phy">Science interface to use to construct the Body.</param>
-		/// <param name="seed">Source Seed to create the Body.</param>
-		/// <param name="star">Parent Star of the Body.</param>
-		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
-		public SatelliteBody(IScienceAstrophysics? phy, Seed seed, StellarBody star, Body parentBody)
+		public SatelliteBody(Seed seed, StellarBody star, Body parentBody)  
 		{
-			Science = phy;
-
 			StellarBody = star;
 			Parent = parentBody;
 
@@ -556,11 +545,27 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <summary>
 		/// 
 		/// </summary>
+		/// <param name="phy">Science interface to use to construct the Body.</param>
+		/// <param name="seed">Source Seed to create the Body.</param>
+		/// <param name="star">Parent Star of the Body.</param>
+		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
+		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody) : this(seed, star, parentBody)
+		{
+			Science = phy;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		/// <param name="seed">Source Seed to create the Body.</param>
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
 		/// <param name="layers">Layers to construct the Body with.</param>
-		public SatelliteBody(Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(null, seed, star, parentBody, layers) { }
+		public SatelliteBody(Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody) 
+		{
+			Layers.Clear();
+			Layers.AddMany(layers);
+		}
 
 		/// <summary>
 		/// 
@@ -570,12 +575,9 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
 		/// <param name="layers">Layers to construct the Body with.</param>
-		public SatelliteBody(IScienceAstrophysics? phy, Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody)
+		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody, layers)
 		{
 			Science = phy;
-
-			Layers.Clear();
-			Layers.AddMany(layers);
 		}
 
 		private IEnumerable<(Chemical, Ratio)> ConsolidateComposition(IEnumerable<Layer> layers)

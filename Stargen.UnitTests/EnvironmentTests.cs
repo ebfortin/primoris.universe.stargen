@@ -437,6 +437,16 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var breathe = Primoris.Universe.Stargen.Environment.Breathability(null);
             }*/
 
+            [TestCategory("Defaults")]
+            [TestMethod]
+            public void TestAstrophysicsDefault()
+            {
+                var def1 = IScienceAstrophysics.Default;
+                var def2 = IScienceAstrophysics.Default;
+
+                Assert.AreEqual(def1, def2);   
+            }
+
             [TestCategory("Breathability")]
             [TestMethod]
             public void TestNoAtmoPlanet()

@@ -13,8 +13,7 @@ namespace Primoris.Universe.Stargen.Bodies;
 /// </summary>
 public abstract class Body
 {
-    private IScienceAstrophysics? _phy = null;
-    public IScienceAstrophysics? Science { get => _phy is null ? Provider.Use().GetService<IScienceAstrophysics>() : _phy; set => _phy = value; }
+    public IScienceAstrophysics Science { get; set; } = IScienceAstrophysics.Default;
 
 	/// <summary>
 	/// Gets or sets the position.
@@ -51,9 +50,12 @@ public abstract class Body
 	/// <summary>
 	/// Radius of the Body, including all Layers. 
 	/// </summary>
-        public virtual Length Radius { get; protected set; }
+    public virtual Length Radius { get; protected set; }
 
-        public Speed EscapeVelocity { get; protected set; }
+	/// <summary>
+	/// Velocity at which an object can escape the Body gravitational pull.
+	/// </summary>
+    public Speed EscapeVelocity { get; protected set; }
 
 	/// <summary>
 	/// Gets or sets the temperature.

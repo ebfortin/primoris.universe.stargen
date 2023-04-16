@@ -33,26 +33,28 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StellarBody"/> class.
 		/// </summary>
-		public StellarBody() : this(null as IScienceAstrophysics) { }
+		public StellarBody() : this(Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4))) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StellarBody"/> class.
 		/// </summary>
 		/// <param name="phy">The Science interface to use.</param>
-		public StellarBody(IScienceAstrophysics? phy) : this(phy, Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4))) { }
+		public StellarBody(IScienceAstrophysics phy) : this(phy, Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4))) 
+		{
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StellarBody"/> class.
 		/// </summary>
 		/// <param name="mass">The mass.</param>
-		public StellarBody(Mass mass) : this(null, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
+		public StellarBody(Mass mass) : this(mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StellarBody"/> class.
 		/// </summary>
 		/// <param name="phy">The Science interface to use.</param>
 		/// <param name="mass">The mass.</param>
-		public StellarBody(IScienceAstrophysics? phy, Mass mass) : this(phy, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
+		public StellarBody(IScienceAstrophysics phy, Mass mass) : this(phy, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StellarBody"/> class.
@@ -60,7 +62,34 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="mass">The mass.</param>
 		/// <param name="lum">The luminosity.</param>
 		/// <param name="age">The age of the Body.</param>
-		public StellarBody(Mass mass, Luminosity lum, Duration age) : this(null, mass, lum, age) { }
+		public StellarBody(Mass mass, Luminosity lum, Duration age)
+		{
+			if (mass.SolarMasses < 0.2 || mass.SolarMasses > 1.5)
+			{
+				mass = Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4));
+			}
+
+			if (lum.SolarLuminosities == 0.0)
+			{
+				lum = Science!.Astronomy.GetLuminosityFromMass(mass);
+			}
+
+			StellarType = StellarType.FromLuminosityAndRadius(lum, Length.FromSolarRadiuses(1.0));
+
+			//EcosphereRadiusAU = Math.Sqrt(lum);
+			Life = Duration.FromYears365(1.0E10 * (mass.SolarMasses / lum.SolarLuminosities));
+
+			if (age.Years365 == double.MaxValue)
+				Age = Duration.FromYears365(Extensions.RandomNumber(MinSunAge.Years365, Life < MaxSunAge ? Life.Years365 : MaxSunAge.Years365));
+			else
+				Age = age;
+
+			Mass = StellarType.Mass;
+			Radius = StellarType.Radius;
+			Luminosity = StellarType.Luminosity;
+			Temperature = StellarType.Temperature;
+			EscapeVelocity = Science!.Dynamics.GetEscapeVelocity(Mass, Radius);
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StellarBody"/> class.
@@ -69,35 +98,9 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="mass">The mass.</param>
 		/// <param name="lum">The lumuminosity.</param>
 		/// <param name="age">The age of the Body.</param>
-		public StellarBody(IScienceAstrophysics? phy, Mass mass, Luminosity lum, Duration age)
-        {
+		public StellarBody(IScienceAstrophysics phy, Mass mass, Luminosity lum, Duration age) : this(mass, lum, age)
+		{
             Science = phy;
-
-            if (mass.SolarMasses < 0.2 || mass.SolarMasses > 1.5)
-            {
-                mass = Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4));
-            }
-
-            if (lum.SolarLuminosities == 0.0)
-            {
-                lum = Science!.Astronomy.GetLuminosityFromMass(mass);
-            }
-
-            StellarType = StellarType.FromLuminosityAndRadius(lum, Length.FromSolarRadiuses(1.0));
-
-            //EcosphereRadiusAU = Math.Sqrt(lum);
-            Life = Duration.FromYears365(1.0E10 * (mass.SolarMasses / lum.SolarLuminosities));
-
-            if (age.Years365 == double.MaxValue)
-                Age = Duration.FromYears365(Extensions.RandomNumber(MinSunAge.Years365, Life < MaxSunAge ? Life.Years365 : MaxSunAge.Years365));
-            else
-                Age = age;
-
-            Mass = StellarType.Mass;
-            Radius = StellarType.Radius;
-            Luminosity = StellarType.Luminosity;
-            Temperature = StellarType.Temperature;
-            EscapeVelocity = Science!.Dynamics.GetEscapeVelocity(Mass, Radius);
         }
 
 		/// <summary>
@@ -211,7 +214,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// The ecosphere radius.
 		/// </value>
-		public Length EcosphereRadius { get => Science!.Astronomy.GetEcosphereRadius(Mass, Luminosity); }
+		public Length EcosphereRadius { get => Science.Astronomy.GetEcosphereRadius(Mass, Luminosity); }
 
         /// <summary>
         /// Luminosity of the star.

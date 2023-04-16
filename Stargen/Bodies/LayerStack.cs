@@ -255,7 +255,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			}
 			else 
 			{
-				acc = layer.Parent!.Science!.Physics.GetAcceleration(mbelow, rbelow);
+				acc = layer.Parent!.Science.Physics.GetAcceleration(mbelow, rbelow);
 			}
 
 			return acc;
