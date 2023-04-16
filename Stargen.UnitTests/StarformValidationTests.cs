@@ -41,7 +41,6 @@ namespace Primoris.Universe.Stargen.UnitTests
             {
                 var star = GetTestStar();
                 var planet = new Planet(star,
-                            star,
                             Length.FromAstronomicalUnits(0.723332),
                             Ratio.FromDecimalFractions(0.0067),
                             Angle.FromDegrees(2.8),

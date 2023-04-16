@@ -9,7 +9,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 	public class Accrete : IBodyFormationAlgorithm
 	{
-		private class InnerSeed : Seed
+		private record InnerSeed : Seed
 		{
 			internal InnerSeed? NextBody { get; set; } = null;
 			internal InnerSeed? FirstSatellite { get; set; } = null;

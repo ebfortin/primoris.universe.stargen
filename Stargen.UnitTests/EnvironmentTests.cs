@@ -423,7 +423,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 
 				var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(0.000001));
 
-                var planet = new Planet(seed, star, star, mockAtmoGen());
+                var planet = new Planet(seed, star, mockAtmoGen());
 
 				//planet.RecalculateGases(mockAtmoGen());
 				return planet;

@@ -13,7 +13,20 @@ namespace Primoris.Universe.Stargen.Bodies;
 /// </summary>
 public abstract class Body
 {
-    public IScienceAstrophysics Science { get; set; } = IScienceAstrophysics.Default;
+	public static readonly Body Null = new NullBody();
+
+    public virtual IScienceAstrophysics Science { get; set; } = IScienceAstrophysics.Default;
+
+	/// <summary>
+	/// Gets or sets the parent.
+	/// </summary>
+	/// <remarks>
+	/// For a planet this would be a StellarBody. For a Satellite this would be a planet.
+	/// </remarks>
+	/// <value>
+	/// The parent.
+	/// </value>
+	public Body Parent { get; protected set; } = Null;
 
 	/// <summary>
 	/// Gets or sets the position.
@@ -21,7 +34,7 @@ public abstract class Body
 	/// <value>
 	/// The position.
 	/// </value>
-	public int Position { get; set; }
+	public virtual int Position { get; set; }
 
 	/// <summary>
 	/// Gets or sets the name.
@@ -29,7 +42,7 @@ public abstract class Body
 	/// <value>
 	/// The name.
 	/// </value>
-	public string Name { get; set; } = String.Empty;
+	public virtual string Name { get; set; } = String.Empty;
 
 	/// <summary>
 	/// Gets or sets the age.
@@ -72,4 +85,22 @@ public abstract class Body
 	/// The satellites.
 	/// </value>
 	public IEnumerable<SatelliteBody> Satellites { get; protected set; } = Array.Empty<SatelliteBody>();
+
+
+	class NullBody : Body
+	{
+		public NullBody() { }
+
+		public override int Position
+		{
+			get => 0;
+			set { }
+		}
+
+		public override string Name
+		{
+			get => String.Empty;
+			set { }
+		}
+	}
 }

@@ -62,7 +62,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 
 				string planet_id = planetNo.ToString();
 
-				var planet = new Planet(seed, sun, sun);
+				var planet = new Planet(seed, sun);
 				planets.Add(planet);
 			}
 

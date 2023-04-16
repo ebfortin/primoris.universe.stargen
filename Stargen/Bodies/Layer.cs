@@ -101,7 +101,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			get
 			{
-				var belowrad = Parent!.Layers.ComputeThicknessBelow(this).Kilometers;
+				var belowrad = Parent.ComputeThicknessBelow(this).Kilometers;
 				var aboverad = belowrad + Thickness.Kilometers;
 				var outer = 4.0 / 3.0 * Math.PI * Math.Pow(aboverad, 3.0);
 				var inner = 4.0 / 3.0 * Math.PI * Math.Pow(belowrad, 3.0);
@@ -126,7 +126,7 @@ namespace Primoris.Universe.Stargen.Bodies
 				if (Parent is null)
 					return Area.Zero;
 
-				var aboverad = Parent.Layers.ComputeThicknessBelow(this).Kilometers + Thickness.Kilometers;
+				var aboverad = Parent.ComputeThicknessBelow(this).Kilometers + Thickness.Kilometers;
 				var outer = 4.0 * Math.PI * Math.Pow(aboverad, 2.0);
 
 				return Area.FromSquareKilometers(outer);
@@ -149,7 +149,7 @@ namespace Primoris.Universe.Stargen.Bodies
 				if (Parent is null)
 					return Area.Zero;
 
-				var belowrad = Parent.Layers.ComputeThicknessBelow(this).Kilometers;
+				var belowrad = Parent.ComputeThicknessBelow(this).Kilometers;
 				var inner = 4.0 * Math.PI * Math.Pow(belowrad, 2.0);
 
 				return Area.FromSquareKilometers(inner);

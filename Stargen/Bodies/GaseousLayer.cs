@@ -95,7 +95,7 @@ namespace Primoris.Universe.Stargen.Bodies
 			if (Parent is null)
 				return Mass.Zero;
 
-			return pres * LowerBoundaryArea / Parent.Layers.ComputeAccelerationAt(this);
+			return pres * LowerBoundaryArea / Parent.ComputeAccelerationAt(this);
 		}
 	}
 }

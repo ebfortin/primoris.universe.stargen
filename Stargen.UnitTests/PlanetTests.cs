@@ -27,7 +27,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 
 			private SatelliteBody CreatePlanet(Seed seed, StellarBody star, int pos, string planetID)
 			{
-				return new Planet(seed, star, star) { Position = pos, Name = planetID };
+				return new Planet(seed, star) { Position = pos, Name = planetID };
 			}
 
 			[TestCategory("Planet.Equals")]
@@ -77,7 +77,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 					new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>() { (Chemical.All["N"], Ratio.FromDecimalFractions(0.50)) }, Pressure.FromBars(0.5)),
 					new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>() { (Chemical.All["N"], Ratio.FromDecimalFractions(0.25)) }, Pressure.FromBars(0.25))
 				};
-				var planet = new Planet(seed, star, star, layers);
+				var planet = new Planet(seed, star, layers);
 
 				var ele = planet.AtmosphereComposition.ElementAt(0);
 				Assert.AreEqual(Math.Round((0.50 * 0.5 + 0.25 * 0.25) / 0.75, 2, MidpointRounding.ToNegativeInfinity), Math.Round(ele.Item2.DecimalFractions, 2, MidpointRounding.ToNegativeInfinity));

@@ -83,7 +83,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 										int pos,
                                         string planetID)
         {
-			return new Planet(seed, star, star) { Position = pos };
+			return new Planet(seed, star) { Position = pos };
         }
 
 		protected override void ProcessRecord()

@@ -12,18 +12,16 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 	public class Planet : SatelliteBody
 	{
 
-		public Planet(Seed seed, StellarBody star, Body parentBody) : base(seed, star, parentBody)
+		public Planet(Seed seed, Body parentBody) : base(seed, parentBody)
 		{
 			Generate();
 		}
 
-		public Planet(Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : base(seed, star, parentBody, layers)
+		public Planet(Seed seed, Body parentBody, IEnumerable<Layer> layers) : base(seed, parentBody, layers)
 		{
-
 		}
 
-		public Planet(StellarBody sun,
-					  Body parentBody,
+		public Planet(Body parentBody,
 					  Length semiMajorAxisAU,
 					  Ratio eccentricity,
 					  Angle axialTilt,
@@ -36,10 +34,10 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					  Temperature dayTimeTempK,
 					  Temperature nightTimeTempK,
 					  Temperature surfTempK,
-					  Acceleration surfGrav) : base(new Seed(semiMajorAxisAU, eccentricity, massSM, massSM - gasMassSM, gasMassSM), sun, parentBody)
+					  Acceleration surfGrav) : base(new Seed(semiMajorAxisAU, eccentricity, massSM, massSM - gasMassSM, gasMassSM), parentBody)
 		{
 			Parent = parentBody;
-			StellarBody = sun;
+			var sun = StellarBody;
 
 			SemiMajorAxis = semiMajorAxisAU;
 			Eccentricity = eccentricity;

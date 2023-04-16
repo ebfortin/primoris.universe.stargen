@@ -163,6 +163,9 @@ namespace Primoris.Universe.Stargen.Bodies
         /// <summary>
         /// The gravitational acceleration felt at the surface of the planet.
         /// </summary>
+		/// <remarks>
+		/// For an all gas planet the gravitational acceleration felt at the surface, the center of the Body, is Zero.
+		/// </remarks>
 		/// <value>
 		/// Acceleration felt at the Body surface.
 		/// </value>
@@ -191,7 +194,6 @@ namespace Primoris.Universe.Stargen.Bodies
 			}
 		}
 
-		// TODO: Integrates it into layers.
 		/// <summary>
 		/// The radius of the planet's core in km.
 		/// </summary>
@@ -221,7 +223,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// The layers.
 		/// </value>
-		public LayerStack Layers { get; protected set; }
+		protected LayerStack Layers { get; set; }
 
 		/// <summary>
 		/// Gets the core layers.
@@ -244,17 +246,6 @@ namespace Primoris.Universe.Stargen.Bodies
 		#region Planet properties
 
 		/// <summary>
-		/// Gets or sets the parent.
-		/// </summary>
-		/// <remarks>
-		/// For a planet this would be a StellarBody. For a Satellite this would be a planet.
-		/// </remarks>
-		/// <value>
-		/// The parent.
-		/// </value>
-		public Body Parent { get; protected set; }
-
-		/// <summary>
 		/// Gets or sets the stellar body.
 		/// </summary>
 		/// <remarks>
@@ -263,7 +254,18 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// The stellar body.
 		/// </value>
-		public StellarBody StellarBody { get; protected set; }
+		public StellarBody StellarBody 
+		{ 
+			get 
+			{
+				switch(Parent)
+				{
+					case StellarBody stellarBody: return stellarBody;
+					case SatelliteBody satelliteBody: return satelliteBody.StellarBody;
+					default: throw new InvalidBodyException("Unknown Body type encountered.");
+				}
+			} 
+		}
 
 		/// <summary>
 		/// Gets or sets the type.
@@ -520,15 +522,21 @@ namespace Primoris.Universe.Stargen.Bodies
 
         #endregion
 
+		protected internal SatelliteBody()
+		{
+			Seed = new Seed();
+			Parent = this;
+			Layers = new LayerStack(this);
+		}
+
 		/// <summary>
 		/// Construct a new SatelliteBody.
 		/// </summary>
 		/// <param name="seed">Source Seed to create the Body.</param>
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
-		public SatelliteBody(Seed seed, StellarBody star, Body parentBody)  
+		public SatelliteBody(Seed seed, Body parentBody)  
 		{
-			StellarBody = star;
 			Parent = parentBody;
 
 			Seed = seed;
@@ -549,7 +557,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="seed">Source Seed to create the Body.</param>
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
-		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody) : this(seed, star, parentBody)
+		public SatelliteBody(IScienceAstrophysics phy, Seed seed, Body parentBody) : this(seed, parentBody)
 		{
 			Science = phy;
 		}
@@ -561,10 +569,30 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
 		/// <param name="layers">Layers to construct the Body with.</param>
-		public SatelliteBody(Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody) 
+		public SatelliteBody(Seed seed, Body parentBody, IEnumerable<Layer> layers) : this(seed, parentBody) 
 		{
 			Layers.Clear();
 			Layers.AddMany(layers);
+		}
+
+		public void AddLayer(Layer layer)
+		{
+			Layers.Add(layer);
+		}
+
+		public Acceleration ComputeAccelerationAt(Layer layer)
+		{
+			return Layers.ComputeAccelerationAt(layer);
+		}
+
+		public Length ComputeThicknessBelow(Layer layer)
+		{
+			return Layers.ComputeThicknessBelow(layer);
+		}
+
+		public Mass ComputeMassBelow(Layer layer)
+		{
+			return Layers.ComputeMassBelow(layer);
 		}
 
 		/// <summary>
@@ -575,7 +603,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
 		/// <param name="layers">Layers to construct the Body with.</param>
-		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody, layers)
+		public SatelliteBody(IScienceAstrophysics phy, Seed seed, Body parentBody, IEnumerable<Layer> layers) : this(seed, parentBody, layers)
 		{
 			Science = phy;
 		}
@@ -701,6 +729,24 @@ namespace Primoris.Universe.Stargen.Bodies
 				Extensions.AlmostEqual(WaterCoverFraction.Value, other.WaterCoverFraction.Value) &&
 				Extensions.AlmostEqual(CloudCoverFraction.Value, other.CloudCoverFraction.Value) &&
 				Extensions.AlmostEqual(IceCoverFraction.Value, other.IceCoverFraction.Value);
+		}
+	}
+
+
+	class EmptySatelliteBody : SatelliteBody
+	{
+		public EmptySatelliteBody()
+		{
+		}
+
+		protected override void Generate()
+		{
+			return;
+		}
+
+		protected override IEnumerable<SatelliteBody> GenerateSatellites(Seed seed)
+		{
+			return Array.Empty<SatelliteBody>();
 		}
 	}
 }

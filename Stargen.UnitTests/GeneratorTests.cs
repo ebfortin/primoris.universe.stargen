@@ -55,7 +55,6 @@ namespace Primoris.Universe.Stargen.UnitTests
                 var star = GetTestStar();
 
 				var planet = new Planet(star,
-                            star,
 							Length.FromAstronomicalUnits(0.723332),
 							Ratio.FromDecimalFractions(0.0067),
 							Angle.FromDegrees(2.8),
@@ -77,7 +76,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 			{
 				var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.Zero);
                 var star = GetTestStar();
-				var planet = new Planet(seed, star, star, new List<Layer>() { new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()) });
+				var planet = new Planet(seed, star, new List<Layer>() { new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()) });
 				return planet;
 			}
 
