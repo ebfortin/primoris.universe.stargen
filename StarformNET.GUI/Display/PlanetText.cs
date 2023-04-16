@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Bodies;
 
+using UnitsNet;
+
 namespace Primoris.Universe.Stargen.Display
 {
 
@@ -170,12 +172,12 @@ namespace Primoris.Universe.Stargen.Display
 
         public static string GetDayTemp(SatelliteBody planet)
         {
-            return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.DaytimeTemperature.Kelvins));
+            return String.Format("{0:0.0} F", planet.DaytimeTemperature.DegreesFahrenheit);
         }
 
         public static string GetNightTemp(SatelliteBody planet)
         {
-            return String.Format("{0:0.0} F", UnitConversions.KelvinToFahrenheit(planet.NighttimeTemperature.Kelvins));
+            return String.Format("{0:0.0} F", planet.NighttimeTemperature.DegreesFahrenheit);
         }
 
         public static string GetExoTemp(SatelliteBody planet)
@@ -287,8 +289,9 @@ namespace Primoris.Universe.Stargen.Display
                 }
                 else
                 {
-                    var ppm = UnitConversions.MillibarsToPPM(orderedGases[i].Item2.DecimalFractions);
-                    str += String.Format("{0:0.0000}ppm {1}", ppm, orderedGases[i].Item1.Symbol);
+					var mb = Pressure.FromMillibars(orderedGases[i].Item2.DecimalFractions);
+                    var ppm = (mb / (1013.25 * 1.0)) * 1000000;
+					str += String.Format("{0:0.0000}ppm {1}", ppm, orderedGases[i].Item1.Symbol);
                 }
                 if (i < orderedGases.Count() - 1)
                 {

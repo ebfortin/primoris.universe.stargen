@@ -18,7 +18,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 
 		private class StellarTypeRow
 		{
-			public string Type { get; set; }
+			public string Type { get; set; } = String.Empty;
 			public double Mass { get; set; }
 			public double Luminosity { get; set; }
 			public double Radius { get; set; }
@@ -27,7 +27,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			public double AbsMag { get; set; }
 			public double BoloCorr { get; set; }
 			public double BoloMag { get; set; }
-			public string ColorRGB { get; set; }
+			public string ColorRGB { get; set; } = String.Empty;
 		}
 
 		#region Static Constructor
@@ -35,7 +35,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		{
 			// Full StellarType table from http://www.isthe.com/chongo/tech/astro/HR-temp-mass-table-byhrclass.html
 
-			var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.Resources.stellartypes.csv");
+			var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.Resources.stellartypes.csv") ?? throw new InvalidDataException("Corrupted stellartypes.csv resource.");
 			var reader = new StreamReader(stream);
 			var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
 			_types = csv.GetRecords<StellarTypeRow>().ToList();
@@ -127,7 +127,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			var str = Enum.GetName(typeof(SpectralClass), sc) + SubType.ToString() + (lc != LuminosityClass.O ? Enum.GetName(typeof(LuminosityClass), lc) : "");
 			var data = (from row in _types
 						where row.Type == str
-						select new { row.Temperature, row.Mass, row.Radius, row.Luminosity, row.ColorRGB }).FirstOrDefault();
+						select new { row.Temperature, row.Mass, row.Radius, row.Luminosity, row.ColorRGB }).FirstOrDefault() ?? throw new ArgumentException("Invalid combination of SpectraclClass, LuminosityClass and SubType.");
 			Temperature = Temperature.FromKelvins(data.Temperature);
 			Mass = Mass.FromSolarMasses(data.Mass);
 			Luminosity = Luminosity.FromSolarLuminosities(data.Luminosity);
@@ -193,7 +193,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 										  (!(mass.Value == 0.0) ? Math.Pow(mass.SolarMasses - row.Mass, 2.0) : 0.0) +
 										  (!(temp.Value == 0.0) ? Math.Pow(temp.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) : 0.0))
 						ascending
-						select row).FirstOrDefault();
+						select row).FirstOrDefault() ?? throw new InvalidOperationException("Corrupted StellarTypes list.");
 
 			StellarType st = FromString(data.Type);
 			SpectralClass = st.SpectralClass;
@@ -228,7 +228,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 						orderby Math.Sqrt(Math.Pow(lum.SolarLuminosities - row.Luminosity, 2.0) +
 										  Math.Pow(radius.SolarRadiuses - row.Radius, 2.0))
 						ascending
-						select row).FirstOrDefault();
+						select row).FirstOrDefault() ?? throw new InvalidOperationException("Corrupted StellarTypes list."); ;
 
 			StellarType st = FromString(data.Type);
 			st.Luminosity = lum;
@@ -250,7 +250,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 						orderby Math.Sqrt(Math.Pow(mass.SolarMasses - row.Mass, 2.0) +
 										  Math.Pow(temp.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0))
 						ascending
-						select row).FirstOrDefault();
+						select row).FirstOrDefault() ?? throw new InvalidOperationException("Corrupted StellarTypes list."); ;
 
 			StellarType st = FromString(data.Type);
 			st.Mass = mass;
@@ -289,7 +289,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 						orderby Math.Sqrt(Math.Pow(mass.SolarMasses - row.Mass, 2.0) +
 										  Math.Pow(radius.SolarRadiuses - row.Radius, 2.0))
 						ascending
-						select row).FirstOrDefault();
+						select row).FirstOrDefault() ?? throw new InvalidOperationException("Corrupted StellarTypes list."); ;
 
 			StellarType st = FromString(data.Type);
 			st.Mass = mass;
@@ -325,7 +325,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 						orderby Math.Sqrt(Math.Pow(eff_temp.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE - row.Temperature / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0) +
 										  Math.Pow(luminosity.SolarLuminosities - row.Luminosity, 2.0))
 						ascending
-						select row).FirstOrDefault();
+						select row).FirstOrDefault() ?? throw new InvalidOperationException("Corrupted StellarTypes list."); ;
 
 			StellarType st = FromString(data.Type);
 			st.Temperature = eff_temp;

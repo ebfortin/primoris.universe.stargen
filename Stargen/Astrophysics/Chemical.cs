@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnitsNet;
-
+using System.Diagnostics;
 
 namespace Primoris.Universe.Stargen.Astrophysics
 {
@@ -14,7 +14,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 	// TODO break out abundance into a separate class for star/planet profiles
 	public class Chemical
 	{
-		private static IReadOnlyDictionary<string, Chemical> _all = null;
+		private static IReadOnlyDictionary<string, Chemical>? _all = null;
 
 		/// <summary>
 		/// Gets or sets all chemical available for the current simulation.
@@ -156,7 +156,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 		/// <returns></returns>
 		public static IReadOnlyDictionary<string, Chemical> Reload()
 		{
-			All = null;
+			_all = null;
 			return Load();
 		}
 
@@ -170,7 +170,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 				return _all;
 
 			var a = Assembly.GetExecutingAssembly();
-			var s = a.GetManifestResourceStream("Primoris.Universe.Stargen.Resources.elements.dat");
+			var s = a.GetManifestResourceStream("Primoris.Universe.Stargen.Resources.elements.dat") ?? throw new InvalidDataException("Corrupted elements.dat resource.");
 
 			using (s)
 			{
@@ -201,7 +201,7 @@ namespace Primoris.Universe.Stargen.Astrophysics
 			var chemTable = new Dictionary<string, Chemical>();
 
 			var json = r.ReadToEnd();
-			var items = JsonConvert.DeserializeObject<List<List<object>>>(json);
+			var items = JsonConvert.DeserializeObject<List<List<object>>>(json) ?? throw new InvalidDataException("Corrupted elements.dat resource.");
 
 
 			foreach (var item in items)

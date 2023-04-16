@@ -6,6 +6,6 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		public double OuterEdge;
 		public bool DustPresent;
 		public bool GasPresent;
-		public DustRecord NextBand = null;
+		public DustRecord? NextBand = null;
 	}
 }

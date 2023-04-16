@@ -22,7 +22,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			//Thickness = parentBody.CoreRadius;
 			//MeanDensity = parentBody.Density;
 			MeanTemperature = parentBody.Temperature;
-			if (Mass > Mass.Zero && Mass != availableMass)
+			if (Mass > Mass.Zero && !Mass.Equals(availableMass, Extensions.Epsilon, ComparisonType.Relative))
 				throw new ArgumentException("Available Mass must be equal to specified mass.");
 		
 			Mass = availableMass;

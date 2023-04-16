@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Collections.Generic;
 using Primoris.Universe.Stargen.IO;
+using System.IO;
 
 namespace Primoris.Universe.Stargen
 {
@@ -16,8 +17,8 @@ namespace Primoris.Universe.Stargen
 	public class NameGenerator
 	{
 		public NameGenerator(int order = 3, int minLength = 6) 
-			: this(Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.Resources.starnames.csv").ReadLines(),
-				  Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.Resources.greekletters.csv").ReadLines(),
+			: this(Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.Resources.starnames.csv")!.ReadLines(),
+				  Assembly.GetExecutingAssembly().GetManifestResourceStream("Primoris.Universe.Stargen.Resources.greekletters.csv")!.ReadLines(),
 				  order, 
 				  minLength)
 		{
@@ -56,7 +57,7 @@ namespace Primoris.Universe.Stargen
 				for (int letter = 0; letter < word.Length - order; letter++)
 				{
 					string token = word.Substring(letter, order);
-					List<char> entry = null;
+					List<char> entry;
 					if (_chains.ContainsKey(token))
 						entry = _chains[token];
 					else

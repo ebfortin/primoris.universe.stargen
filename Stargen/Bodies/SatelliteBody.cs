@@ -244,6 +244,28 @@ namespace Primoris.Universe.Stargen.Bodies
 		#region Planet properties
 
 		/// <summary>
+		/// Gets or sets the parent.
+		/// </summary>
+		/// <remarks>
+		/// For a planet this would be a StellarBody. For a Satellite this would be a planet.
+		/// </remarks>
+		/// <value>
+		/// The parent.
+		/// </value>
+		public Body Parent { get; protected set; }
+
+		/// <summary>
+		/// Gets or sets the stellar body.
+		/// </summary>
+		/// <remarks>
+		/// The StellarBody is the body at the center of the system.
+		/// </remarks>
+		/// <value>
+		/// The stellar body.
+		/// </value>
+		public StellarBody StellarBody { get; protected set; }
+
+		/// <summary>
 		/// Gets or sets the type.
 		/// </summary>
 		/// <value>
@@ -277,7 +299,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </value>
 		public bool IsTidallyLocked { get; protected set; }
 
-		public bool IsEarthlike => Science.Planetology.TestIsEarthLike(Temperature,
+		public bool IsEarthlike => Science!.Planetology.TestIsEarthLike(Temperature,
 																 WaterCoverFraction,
 																 CloudCoverFraction,
 																 IceCoverFraction,
@@ -292,7 +314,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		///   <c>true</c> if this instance is habitable; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsHabitable => Science.Planetology.TestIsHabitable(DayLength, OrbitalPeriod, Breathability, HasResonantPeriod, IsTidallyLocked);
+		public bool IsHabitable => Science!.Planetology.TestIsHabitable(DayLength, OrbitalPeriod, Breathability, HasResonantPeriod, IsTidallyLocked);
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance has resonant period.
@@ -396,7 +418,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// The breathability of the Body.
 		/// </value>
-		public Breathability Breathability => (from l in Layers where l is GaseousLayer select (l as GaseousLayer).Breathability).FirstOrDefault();
+		public Breathability Breathability => (from l in Layers where l is GaseousLayer select ((GaseousLayer)l).Breathability).FirstOrDefault();
 
 		#endregion
 
@@ -409,7 +431,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// Illumination Ratio.
 		/// </value>
-		public Ratio Illumination => Science.Astronomy.GetMinimumIllumination(SemiMajorAxis, StellarBody.Luminosity);
+		public Ratio Illumination => Science!.Astronomy.GetMinimumIllumination(SemiMajorAxis, StellarBody.Luminosity);
 
 		/// <summary>
 		/// Temperature at the body's exosphere.
@@ -513,7 +535,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="seed">Source Seed to create the Body.</param>
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
-		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody)
+		public SatelliteBody(IScienceAstrophysics? phy, Seed seed, StellarBody star, Body parentBody)
 		{
 			Science = phy;
 
@@ -548,7 +570,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
 		/// <param name="layers">Layers to construct the Body with.</param>
-		public SatelliteBody(IScienceAstrophysics phy, Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody)
+		public SatelliteBody(IScienceAstrophysics? phy, Seed seed, StellarBody star, Body parentBody, IEnumerable<Layer> layers) : this(seed, star, parentBody)
 		{
 			Science = phy;
 
@@ -559,7 +581,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		private IEnumerable<(Chemical, Ratio)> ConsolidateComposition(IEnumerable<Layer> layers)
 		{
 			var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
-			if (totmass == Mass.Zero)
+			if (totmass.Equals(Mass.Zero, Extensions.Epsilon, ComparisonType.Relative))
 				return new (Chemical, Ratio)[0];
 
 			var amounts = (from l in layers
@@ -638,8 +660,11 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		/// <param name="other">Other Body to compare this with.</param>
 		/// <returns>True if both Bodies are equals, false otherwise.</returns>
-		public bool Equals(SatelliteBody other)
+		public bool Equals(SatelliteBody? other)
 		{
+			if (other is null)
+				return false;
+
 			return Position == other.Position &&
 				Extensions.AlmostEqual(SemiMajorAxis.Value, other.SemiMajorAxis.Value) &&
 				Extensions.AlmostEqual(Eccentricity.Value, other.Eccentricity.Value) &&

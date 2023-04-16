@@ -18,7 +18,7 @@ namespace Primoris.Universe.Stargen.Bodies
 	/// <seealso cref="System.IEquatable{Primoris.Universe.Stargen.Bodies.Layer}" />
 	public abstract class Layer : IEquatable<Layer>
 	{
-		private IScienceAstrophysics _phy = null;
+		private IScienceAstrophysics? _phy = null;
 
 		/// <summary>
 		/// Gets or sets the science.
@@ -40,7 +40,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// The stellar body, ie Parent.StellarBody.
 		/// </value>
-		public StellarBody StellarBody { get => Parent.StellarBody; }
+		public StellarBody StellarBody { get => Parent!.StellarBody; }
 
 		/// <summary>
 		/// Gets the parent this layer belongs to. 
@@ -48,7 +48,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// The parent.
 		/// </value>
-		public SatelliteBody Parent { get; internal set; }
+		public SatelliteBody? Parent { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the thickness of the layer. 
@@ -101,7 +101,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			get
 			{
-				var belowrad = Parent.Layers.ComputeThicknessBelow(this).Kilometers;
+				var belowrad = Parent!.Layers.ComputeThicknessBelow(this).Kilometers;
 				var aboverad = belowrad + Thickness.Kilometers;
 				var outer = 4.0 / 3.0 * Math.PI * Math.Pow(aboverad, 3.0);
 				var inner = 4.0 / 3.0 * Math.PI * Math.Pow(belowrad, 3.0);
@@ -213,7 +213,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <returns>
 		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			return Equals(obj as Layer);
 		}
@@ -225,14 +225,16 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <returns>
 		///   <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.
 		/// </returns>
-		public bool Equals([AllowNull] Layer other)
+		public bool Equals(Layer? other)
 		{
-			return other != null &&
-				   EqualityComparer<StellarBody>.Default.Equals(StellarBody, other.StellarBody) &&
+			if (other is null)
+				return false;
+
+			return EqualityComparer<StellarBody>.Default.Equals(StellarBody, other.StellarBody) &&
 				   EqualityComparer<SatelliteBody>.Default.Equals(Parent, other.Parent) &&
-				   Thickness.Equals(other.Thickness) &&
-				   Mass.Equals(other.Mass) &&
-				   MeanTemperature.Equals(other.MeanTemperature) &&
+				   Thickness.Equals(other.Thickness, Extensions.Epsilon, ComparisonType.Relative) &&
+				   Mass.Equals(other.Mass, Extensions.Epsilon, ComparisonType.Relative) &&
+				   MeanTemperature.Equals(other.MeanTemperature, Extensions.Epsilon, ComparisonType.Relative) &&
 				   EqualityComparer<IList<(Chemical, Ratio)>>.Default.Equals(CompositionInternal, other.CompositionInternal) &&
 				   EqualityComparer<IEnumerable<(Chemical, Ratio)>>.Default.Equals(Composition, other.Composition);
 		}

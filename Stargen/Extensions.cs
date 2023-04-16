@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.CompilerServices;
+
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Services;
 
@@ -12,6 +14,8 @@ namespace Primoris.Universe.Stargen
 	/// </summary>
 	public static class Extensions
 	{
+		public const double Epsilon = 0.00001;
+
 		/// <summary>
 		/// The common Random class instance to use.
 		/// </summary>

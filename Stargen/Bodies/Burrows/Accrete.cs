@@ -11,8 +11,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 	{
 		private class InnerSeed : Seed
 		{
-			internal InnerSeed NextBody { get; set; } = null;
-			internal InnerSeed FirstSatellite { get; set; } = null;
+			internal InnerSeed? NextBody { get; set; } = null;
+			internal InnerSeed? FirstSatellite { get; set; } = null;
 
 			public InnerSeed(Length a, Ratio e, Mass mass, Mass dMass, Mass gMass) : base(a, e, mass, dMass, gMass)
 			{
@@ -30,9 +30,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		private double _reducedMass;
 		private double _dustDensity;
 		private Ratio _cloudEccentricity;
-		private DustRecord _dustHead;
-		private InnerSeed _planetHead;
-		private Generation _histHead;
+		private DustRecord? _dustHead = null;
+		private InnerSeed? _planetHead;
+		private Generation? _histHead;
 
 
 		public Accrete(Ratio e, Ratio gdr, Ratio dust)
@@ -71,8 +71,8 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			{
 				Length a;
 				Ratio e;
-				a = semiMajorAxisAU == Length.Zero ? Length.FromAstronomicalUnits(Extensions.RandomNumber(planet_inner_bound.AstronomicalUnits, planet_outer_bound.AstronomicalUnits)) : semiMajorAxisAU;
-				e = CloudEccentricity == Ratio.Zero ? Ratio.FromDecimalFractions(Extensions.RandomEccentricity()) : CloudEccentricity;
+				a = semiMajorAxisAU.Equals(Length.Zero, Extensions.Epsilon, ComparisonType.Relative) ? Length.FromAstronomicalUnits(Extensions.RandomNumber(planet_inner_bound.AstronomicalUnits, planet_outer_bound.AstronomicalUnits)) : semiMajorAxisAU;
+				e = CloudEccentricity.Equals(Ratio.Zero, Extensions.Epsilon, ComparisonType.Relative) ? Ratio.FromDecimalFractions(Extensions.RandomEccentricity()) : CloudEccentricity;
 
 				Mass mass = GlobalConstants.PROTOPLANET_MASS;
 				Mass dust_mass = Mass.FromSolarMasses(0.0);
@@ -103,7 +103,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			return ProcessSeeds(_planetHead);
 		}
 
-		private IEnumerable<Seed> ProcessSeeds(InnerSeed nextSeed)
+		private IEnumerable<Seed> ProcessSeeds(InnerSeed? nextSeed)
 		{
 			var seedList = new List<Seed>();
 			var next = nextSeed;
@@ -162,7 +162,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 		private bool DustAvailable(double inside_range, double outside_range)
 		{
-			DustRecord current_dust_band;
+			DustRecord? current_dust_band;
 			bool dust_here;
 
 			current_dust_band = _dustHead;
@@ -191,9 +191,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		private void UpdateDustLanes(double min, double max, Mass mass, Mass crit_mass, Length body_inner_bound, Length body_outer_bound)
 		{
 			bool gas;
-			DustRecord node1 = null;
-			DustRecord node2 = null;
-			DustRecord node3 = null;
+			DustRecord? node1 = null;
+			DustRecord? node2 = null;
+			DustRecord? node3 = null;
 
 			_dustLeft = false;
 			if (mass > crit_mass)
@@ -311,7 +311,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 			}
 		}
 
-		private Mass CollectDust(Mass last_mass, ref Mass new_dust, ref Mass new_gas, Length a, Ratio e, Mass crit_mass, ref DustRecord dust_band)
+		private Mass CollectDust(Mass last_mass, ref Mass new_dust, ref Mass new_gas, Length a, Ratio e, Mass crit_mass, ref DustRecord? dust_band)
 		{
 			double temp = last_mass.SolarMasses / (1.0 + last_mass.SolarMasses);
 			_reducedMass = Math.Pow(temp, 1.0 / 4.0);
@@ -323,7 +323,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 				_rInner = 0.0;
 			}
 
-			if (dust_band == null)
+			if (dust_band is null)
 			{
 				return Mass.FromSolarMasses(0.0);
 			}
@@ -422,7 +422,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			if (planet.FirstSatellite != null)
 			{
-				for (InnerSeed m = planet.FirstSatellite; m != null; m = m.NextBody)
+				for (InnerSeed? m = planet.FirstSatellite; m != null; m = m.NextBody)
 				{
 					existingMass += m.Mass;
 				}
@@ -505,9 +505,9 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 									 bool doMoons)
 		{
 			// First we try to find an existing planet with an over-lapping orbit.
-			InnerSeed thePlanet = null;
-			InnerSeed nextPlanet = null;
-			InnerSeed prevPlanet = null;
+			InnerSeed? thePlanet = null;
+			InnerSeed? nextPlanet = null;
+			InnerSeed? prevPlanet = null;
 			var finished = false;
 			for (thePlanet = _planetHead; thePlanet != null; thePlanet = thePlanet.NextBody)
 			{
@@ -582,7 +582,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 							}
 							else
 							{
-								prevPlanet.NextBody = nextPlanet;
+								prevPlanet!.NextBody = nextPlanet;
 							}
 
 							thePlanet.NextBody = nextPlanet.NextBody;
@@ -638,7 +638,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 						nextPlanet = nextPlanet.NextBody;
 					}
 					thePlanet.NextBody = nextPlanet;
-					prevPlanet.NextBody = thePlanet;
+					prevPlanet!.NextBody = thePlanet;
 				}
 			}
 		}

@@ -12,7 +12,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 	[Obsolete]
     public class SystemGenerator
 	{
-		public static StellarGroup GenerateStellarGroup(int seed, int numSystems, SystemGenerationOptions genOptions = null)
+		public static StellarGroup GenerateStellarGroup(int seed, int numSystems, SystemGenerationOptions? genOptions = null)
 		{
 			Extensions.InitRandomSeed(seed);
 			genOptions = genOptions ?? SystemGenerationOptions.DefaultOptions;
@@ -25,7 +25,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			return group;
 		}
 
-		public static StellarSystem GenerateStellarSystem(string systemName, SystemGenerationOptions genOptions = null, StellarBody sun = null, IEnumerable<Seed> seedSystem = null)
+		public static StellarSystem GenerateStellarSystem(string systemName, SystemGenerationOptions? genOptions = null, StellarBody? sun = null, IEnumerable<Seed>? seedSystem = null)
 		{
 			genOptions ??= new SystemGenerationOptions();
 

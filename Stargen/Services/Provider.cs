@@ -36,7 +36,7 @@ namespace Primoris.Universe.Stargen.Services
 
         private static Dictionary<Type, object> _services = new Dictionary<Type, object>();
 
-        private static Provider _instance = null;
+        private static Provider? _instance = null;
 
 		/// <summary>
 		/// Uses this instance.
@@ -101,7 +101,7 @@ namespace Primoris.Universe.Stargen.Services
             if (!_services.ContainsKey(typeof(T)))
                 throw new MissingServiceConfigurationException();
 
-            return _services[typeof(T)] as T;
+            return (T)_services[typeof(T)];
         }
 
     }
