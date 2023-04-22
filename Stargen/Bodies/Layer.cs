@@ -18,18 +18,13 @@ namespace Primoris.Universe.Stargen.Bodies
 	/// <seealso cref="System.IEquatable{Primoris.Universe.Stargen.Bodies.Layer}" />
 	public abstract class Layer : IEquatable<Layer>
 	{
-		private IScienceAstrophysics? _phy = null;
-
 		/// <summary>
 		/// Gets or sets the science.
 		/// </summary>
-		/// <remarks>
-		/// If null internally, will return the default defined IScienceAstrophysics object in the services Provider.
-		/// </remarks>
 		/// <value>
 		/// The science.
 		/// </value>
-		public IScienceAstrophysics Science { get => _phy is null ? Provider.Use().GetService<IScienceAstrophysics>() : _phy; set => _phy = value; }
+		public IScienceAstrophysics Science { get; set; } = IScienceAstrophysics.Default;
 
 		/// <summary>
 		/// Gets the stellar body.
@@ -78,13 +73,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// The mean density.
 		/// </value>
-		public virtual Density MeanDensity
-		{
-			get
-			{
-				return Mass / Volume;
-			}
-		}
+		public virtual Density MeanDensity => Mass / Volume;
 
 		/// <summary>
 		/// Gets or sets the mean temperature.
@@ -101,6 +90,9 @@ namespace Primoris.Universe.Stargen.Bodies
 		{
 			get
 			{
+				if (Parent is null)
+					return Volume.Zero;
+
 				var belowrad = Parent.ComputeThicknessBelow(this).Kilometers;
 				var aboverad = belowrad + Thickness.Kilometers;
 				var outer = 4.0 / 3.0 * Math.PI * Math.Pow(aboverad, 3.0);
@@ -170,7 +162,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// The composition.
 		/// </value>
-		public IEnumerable<ValueTuple<Chemical, Ratio>> Composition { get => CompositionInternal; }
+		public IEnumerable<(Chemical, Ratio)> Composition { get => CompositionInternal; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Layer"/> class.

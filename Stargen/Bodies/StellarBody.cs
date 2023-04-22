@@ -144,7 +144,7 @@ public abstract class StellarBody : Body
 	}
 
 
-	private IBodyFormationAlgorithm? _frm = null;
+	IBodyFormationAlgorithm? _frm = null;
 
 	/// <summary>
 	/// Gets or sets the body formation algorithm interface.

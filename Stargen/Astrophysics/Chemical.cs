@@ -15,7 +15,12 @@ namespace Primoris.Universe.Stargen.Astrophysics;
 // TODO break out abundance into a separate class for star/planet profiles
 public class Chemical
 {
-	private static IReadOnlyDictionary<string, Chemical>? _all = null;
+	static IReadOnlyDictionary<string, Chemical> _all;
+
+	static Chemical()
+	{
+		_all = Load();
+	}
 
 	/// <summary>
 	/// Gets or sets all chemical available for the current simulation.
@@ -27,9 +32,6 @@ public class Chemical
 	{ 
 		get
 		{
-			if (_all == null)
-				_all = Load();
-			
 			return _all;
 		} 
 
@@ -157,7 +159,6 @@ public class Chemical
 	/// <returns></returns>
 	public static IReadOnlyDictionary<string, Chemical> Reload()
 	{
-		_all = null;
 		return Load();
 	}
 
@@ -167,9 +168,6 @@ public class Chemical
 	/// <returns>Dictionary of Chemicals.</returns>
 	public static IReadOnlyDictionary<string, Chemical> Load()
 	{
-		if (_all != null)
-			return _all;
-
 		var a = Assembly.GetExecutingAssembly();
 		var s = a.GetManifestResourceStream("Primoris.Universe.Stargen.Resources.elements.dat") ?? throw new InvalidDataException("Corrupted elements.dat resource.");
 
