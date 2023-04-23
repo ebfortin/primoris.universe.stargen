@@ -27,6 +27,93 @@ public abstract class StellarBody : Body
 	public static readonly Duration MaxSunAge = Duration.FromYears365(6.0E9);
 
 	/// <summary>
+	/// Gets or sets the body formation algorithm interface.
+	/// </summary>
+	/// <value>
+	/// The body formation algorithm interface.
+	/// </value>
+	public virtual required IBodyFormationAlgorithm BodyFormationScience { get; init; }
+
+	/// <summary>
+	/// Gets or sets the type of the stellar.
+	/// </summary>
+	/// <value>
+	/// The type of the stellar.
+	/// </value>
+	public StellarType StellarType { get; protected set; }
+
+	/// <summary>
+	/// Gets the color.
+	/// </summary>
+	/// <value>
+	/// The color.
+	/// </value>
+	public Color Color { get => StellarType.Color; }
+
+	/// <summary>
+	/// Gets the distance from a well known star.
+	/// </summary>
+	/// <value>
+	/// The distance from typical.
+	/// </value>
+	public double DistanceFromTypical
+	{
+		get
+		{
+			var st = StellarType.FromString(StellarType.ToString());
+			return Math.Sqrt(Math.Pow(Luminosity.SolarLuminosities - st.Luminosity.SolarLuminosities, 2.0) +
+								Math.Pow(Radius.SolarRadiuses - st.Radius.SolarRadiuses, 2.0) +
+								Math.Pow(Mass.SolarMasses - st.Mass.SolarMasses, 2.0) +
+								Math.Pow(Temperature.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE - st.Temperature.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0));
+
+		}
+	}
+
+	/// <summary>
+	/// Age of the star in years.
+	/// </summary>
+	//public Duration Age { get; protected set; }
+
+	/// <summary>
+	/// The maximum lifetime of the star before going to a Supernovae.
+	/// </summary>
+	public Duration Life { get; protected set; }
+
+	/// <summary>
+	/// Gets the ecosphere radius.
+	/// </summary>
+	/// <remarks>
+	/// The ecosphere radius is the distance from the StellarBody that habitable planets can exist.
+	/// </remarks>
+	/// <value>
+	/// The ecosphere radius.
+	/// </value>
+	public Length EcosphereRadius { get => Science.Astronomy.GetEcosphereRadius(Mass, Luminosity); }
+
+	/// <summary>
+	/// Luminosity of the star.
+	/// </summary>
+	public Luminosity Luminosity { get; protected set; }
+
+
+	// TODO: Have companion stars treated as satellites.
+	/// <summary>
+	/// The mass of this star's companion star (if any) in solar mass
+	/// units (M<sub>☉</sub>). 
+	/// </summary>
+	public Mass BinaryMass { get; protected set; } = Mass.Zero;
+
+	/// <summary>
+	/// The semi-major axis of the companion star in au.
+	/// </summary>
+	public Length BinarySemiMajorAxis { get; protected set; } = Length.Zero;
+
+	/// <summary>
+	/// The eccentricity of the companion star's orbit.
+	/// </summary>
+	public Ratio BinaryEccentricity { get; protected set; } = Ratio.Zero;
+
+	/// <summary>
 	/// Initializes a new instance of the <see cref="StellarBody"/> class.
 	/// </summary>
 	public StellarBody() : this(Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4))) { }
@@ -144,97 +231,6 @@ public abstract class StellarBody : Body
 	}
 
 
-	IBodyFormationAlgorithm? _frm = null;
-
-	/// <summary>
-	/// Gets or sets the body formation algorithm interface.
-	/// </summary>
-	/// <value>
-	/// The body formation algorithm interface.
-	/// </value>
-	public virtual IBodyFormationAlgorithm BodyFormationScience { get => _frm is null ? Provider.Use().GetService<IBodyFormationAlgorithm>() : _frm; set => _frm = value; }
-
-	//public override Body Parent { get => null; protected set { } }
-
-	/// <summary>
-	/// Gets or sets the type of the stellar.
-	/// </summary>
-	/// <value>
-	/// The type of the stellar.
-	/// </value>
-	public StellarType StellarType { get; protected set; }
-
-	/// <summary>
-	/// Gets the color.
-	/// </summary>
-	/// <value>
-	/// The color.
-	/// </value>
-	public Color Color { get => StellarType.Color; }
-
-	/// <summary>
-	/// Gets the distance from a well known star.
-	/// </summary>
-	/// <value>
-	/// The distance from typical.
-	/// </value>
-	public double DistanceFromTypical
-	{
-		get
-		{
-			var st = StellarType.FromString(StellarType.ToString());
-			return Math.Sqrt(Math.Pow(Luminosity.SolarLuminosities - st.Luminosity.SolarLuminosities, 2.0) +
-								Math.Pow(Radius.SolarRadiuses - st.Radius.SolarRadiuses, 2.0) +
-								Math.Pow(Mass.SolarMasses - st.Mass.SolarMasses, 2.0) +
-								Math.Pow(Temperature.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE - st.Temperature.Kelvins / GlobalConstants.EARTH_SUN_TEMPERATURE, 2.0));
-
-		}
-	}
-
-	/// <summary>
-	/// Age of the star in years.
-	/// </summary>
-	//public Duration Age { get; protected set; }
-
-	/// <summary>
-	/// The maximum lifetime of the star before going to a Supernovae.
-	/// </summary>
-	public Duration Life { get; protected set; }
-
-	/// <summary>
-	/// Gets the ecosphere radius.
-	/// </summary>
-	/// <remarks>
-	/// The ecosphere radius is the distance from the StellarBody that habitable planets can exist.
-	/// </remarks>
-	/// <value>
-	/// The ecosphere radius.
-	/// </value>
-	public Length EcosphereRadius { get => Science.Astronomy.GetEcosphereRadius(Mass, Luminosity); }
-
-	/// <summary>
-	/// Luminosity of the star.
-	/// </summary>
-	public Luminosity Luminosity { get; protected set; }
-
-
-	// TODO: Have companion stars treated as satellites.
-	/// <summary>
-	/// The mass of this star's companion star (if any) in solar mass
-	/// units (M<sub>☉</sub>). 
-	/// </summary>
-	public Mass BinaryMass { get; protected set; } = Mass.Zero;
-
-	/// <summary>
-	/// The semi-major axis of the companion star in au.
-	/// </summary>
-	public Length BinarySemiMajorAxis { get; protected set; } = Length.Zero;
-
-	/// <summary>
-	/// The eccentricity of the companion star's orbit.
-	/// </summary>
-	public Ratio BinaryEccentricity { get; protected set; } = Ratio.Zero;
-
 	/// <summary>
 	/// Generates the system.
 	/// </summary>
@@ -246,7 +242,7 @@ public abstract class StellarBody : Body
 
 		var sun = this;
 
-		Length outer_planet_limit = phy!.Astronomy.GetOuterLimit(Mass, BinaryMass, BinarySemiMajorAxis, BinaryEccentricity);
+		Length outer_planet_limit = phy.Astronomy.GetOuterLimit(Mass, BinaryMass, BinarySemiMajorAxis, BinaryEccentricity);
 		Length outer_dust_limit = phy.Astronomy.GetStellarDustLimit(Mass);
 		var seedSystem = frm.CreateSeeds(sun.Mass,
 						sun.Luminosity,

@@ -51,7 +51,6 @@ public class Accrete : IBodyFormationAlgorithm
 	/// <param name="innerDust"></param>
 	/// <param name="outerDust"></param>
 	/// <param name="outerPlanetLimit"></param>
-	/// <param name="dustDensityCoeff"></param>
 	/// <returns></returns>
 	public IEnumerable<Seed> CreateSeeds(Mass stellarMassRatio,
 									Luminosity stellarLumRatio,
@@ -103,7 +102,7 @@ public class Accrete : IBodyFormationAlgorithm
 		return ProcessSeeds(_planetHead);
 	}
 
-	private IEnumerable<Seed> ProcessSeeds(InnerSeed? nextSeed)
+	IEnumerable<Seed> ProcessSeeds(InnerSeed? nextSeed)
 	{
 		var seedList = new List<Seed>();
 		var next = nextSeed;
@@ -121,7 +120,7 @@ public class Accrete : IBodyFormationAlgorithm
 		return seedList;
 	}
 
-	private void SetInitialConditions(Length inner_limit_of_dust, Length outer_limit_of_dust)
+	void SetInitialConditions(Length inner_limit_of_dust, Length outer_limit_of_dust)
 	{
 		_histHead = new Generation();
 
@@ -140,27 +139,27 @@ public class Accrete : IBodyFormationAlgorithm
 		_histHead.Next = _histHead;
 	}
 
-	private Length NearestPlanet(Mass stell_mass_ratio)
+	Length NearestPlanet(Mass stell_mass_ratio)
 	{
 		return Length.FromAstronomicalUnits(0.3 * Math.Pow(stell_mass_ratio.SolarMasses, 1.0 / 3.0));
 	}
 
-	private Length FarthestPlanet(Mass stell_mass_ratio)
+	Length FarthestPlanet(Mass stell_mass_ratio)
 	{
 		return Length.FromAstronomicalUnits(50.0 * Math.Pow(stell_mass_ratio.SolarMasses, 1.0 / 3.0));
 	}
 
-	private double InnerEffectLimit(double a, double e, double mass)
+	double InnerEffectLimit(double a, double e, double mass)
 	{
 		return a * (1.0 - e) * (1.0 - mass) / (1.0 + _cloudEccentricity.DecimalFractions);
 	}
 
-	private double OuterEffectLimit(double a, double e, double mass)
+	double OuterEffectLimit(double a, double e, double mass)
 	{
 		return a * (1.0 + e) * (1.0 + mass) / (1.0 - _cloudEccentricity.DecimalFractions);
 	}
 
-	private bool DustAvailable(double inside_range, double outside_range)
+	bool DustAvailable(double inside_range, double outside_range)
 	{
 		DustRecord? current_dust_band;
 		bool dust_here;
@@ -188,7 +187,7 @@ public class Accrete : IBodyFormationAlgorithm
 		return dust_here;
 	}
 
-	private void UpdateDustLanes(double min, double max, Mass mass, Mass crit_mass, Length body_inner_bound, Length body_outer_bound)
+	void UpdateDustLanes(double min, double max, Mass mass, Mass crit_mass, Length body_inner_bound, Length body_outer_bound)
 	{
 		bool gas;
 		DustRecord? node1 = null;

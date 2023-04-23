@@ -14,6 +14,8 @@ using Primoris.Universe.Stargen.Services;
 
 using Units = UnitsNet;
 using Primoris.Universe.Stargen.Bodies;
+using Primoris.Universe.Stargen.Bodies.Burrows;
+using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Cmdlets
 {
@@ -100,9 +102,30 @@ namespace Primoris.Universe.Stargen.Cmdlets
             }
 		}
 
+		protected StellarBody GenerateStar(Ratio e, Ratio k, Ratio coeff)
+		{
+			var accrete = new Accrete(e, k, coeff);
+
+			StellarType st = StellarType.FromString(StarStellarType);
+			if (!(Mass == 0.0) || !(Luminosity == 0.0) || !(Temperature == 0.0) || !(Radius == 0.0))
+				st.Change(Units.Mass.FromSolarMasses(Mass),
+						  Units.Luminosity.FromSolarLuminosities(Luminosity),
+						  Units.Temperature.FromKelvins(Temperature),
+						  Units.Length.FromSolarRadiuses(Radius));
+
+			if (Name == String.Empty)
+			{
+				var ng = new NameGenerator();
+				Name = ng.NextName();
+			}
+
+			Provider.Use().WithAstrophysics(new BodyPhysics());
+			return new Star(st, Name) { BodyFormationScience = accrete };
+		}
+
         protected StellarBody GenerateStar()
         {
-            StellarType st = StellarType.FromString(StarStellarType);
+			StellarType st = StellarType.FromString(StarStellarType);
             if (!(Mass == 0.0) || !(Luminosity == 0.0)  || !(Temperature == 0.0) || !(Radius == 0.0))
                 st.Change(Units.Mass.FromSolarMasses(Mass),
 						  Units.Luminosity.FromSolarLuminosities(Luminosity),
@@ -116,7 +139,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
             }
 
 			Provider.Use().WithAstrophysics(new BodyPhysics());
-            return new Star(st, Name);
+            return new Star(st, Name) { BodyFormationScience = new NullBodyFormationAlgorithm() };
         }
 	}
 }

@@ -11,8 +11,6 @@ namespace Primoris.Universe.Stargen.Bodies;
 /// </summary>
 public interface IBodyFormationAlgorithm
 {
-	static IBodyFormationAlgorithm Default { get; } = new Accrete();
-
 	/// <summary>
 	/// Gets the dust density coefficient.
 	/// </summary>

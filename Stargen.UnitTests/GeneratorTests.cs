@@ -33,17 +33,26 @@ public class GeneratorTests
 	[TestClass]
 	public class CalculateGasesTest
 	{
+		IBodyFormationAlgorithm _algo = null;
+
 		[TestInitialize]
 		public void InitializeTests()
 		{
-			Provider.Use().WithAstrophysics(new BodyPhysics());
+			//Provider.Use().WithAstrophysics(new BodyPhysics());
+
+			_algo = new Accrete(Ratio.FromDecimalFractions(GlobalConstants.CLOUD_ECCENTRICITY),
+								Ratio.FromDecimalFractions(GlobalConstants.K),
+								Ratio.FromDecimalFractions(GlobalConstants.DUST_DENSITY_COEFF));
 		}
 
 		private double DELTA = 0.0001;
 
 		private StellarBody GetTestStar()
 		{
-			return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10));
+			return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10))
+			{
+				BodyFormationScience = _algo
+			};
 		}
 
 		private SatelliteBody GetTestPlanetAtmosphere()

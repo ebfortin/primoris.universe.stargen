@@ -26,20 +26,30 @@ namespace Primoris.Universe.Stargen.UnitTests
             double VeryHighDelta = 1e-2;
             double UnitDelta = 1.0;
 
+			IBodyFormationAlgorithm _algo = null;
+
 			[TestInitialize]
 			public void InitializeTests()
 			{
-				Provider.Use().WithAstrophysics(new BodyPhysics());
+				//Provider.Use().WithAstrophysics(new BodyPhysics());
+
+				_algo = new Accrete(Ratio.FromDecimalFractions(GlobalConstants.CLOUD_ECCENTRICITY),
+									Ratio.FromDecimalFractions(GlobalConstants.K),
+									Ratio.FromDecimalFractions(GlobalConstants.DUST_DENSITY_COEFF));
 			}
 
-            private StellarBody GetTestStar()
+			StellarBody GetTestStar(IBodyFormationAlgorithm algo)
             {
-                return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(4.6e9)) { Science = new BodyPhysics() };
+                return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(4.6e9)) 
+                { 
+                    Science = new BodyPhysics(),
+                    BodyFormationScience = algo
+				};
             }
 
-            private SatelliteBody GetTestPlanetAtmosphere()
+            SatelliteBody GetTestPlanetAtmosphere(IBodyFormationAlgorithm algo)
             {
-                var star = GetTestStar();
+				var star = GetTestStar(algo);
                 var planet = new Planet(star,
                             Length.FromAstronomicalUnits(0.723332),
                             Ratio.FromDecimalFractions(0.0067),
@@ -250,7 +260,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void GetMolecularWeightRetained()
             {
-                SatelliteBody p1 = GetTestPlanetAtmosphere();
+                SatelliteBody p1 = GetTestPlanetAtmosphere(_algo);
                 Data.Planet p2 = GetTestPlanetAtmosphereStarform();
 
                 Assert.AreEqual(Env.MinMolecularWeight(p2),
@@ -289,7 +299,7 @@ namespace Primoris.Universe.Stargen.UnitTests
             [TestMethod]
             public void GetInitialMolecularWeightRetained()
             {
-                SatelliteBody p1 = GetTestPlanetAtmosphere();
+                SatelliteBody p1 = GetTestPlanetAtmosphere(_algo);
                 Data.Planet p2 = GetTestPlanetAtmosphereStarform();
 
                 Assert.AreEqual(Env.MoleculeLimit(p2.MassSM, p2.RadiusKM, p2.ExosphereTempKelvin), 

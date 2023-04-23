@@ -87,14 +87,13 @@ public class PlanetsCmdlet : StarCmdlet
 
 	protected override void ProcessRecord()
 	{
-		var sun = GenerateStar();
+		var sun = GenerateStar(Ratio.FromDecimalFractions(CloudEccentricity),
+							   Ratio.FromDecimalFractions(GasDensityRatio),
+							   Ratio.FromDecimalFractions(DustDensityCoeff));
 		bool findsys;
 
 		do
 		{
-			sun.BodyFormationScience = new Accrete(Ratio.FromDecimalFractions(CloudEccentricity),
-											   Ratio.FromDecimalFractions(GasDensityRatio),
-											   Ratio.FromDecimalFractions(DustDensityCoeff));
 			sun.GenerateSystem(CreatePlanet);
 			findsys = (from p in sun.Satellites where p.IsHabitable select p).Count() > 0;
 		} while (!findsys && OnlyHabitableSystem);
@@ -106,7 +105,7 @@ public class PlanetsCmdlet : StarCmdlet
 		}
 		else
 		{
-			var conf = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture);
+			var conf = new CsvConfiguration(CultureInfo.InvariantCulture);
 
 			var f = new FileStream(CsvOutputPath, FileMode.Create);
 			var w = new StreamWriter(f);
@@ -115,7 +114,7 @@ public class PlanetsCmdlet : StarCmdlet
 
 			cw.WriteHeader<SatelliteBody>();
 			cw.NextRecord();
-			cw.WriteRecords<SatelliteBody>(sun.Satellites);
+			cw.WriteRecords(sun.Satellites);
 			cw.Flush();
 
 			w.Close();

@@ -30,12 +30,12 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			genOptions ??= new SystemGenerationOptions();
 
             var phy = new BodyPhysics();
-			sun ??= new Star() { Science = phy };
+			var accrete = new Accrete(Ratio.FromDecimalFractions(genOptions.CloudEccentricity),
+						  Ratio.FromDecimalFractions(genOptions.GasDensityRatio),
+						  Ratio.FromDecimalFractions(genOptions.DustDensityCoeff));
+			sun ??= new Star() { Science = phy, BodyFormationScience = accrete };
 			var useRandomTilt = seedSystem == null;
 
-			var accrete = new Accrete(Ratio.FromDecimalFractions(genOptions.CloudEccentricity), 
-									  Ratio.FromDecimalFractions(genOptions.GasDensityRatio), 
-									  Ratio.FromDecimalFractions(genOptions.DustDensityCoeff));
 			double outer_planet_limit = GetOuterLimit(sun);
 			double outer_dust_limit = GetStellarDustLimit(sun.Mass.SolarMasses);
 			seedSystem = seedSystem ?? accrete.CreateSeeds(sun.Mass,

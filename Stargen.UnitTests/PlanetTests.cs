@@ -21,10 +21,16 @@ public class PlanetTests
 	[TestClass]
 	public class EqualTests
 	{
+		IBodyFormationAlgorithm _algo = null;
+
 		[TestInitialize]
 		public void InitializeTests()
 		{
-			Provider.Use().WithAstrophysics(new BodyPhysics());
+			//Provider.Use().WithAstrophysics(new BodyPhysics());
+
+			_algo = new Accrete(Ratio.FromDecimalFractions(GlobalConstants.CLOUD_ECCENTRICITY),
+								Ratio.FromDecimalFractions(GlobalConstants.K),
+								Ratio.FromDecimalFractions(GlobalConstants.DUST_DENSITY_COEFF));
 		}
 
 		private SatelliteBody CreatePlanet(Seed seed, StellarBody star, int pos, string planetID)
@@ -37,12 +43,12 @@ public class PlanetTests
 		public void TestGeneratedEquality()
 		{
 			Extensions.InitRandomSeed(0);
-			var star = new Star();
+			var star = new Star() { BodyFormationScience = _algo };
 			star.GenerateSystem(CreatePlanet);
 			var system1 = star.Satellites;
 
 			Extensions.InitRandomSeed(0);
-			var star2 = new Star();
+			var star2 = new Star() { BodyFormationScience = _algo };
 			star.GenerateSystem(CreatePlanet);
 			var system2 = star.Satellites;
 
@@ -54,12 +60,12 @@ public class PlanetTests
 		public void TestGeneratedInequality()
 		{
 			Extensions.InitRandomSeed(0);
-			var star = new Star();
+			var star = new Star() { BodyFormationScience = _algo };
 			star.GenerateSystem(CreatePlanet);
 			var system1 = star.Satellites;
 
 			Extensions.InitRandomSeed(1);
-			var star2 = new Star();
+			var star2 = new Star() { BodyFormationScience = _algo };
 			star.GenerateSystem(CreatePlanet);
 			var system2 = star.Satellites;
 
@@ -70,7 +76,7 @@ public class PlanetTests
 		[TestMethod]
 		public void TestAtmosphereComposition()
 		{
-			var star = new Star();
+			var star = new Star() { BodyFormationScience = _algo };
 			var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.Zero);
 
 			var layers = new List<Layer>()
