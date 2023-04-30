@@ -16,7 +16,8 @@ public abstract class Body
 {
 	public static readonly Body Null = new NullBody();
 
-    public virtual IScienceAstrophysics Science { get; set; }
+
+    public virtual IScienceAstrophysics Science { get; }
 
 	/// <summary>
 	/// Gets or sets the parent.
@@ -98,7 +99,7 @@ public abstract class Body
 	{
 		public NullBody() : base(new SingularityPhysics()) { }
 
-		public override IScienceAstrophysics Science { get => base.Science; set { } }
+		public override IScienceAstrophysics Science => base.Science;
 
 		public override int Position
 		{

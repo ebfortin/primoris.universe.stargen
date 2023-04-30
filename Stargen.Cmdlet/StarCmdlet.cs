@@ -120,7 +120,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 			}
 
 			Provider.Use().WithAstrophysics(new BodyPhysics());
-			return new Star(new BodyPhysics(), st, Name) { BodyFormationScience = accrete };
+			return new Star(new BodyPhysics(), accrete, st, Name);
 		}
 
         protected StellarBody GenerateStar()
@@ -139,7 +139,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
             }
 
 			Provider.Use().WithAstrophysics(new BodyPhysics());
-            return new Star(new BodyPhysics(), st, Name) { BodyFormationScience = new NullBodyFormationAlgorithm() };
+            return new Star(new BodyPhysics(), new NullBodyFormationAlgorithm(), st, Name);
         }
 	}
 }

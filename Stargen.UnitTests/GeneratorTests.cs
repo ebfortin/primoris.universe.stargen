@@ -49,10 +49,7 @@ public class GeneratorTests
 
 		private StellarBody GetTestStar()
 		{
-			return new Star(new BodyPhysics(), Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10))
-			{
-				BodyFormationScience = _algo
-			};
+			return new Star(new BodyPhysics(), _algo, Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(1e10));
 		}
 
 		private SatelliteBody GetTestPlanetAtmosphere()

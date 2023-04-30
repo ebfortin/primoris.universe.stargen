@@ -32,7 +32,7 @@ public abstract class StellarBody : Body
 	/// <value>
 	/// The body formation algorithm interface.
 	/// </value>
-	public virtual required IBodyFormationAlgorithm BodyFormationScience { get; init; }
+	public virtual IBodyFormationAlgorithm BodyFormationScience { get; }
 
 	/// <summary>
 	/// Gets or sets the type of the stellar.
@@ -117,7 +117,8 @@ public abstract class StellarBody : Body
 	/// Initializes a new instance of the <see cref="StellarBody"/> class.
 	/// </summary>
 	/// <param name="phy">The Science interface to use.</param>
-	public StellarBody(IScienceAstrophysics phy) : this(phy, Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4)))
+	public StellarBody(IScienceAstrophysics phy, IBodyFormationAlgorithm algo) 
+		: this(phy, algo, Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4)))
 	{
 	}
 
@@ -126,7 +127,10 @@ public abstract class StellarBody : Body
 	/// </summary>
 	/// <param name="phy">The Science interface to use.</param>
 	/// <param name="mass">The mass.</param>
-	public StellarBody(IScienceAstrophysics phy, Mass mass) : this(phy, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
+	public StellarBody(IScienceAstrophysics phy, IBodyFormationAlgorithm algo, Mass mass) 
+		: this(phy, algo, mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) 
+	{ 
+	}
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="StellarBody"/> class.
@@ -134,8 +138,10 @@ public abstract class StellarBody : Body
 	/// <param name="mass">The mass.</param>
 	/// <param name="lum">The luminosity.</param>
 	/// <param name="age">The age of the Body.</param>
-	public StellarBody(IScienceAstrophysics science, Mass mass, Luminosity lum, Duration age) : base(science)
+	public StellarBody(IScienceAstrophysics science, IBodyFormationAlgorithm algo, Mass mass, Luminosity lum, Duration age) : base(science)
 	{
+		BodyFormationScience = algo;
+
 		if (mass.SolarMasses < 0.2 || mass.SolarMasses > 1.5)
 		{
 			mass = Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4));
@@ -168,9 +174,10 @@ public abstract class StellarBody : Body
 	/// </summary>
 	/// <param name="phy">The Science interface to use.</param>
 	/// <param name="st">The StellarType of the Body to construct.</param>
-	public StellarBody(IScienceAstrophysics phy, StellarType st) : base(phy)
+	public StellarBody(IScienceAstrophysics phy, IBodyFormationAlgorithm algo, StellarType st) 
+		: base(phy)
 	{
-		Science = phy;
+		BodyFormationScience = algo;
 
 		StellarType = st;
 		Life = Duration.FromYears365(1.0E10 * (st.Mass.SolarMasses / st.Luminosity.SolarLuminosities));
@@ -189,7 +196,8 @@ public abstract class StellarBody : Body
 	/// <param name="phy">The Science interface to use.</param>
 	/// <param name="st">The StellarType of the Body to construct.</param>
 	/// <param name="name">The name.</param>
-	public StellarBody(IScienceAstrophysics phy, StellarType st, string name) : this(phy, st)
+	public StellarBody(IScienceAstrophysics phy, IBodyFormationAlgorithm algo, StellarType st, string name) 
+		: this(phy, algo, st)
 	{
 		Name = name;
 	}
