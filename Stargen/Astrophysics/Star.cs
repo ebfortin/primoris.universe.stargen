@@ -8,19 +8,8 @@ public class Star : StellarBody
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Star"/> class.
 	/// </summary>
-	public Star() : base() { }
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="Star"/> class.
-	/// </summary>
 	/// <param name="phy">The astrophysics interface.</param>
 	public Star(IScienceAstrophysics phy) : base(phy) { }
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="Star"/> class.
-	/// </summary>
-	/// <param name="mass">The mass of the Star.</param>
-	public Star(Mass mass) : base(mass) { }
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Star"/> class.
@@ -32,22 +21,9 @@ public class Star : StellarBody
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Star"/> class.
 	/// </summary>
-	/// <param name="st">The StellarType of the Star to create.</param>
-	public Star(StellarType st) : base(st) { }
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="Star"/> class.
-	/// </summary>
 	/// <param name="phy">The astrophysics interface.</param>
 	/// <param name="st">The StellarType of the Star to create.</param>
 	public Star(IScienceAstrophysics phy, StellarType st) : base(phy, st) { }
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="Star"/> class.
-	/// </summary>
-	/// <param name="st">The StellarType of the Star to create.</param>
-	/// <param name="name">The name to give to the Star.</param>
-	public Star(StellarType st, string name) : base(st, name) { }
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Star"/> class.
@@ -60,19 +36,13 @@ public class Star : StellarBody
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Star"/> class.
 	/// </summary>
-	/// <param name="mass">The mass of the Star to create.</param>
-	/// <param name="lum">The luminosity of the Star to create.</param>
-	/// <param name="age">The age of the Star to create.</param>
-	public Star(Mass mass, Luminosity lum, Duration age) : base(mass, lum, age) { }
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="Star"/> class.
-	/// </summary>
 	/// <param name="phy">The astrophysics interface.</param>
 	/// <param name="mass">The mass of the Star to create.</param>
 	/// <param name="lum">The luminosity of the Star to create.</param>
 	/// <param name="age">The age of the Star to create.</param>
 	public Star(IScienceAstrophysics phy, Mass mass, Luminosity lum, Duration age) : base(phy, mass, lum, age) { }
+
+
 
 	/// <summary>
 	/// Generates the satellites.

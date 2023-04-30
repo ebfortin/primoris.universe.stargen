@@ -43,12 +43,12 @@ public class PlanetTests
 		public void TestGeneratedEquality()
 		{
 			Extensions.InitRandomSeed(0);
-			var star = new Star() { BodyFormationScience = _algo };
+			var star = new Star(new BodyPhysics()) { BodyFormationScience = _algo };
 			star.GenerateSystem(CreatePlanet);
 			var system1 = star.Satellites;
 
 			Extensions.InitRandomSeed(0);
-			var star2 = new Star() { BodyFormationScience = _algo };
+			var star2 = new Star(new BodyPhysics()) { BodyFormationScience = _algo };
 			star.GenerateSystem(CreatePlanet);
 			var system2 = star.Satellites;
 
@@ -60,12 +60,12 @@ public class PlanetTests
 		public void TestGeneratedInequality()
 		{
 			Extensions.InitRandomSeed(0);
-			var star = new Star() { BodyFormationScience = _algo };
+			var star = new Star(new BodyPhysics()) { BodyFormationScience = _algo };
 			star.GenerateSystem(CreatePlanet);
 			var system1 = star.Satellites;
 
 			Extensions.InitRandomSeed(1);
-			var star2 = new Star() { BodyFormationScience = _algo };
+			var star2 = new Star(new BodyPhysics()) { BodyFormationScience = _algo };
 			star.GenerateSystem(CreatePlanet);
 			var system2 = star.Satellites;
 
@@ -76,7 +76,7 @@ public class PlanetTests
 		[TestMethod]
 		public void TestAtmosphereComposition()
 		{
-			var star = new Star() { BodyFormationScience = _algo };
+			var star = new Star(new BodyPhysics()) { BodyFormationScience = _algo };
 			var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.Zero);
 
 			var layers = new List<Layer>()

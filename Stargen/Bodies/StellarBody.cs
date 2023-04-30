@@ -116,21 +116,10 @@ public abstract class StellarBody : Body
 	/// <summary>
 	/// Initializes a new instance of the <see cref="StellarBody"/> class.
 	/// </summary>
-	public StellarBody() : this(Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4))) { }
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="StellarBody"/> class.
-	/// </summary>
 	/// <param name="phy">The Science interface to use.</param>
 	public StellarBody(IScienceAstrophysics phy) : this(phy, Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4)))
 	{
 	}
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="StellarBody"/> class.
-	/// </summary>
-	/// <param name="mass">The mass.</param>
-	public StellarBody(Mass mass) : this(mass, Luminosity.Zero, Duration.FromYears365(double.MaxValue)) { }
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="StellarBody"/> class.
@@ -145,7 +134,7 @@ public abstract class StellarBody : Body
 	/// <param name="mass">The mass.</param>
 	/// <param name="lum">The luminosity.</param>
 	/// <param name="age">The age of the Body.</param>
-	public StellarBody(Mass mass, Luminosity lum, Duration age)
+	public StellarBody(IScienceAstrophysics science, Mass mass, Luminosity lum, Duration age) : base(science)
 	{
 		if (mass.SolarMasses < 0.2 || mass.SolarMasses > 1.5)
 		{
@@ -178,26 +167,8 @@ public abstract class StellarBody : Body
 	/// Initializes a new instance of the <see cref="StellarBody"/> class.
 	/// </summary>
 	/// <param name="phy">The Science interface to use.</param>
-	/// <param name="mass">The mass.</param>
-	/// <param name="lum">The lumuminosity.</param>
-	/// <param name="age">The age of the Body.</param>
-	public StellarBody(IScienceAstrophysics phy, Mass mass, Luminosity lum, Duration age) : this(mass, lum, age)
-	{
-		Science = phy;
-	}
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="StellarBody"/> class.
-	/// </summary>
 	/// <param name="st">The StellarType of the Body to construct.</param>
-	public StellarBody(StellarType st) : this(Provider.Use().GetService<IScienceAstrophysics>(), st) { }
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="StellarBody"/> class.
-	/// </summary>
-	/// <param name="phy">The Science interface to use.</param>
-	/// <param name="st">The StellarType of the Body to construct.</param>
-	public StellarBody(IScienceAstrophysics phy, StellarType st)
+	public StellarBody(IScienceAstrophysics phy, StellarType st) : base(phy)
 	{
 		Science = phy;
 
@@ -211,13 +182,6 @@ public abstract class StellarBody : Body
 		Temperature = StellarType.Temperature;
 		EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
 	}
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="StellarBody"/> class.
-	/// </summary>
-	/// <param name="st">The StellarType of the Body to construct.</param>
-	/// <param name="name">The name.</param>
-	public StellarBody(StellarType st, string name) : this(IScienceAstrophysics.Default, st, name) { }
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="StellarBody"/> class.

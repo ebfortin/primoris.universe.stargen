@@ -33,7 +33,7 @@ namespace Primoris.Universe.Stargen.Systems.Burrows
 			var accrete = new Accrete(Ratio.FromDecimalFractions(genOptions.CloudEccentricity),
 						  Ratio.FromDecimalFractions(genOptions.GasDensityRatio),
 						  Ratio.FromDecimalFractions(genOptions.DustDensityCoeff));
-			sun ??= new Star() { Science = phy, BodyFormationScience = accrete };
+			sun ??= new Star(phy) { BodyFormationScience = accrete };
 			var useRandomTilt = seedSystem == null;
 
 			double outer_planet_limit = GetOuterLimit(sun);

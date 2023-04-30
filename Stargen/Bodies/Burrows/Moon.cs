@@ -1,11 +1,14 @@
-﻿namespace Primoris.Universe.Stargen.Bodies.Burrows;
+﻿using Primoris.Universe.Stargen.Astrophysics;
+
+namespace Primoris.Universe.Stargen.Bodies.Burrows;
 
 public class Moon : Planet
 {
-	public Moon(Seed seed,
-				   StellarBody star,
-				   SatelliteBody parentBody,
-				   string planetID) : base(seed, parentBody)
+	public Moon(IScienceAstrophysics science,
+				Seed seed,
+				StellarBody star,
+				SatelliteBody parentBody,
+				string planetID) : base(science, seed, parentBody)
 	{
 		var generatedMoon = this;
 

@@ -433,11 +433,11 @@ public class BurrowsPhysicsTests
 
 		private SatelliteBody GetMockPlanet(Func<IEnumerable<Layer>> mockAtmoGen)
 		{
-			var star = new Star() { BodyFormationScience = _algo };
+			var star = new Star(new BodyPhysics()) { BodyFormationScience = _algo };
 
 			var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(0.000001));
 
-			var planet = new Planet(seed, star, mockAtmoGen());
+			var planet = new Planet(star.Science, seed, star, mockAtmoGen());
 
 			//planet.RecalculateGases(mockAtmoGen());
 			return planet;

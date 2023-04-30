@@ -6,7 +6,7 @@ using Primoris.Universe.Stargen.Systems;
 using Primoris.Universe.Stargen.Services;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using UnitsNet;
-
+using Primoris.Universe.Stargen.Astrophysics.Singularity;
 
 namespace Primoris.Universe.Stargen.Bodies
 {
@@ -522,7 +522,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
         #endregion
 
-		protected internal SatelliteBody()
+		protected internal SatelliteBody(IScienceAstrophysics science) : base(science)
 		{
 			Seed = new Seed();
 			Parent = this;
@@ -535,8 +535,8 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="seed">Source Seed to create the Body.</param>
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
-		public SatelliteBody(Seed seed, Body parentBody)  
-		{
+		public SatelliteBody(IScienceAstrophysics science, Seed seed, Body parentBody) : base(science)
+        {
 			Parent = parentBody;
 
 			Seed = seed;
@@ -553,14 +553,9 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="phy">Science interface to use to construct the Body.</param>
-		/// <param name="seed">Source Seed to create the Body.</param>
-		/// <param name="star">Parent Star of the Body.</param>
-		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
-		public SatelliteBody(IScienceAstrophysics phy, Seed seed, Body parentBody) : this(seed, parentBody)
-		{
-			Science = phy;
-		}
+		/// <param name="seed"></param>
+		/// <param name="parentBody"></param>
+		public SatelliteBody(Seed seed, Body parentBody) : this(parentBody.Science, seed, parentBody) { }
 
 		/// <summary>
 		/// 
@@ -569,13 +564,24 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="star">Parent Star of the Body.</param>
 		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
 		/// <param name="layers">Layers to construct the Body with.</param>
-		public SatelliteBody(Seed seed, Body parentBody, IEnumerable<Layer> layers) : this(seed, parentBody) 
+		public SatelliteBody(IScienceAstrophysics science, Seed seed, Body parentBody, IEnumerable<Layer> layers) : this(science, seed, parentBody) 
 		{
 			Layers.Clear();
 			Layers.AddMany(layers);
 		}
 
-		public void AddLayer(Layer layer)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="seed"></param>
+		/// <param name="parentBody"></param>
+		/// <param name="layers"></param>
+		public SatelliteBody(Seed seed, Body parentBody, IEnumerable<Layer> layers) : this(parentBody.Science, seed, parentBody, layers) { }
+
+
+
+
+        public void AddLayer(Layer layer)
 		{
 			Layers.Add(layer);
 		}
@@ -593,19 +599,6 @@ namespace Primoris.Universe.Stargen.Bodies
 		public Mass ComputeMassBelow(Layer layer)
 		{
 			return Layers.ComputeMassBelow(layer);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="phy">Science interface to use to construct the Body.</param>
-		/// <param name="seed">Source Seed to create the Body.</param>
-		/// <param name="star">Parent Star of the Body.</param>
-		/// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
-		/// <param name="layers">Layers to construct the Body with.</param>
-		public SatelliteBody(IScienceAstrophysics phy, Seed seed, Body parentBody, IEnumerable<Layer> layers) : this(seed, parentBody, layers)
-		{
-			Science = phy;
 		}
 
 		private IEnumerable<(Chemical, Ratio)> ConsolidateComposition(IEnumerable<Layer> layers)
@@ -735,7 +728,7 @@ namespace Primoris.Universe.Stargen.Bodies
 
 	class EmptySatelliteBody : SatelliteBody
 	{
-		public EmptySatelliteBody()
+		public EmptySatelliteBody() : base(new SingularityPhysics())
 		{
 		}
 

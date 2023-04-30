@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Primoris.Universe.Stargen.Astrophysics;
+using Primoris.Universe.Stargen.Astrophysics.Singularity;
 using Primoris.Universe.Stargen.Services;
 using UnitsNet;
 
@@ -15,7 +16,7 @@ public abstract class Body
 {
 	public static readonly Body Null = new NullBody();
 
-    public virtual IScienceAstrophysics Science { get; set; } = IScienceAstrophysics.Default;
+    public virtual IScienceAstrophysics Science { get; set; }
 
 	/// <summary>
 	/// Gets or sets the parent.
@@ -87,9 +88,17 @@ public abstract class Body
 	public IEnumerable<SatelliteBody> Satellites { get; protected set; } = Array.Empty<SatelliteBody>();
 
 
+	public Body(IScienceAstrophysics science) 
+	{
+		Science = science;
+	}
+
+
 	class NullBody : Body
 	{
-		public NullBody() { }
+		public NullBody() : base(new SingularityPhysics()) { }
+
+		public override IScienceAstrophysics Science { get => base.Science; set { } }
 
 		public override int Position
 		{

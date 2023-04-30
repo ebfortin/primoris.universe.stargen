@@ -11,16 +11,19 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows;
 public class Planet : SatelliteBody
 {
 
-	public Planet(Seed seed, Body parentBody) : base(seed, parentBody)
+	public Planet(IScienceAstrophysics science, Seed seed, Body parentBody) : base(science, seed, parentBody)
 	{
 		Generate();
 	}
 
-	public Planet(Seed seed, Body parentBody, IEnumerable<Layer> layers) : base(seed, parentBody, layers)
-	{
-	}
+	public Planet(Seed seed, Body parentBody) : this(parentBody.Science, seed, parentBody) { }
 
-	public Planet(Body parentBody,
+	public Planet(IScienceAstrophysics science, Seed seed, Body parentBody, IEnumerable<Layer> layers) : base(science, seed, parentBody, layers) { }
+
+    public Planet(Seed seed, Body parentBody, IEnumerable<Layer> layers) : base(parentBody.Science, seed, parentBody, layers) { }
+
+    public Planet(IScienceAstrophysics science,
+				  Body parentBody,
 				  Length semiMajorAxisAU,
 				  Ratio eccentricity,
 				  Angle axialTilt,
@@ -33,7 +36,7 @@ public class Planet : SatelliteBody
 				  Temperature dayTimeTempK,
 				  Temperature nightTimeTempK,
 				  Temperature surfTempK,
-				  Acceleration surfGrav) : base(new Seed(semiMajorAxisAU, eccentricity, massSM, massSM - gasMassSM, gasMassSM), parentBody)
+				  Acceleration surfGrav) : base(science, new Seed(semiMajorAxisAU, eccentricity, massSM, massSM - gasMassSM, gasMassSM), parentBody)
 	{
 		Parent = parentBody;
 		var sun = StellarBody;
@@ -90,8 +93,40 @@ public class Planet : SatelliteBody
 		IsForming = false;
 	}
 
+    public Planet(Body parentBody,
+              Length semiMajorAxisAU,
+              Ratio eccentricity,
+              Angle axialTilt,
+              Duration dayLengthHours,
+              Duration orbitalPeriodDays,
+              Mass massSM,
+              Mass gasMassSM,
+              Length radius,
+              Pressure surfPressure,
+              Temperature dayTimeTempK,
+              Temperature nightTimeTempK,
+              Temperature surfTempK,
+              Acceleration surfGrav) : this(parentBody.Science,
+										    parentBody,
+											semiMajorAxisAU,
+											eccentricity,
+											axialTilt,
+											dayLengthHours,
+											orbitalPeriodDays,
+											massSM,
+											gasMassSM,
+											radius,
+											surfPressure,
+											dayTimeTempK,
+											nightTimeTempK,
+											surfTempK,
+											surfGrav)
+	{
+	}
 
-	private void AdjustPropertiesForRockyBody()
+
+
+    private void AdjustPropertiesForRockyBody()
 	{
 		// TODO: Remove last references to Environment.
 		double age = Parent.Age.Years365;
@@ -324,7 +359,7 @@ public class Planet : SatelliteBody
 
 				string moon_id = string.Format("{0}.{1}", this.Position, n);
 
-				var generatedMoon = new Moon(curMoon, star, planet, moon_id);
+				var generatedMoon = new Moon(Science, curMoon, star, planet, moon_id);
 
 				sat.Add(generatedMoon);
 			}

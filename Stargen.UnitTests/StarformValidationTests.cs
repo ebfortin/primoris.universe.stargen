@@ -40,7 +40,7 @@ namespace Primoris.Universe.Stargen.UnitTests
 
 			StellarBody GetTestStar(IBodyFormationAlgorithm algo)
             {
-                return new Star(Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(4.6e9)) 
+                return new Star(new BodyPhysics(), Mass.FromSolarMasses(1.0), Luminosity.FromSolarLuminosities(1.0), Duration.FromYears365(4.6e9)) 
                 { 
                     Science = new BodyPhysics(),
                     BodyFormationScience = algo
