@@ -39,7 +39,7 @@ namespace Primoris.Universe.Stargen.Display
                         color = Brushes.LightSteelBlue;
                         break;
                     case BodyType.Barren:
-                    case BodyType.Asteroids:
+                    case BodyType.Asteroid:
                         color = Brushes.SaddleBrown;
                         break;
                     case BodyType.Martian:

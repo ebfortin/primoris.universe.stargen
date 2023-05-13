@@ -19,7 +19,8 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		/// <param name="thickness">The thickness.</param>
 		/// <param name="surfPres">The surface pressure at the lower boundary with the layer below.</param>
-		public GaseousLayer(Length thickness, Pressure surfPres) : base(thickness)
+		public GaseousLayer(SatelliteBody parent, Length thickness, Pressure surfPres) 
+			: base(parent, thickness)
 		{
 			LowerBoundaryPressure = surfPres;
 			//Mass = GetMassFromPressure(surfPres);
@@ -31,7 +32,8 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <param name="thickness">The thickness.</param>
 		/// <param name="composition">The composition.</param>
 		/// <param name="surfPres">The surface pressure at the lower boundary with the layer below.</param>
-		public GaseousLayer(Length thickness, IEnumerable<(Chemical, Ratio)> composition, Pressure surfPres) : base(thickness, composition)
+		public GaseousLayer(SatelliteBody parent, Length thickness, IEnumerable<(Chemical, Ratio)> composition, Pressure surfPres) 
+			: base(parent, thickness, composition)
 		{
 			LowerBoundaryPressure = surfPres;
 			//Mass = GetMassFromPressure(surfPres);
@@ -71,7 +73,7 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// <value>
 		/// The poisonous composition.
 		/// </value>
-		public IEnumerable<(Chemical, Ratio)> PoisonousComposition { get; protected set; } = new (Chemical, Ratio)[0];
+		public IEnumerable<(Chemical, Ratio)> PoisonousComposition { get; protected set; } = Array.Empty<(Chemical, Ratio)>();
 
 		/// <summary>
 		/// Called when [added to stack].

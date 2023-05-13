@@ -78,8 +78,17 @@ public class GeneratorTests
 		{
 			var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.Zero);
 			var star = GetTestStar();
-			var planet = new Planet(seed, star, new List<Layer>() { new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()) });
-			return planet;
+
+			var planet = new Planet(seed, star);
+
+			planet.Add(
+				new List<Layer>()
+				{
+					new BasicSolidLayer(planet, Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>())
+				}
+			);
+
+            return planet;
 		}
 
 		[TestCategory("Atmosphere")]

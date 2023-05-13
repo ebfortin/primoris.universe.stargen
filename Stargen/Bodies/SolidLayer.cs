@@ -17,7 +17,8 @@ public abstract class SolidLayer : HomogeneousLayer
 	/// Initializes a new instance of the <see cref="SolidLayer"/> class.
 	/// </summary>
 	/// <param name="thickness">The thickness.</param>
-	public SolidLayer(Length thickness) : base(thickness)
+	public SolidLayer(SatelliteBody parent, Length thickness) 
+		: base(parent, thickness)
 	{
 	}
 
@@ -27,7 +28,8 @@ public abstract class SolidLayer : HomogeneousLayer
 	/// <param name="thickness">The thickness.</param>
 	/// <param name="mass">The mass.</param>
 	/// <param name="composition">The composition.</param>
-	public SolidLayer(Length thickness, Mass mass, IEnumerable<(Chemical, Ratio)> composition) : base(thickness, composition)
+	public SolidLayer(SatelliteBody parent, Length thickness, Mass mass, IEnumerable<(Chemical, Ratio)> composition) 
+		: base(parent, thickness, composition)
 	{
 		Mass = mass;
 	}

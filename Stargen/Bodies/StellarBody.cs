@@ -207,7 +207,7 @@ public abstract class StellarBody : Body
 	/// Generates the system.
 	/// </summary>
 	/// <param name="createFunc">The SatelliteBody creation function.</param>
-	public virtual void GenerateSystem(CreateSatelliteBodyDelegate createFunc)
+	public virtual void GenerateSystem(Func<Seed, StellarBody, int, string, SatelliteBody> createFunc)
 	{
 		var phy = Science;
 		var frm = BodyFormationScience;
@@ -232,7 +232,7 @@ public abstract class StellarBody : Body
 	/// <param name="seeds">The seeds.</param>
 	/// <param name="createFunc">The create function.</param>
 	/// <returns>IEnumerable of SatelliteBody.</returns>
-	protected abstract IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc);
+	protected abstract IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, Func<Seed, StellarBody, int, string, SatelliteBody> createFunc);
 
 	/// <summary>
 	/// Converts to string.

@@ -79,13 +79,15 @@ public class PlanetTests
 			var star = new Star(new BodyPhysics(), _algo);
 			var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.Zero);
 
-			var layers = new List<Layer>()
+			var planet = new Planet(seed, star);
+
+            var layers = new List<Layer>()
 			{
-				new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), new (Chemical, Ratio)[0]),
-				new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>() { (Chemical.All["N"], Ratio.FromDecimalFractions(0.50)) }, Pressure.FromBars(0.5)),
-				new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>() { (Chemical.All["N"], Ratio.FromDecimalFractions(0.25)) }, Pressure.FromBars(0.25))
+				new BasicSolidLayer(planet, Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Enumerable.Empty<(Chemical, Ratio)>()),
+				new BasicGaseousLayer(planet, Length.FromKilometers(100.0), new List<(Chemical, Ratio)>() { (Chemical.All["N"], Ratio.FromDecimalFractions(0.50)) }, Pressure.FromBars(0.5)),
+				new BasicGaseousLayer(planet, Length.FromKilometers(100.0), new List<(Chemical, Ratio)>() { (Chemical.All["N"], Ratio.FromDecimalFractions(0.25)) }, Pressure.FromBars(0.25))
 			};
-			var planet = new Planet(seed, star, layers);
+			planet.Add(layers);
 
 			var ele = planet.AtmosphereComposition.ElementAt(0);
 			Assert.AreEqual(Math.Round((0.50 * 0.5 + 0.25 * 0.25) / 0.75, 2, MidpointRounding.ToNegativeInfinity), Math.Round(ele.Item2.DecimalFractions, 2, MidpointRounding.ToNegativeInfinity));

@@ -4,22 +4,25 @@ using System.Collections.Generic;
 using System.Text;
 using Primoris.Universe.Stargen.Astrophysics;
 using UnitsNet;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Primoris.Universe.Stargen.Bodies.Burrows;
 
 public class BasicGiantGaseousLayer : BasicGaseousLayer
 {
-	public BasicGiantGaseousLayer(Length thickness) : base(thickness, Pressure.Zero) 
+	public BasicGiantGaseousLayer(SatelliteBody parent, Length thickness) 
+		: base(parent, thickness, Pressure.Zero) 
 	{ 
 	}
 
-	public BasicGiantGaseousLayer(Length thickness, Pressure surfPres) : base(thickness, surfPres)
+	public BasicGiantGaseousLayer(SatelliteBody parent, Length thickness, Pressure surfPres) 
+		: base(parent, thickness, surfPres)
 	{
 	}
 
-	public override Layer Generate(SatelliteBody parentBody, Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
+	protected override void OnGenerate(Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
 	{
-		return base.Generate(parentBody, availableMass, availableChems, curLayers);
+		return;
 	}
 
 	protected internal override void OnAddedToStack()

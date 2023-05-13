@@ -19,7 +19,8 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// Initializes a new instance of the <see cref="HomogeneousLayer"/> class.
 		/// </summary>
 		/// <param name="thickness">The thickness.</param>
-		public HomogeneousLayer(Length thickness) : base(thickness)
+		public HomogeneousLayer(SatelliteBody parent, Length thickness) 
+			: base(parent, thickness)
 		{
 		}
 
@@ -28,7 +29,8 @@ namespace Primoris.Universe.Stargen.Bodies
 		/// </summary>
 		/// <param name="thickness">The thickness.</param>
 		/// <param name="composition">The composition.</param>
-		public HomogeneousLayer(Length thickness, IEnumerable<(Chemical, Ratio)> composition) : base(thickness, composition)
+		public HomogeneousLayer(SatelliteBody parent, Length thickness, IEnumerable<(Chemical, Ratio)> composition) 
+			: base(parent, thickness, composition)
 		{
 		}
 	}

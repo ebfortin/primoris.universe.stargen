@@ -17,7 +17,7 @@ namespace Primoris.Universe.Stargen.Bodies;
 /// <seealso cref="System.Collections.Generic.IEnumerable{Primoris.Universe.Stargen.Bodies.Layer}" />
 public class LayerStack : IList<Layer>, IEnumerable<Layer>
 {
-	private List<Layer> _layers = new List<Layer>();
+	private List<Layer> _layers = new();
 	private SatelliteBody _parent;
 
 	/// <summary>
@@ -47,17 +47,17 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	/// </value>
 	/// <param name="index">The index.</param>
 	/// <returns>The Layer at the index.</returns>
-	public Layer this[int index] { get => ((IList<Layer>)_layers)[index]; set => ((IList<Layer>)_layers)[index] = value; }
+	public Layer this[int index] { get => _layers[index]; set => _layers[index] = value; }
 
 	/// <summary>
 	/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
 	/// </summary>
-	public int Count => ((IList<Layer>)_layers).Count;
+	public int Count => _layers.Count;
 
 	/// <summary>
 	/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
 	/// </summary>
-	public bool IsReadOnly => ((IList<Layer>)_layers).IsReadOnly;
+	public bool IsReadOnly => false;
 
 	/// <summary>
 	/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -69,9 +69,10 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 		if (Count > 0 && _layers[Count - 1] is GaseousLayer && item is SolidLayer)
 			throw new InvalidBodyLayerSequenceException("Can't put a SolidLayer on top of a GaseousLayer");
 
-		item.Parent = _parent;
+		if(item.Parent != _parent)
+			throw new ArgumentException("Added Layer has not the same Parent has this LayerStack.");
 
-		((IList<Layer>)_layers).Add(item);
+		_layers.Add(item);
 		item.OnAddedToStack();
 	}
 
@@ -92,7 +93,7 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	/// </summary>
 	public void Clear()
 	{
-		((IList<Layer>)_layers).Clear();
+		_layers.Clear();
 	}
 
 	/// <summary>
@@ -104,7 +105,7 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	/// </returns>
 	public bool Contains(Layer item)
 	{
-		return ((IList<Layer>)_layers).Contains(item);
+		return _layers.Contains(item);
 	}
 
 	/// <summary>
@@ -114,7 +115,7 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	/// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
 	public void CopyTo(Layer[] array, int arrayIndex)
 	{
-		((IList<Layer>)_layers).CopyTo(array, arrayIndex);
+		_layers.CopyTo(array, arrayIndex);
 	}
 
 	/// <summary>
@@ -125,7 +126,7 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	/// </returns>
 	public IEnumerator<Layer> GetEnumerator()
 	{
-		return ((IList<Layer>)_layers).GetEnumerator();
+		return _layers.GetEnumerator();
 	}
 
 	/// <summary>
@@ -137,7 +138,7 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	/// </returns>
 	public int IndexOf(Layer item)
 	{
-		return ((IList<Layer>)_layers).IndexOf(item);
+		return _layers.IndexOf(item);
 	}
 
 	/// <summary>
@@ -155,7 +156,7 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 		if (_layers[index - 1] is GaseousLayer && item is SolidLayer)
 			throw new InvalidBodyLayerSequenceException("Can't put a SolidLayer on top of a GaseousLayer");
 
-		((IList<Layer>)_layers).Insert(index, item);
+		_layers.Insert(index, item);
 	}
 
 	/// <summary>
@@ -167,7 +168,7 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	/// </returns>
 	public bool Remove(Layer item)
 	{
-		return ((IList<Layer>)_layers).Remove(item);
+		return _layers.Remove(item);
 	}
 
 	/// <summary>
@@ -176,7 +177,7 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	/// <param name="index">The zero-based index of the item to remove.</param>
 	public void RemoveAt(int index)
 	{
-		((IList<Layer>)_layers).RemoveAt(index);
+		_layers.RemoveAt(index);
 	}
 
 	/// <summary>
@@ -187,7 +188,7 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	/// </returns>
 	IEnumerator IEnumerable.GetEnumerator()
 	{
-		return ((IList<Layer>)_layers).GetEnumerator();
+		return _layers.GetEnumerator();
 	}
 
 	/// <summary>
@@ -248,7 +249,7 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 		var mbelow = ComputeMassBelow(layer);
 		var rbelow = ComputeThicknessBelow(layer);
 
-		Acceleration acc = default;
+		Acceleration acc;
 		if(rbelow.Equals(Length.Zero, 0.00001, ComparisonType.Relative))
 		{
 			acc = Acceleration.Zero;

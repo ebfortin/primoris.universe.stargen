@@ -65,7 +65,7 @@ public class Star : StellarBody
 	/// <param name="seeds">The seeds used to create the satellites.</param>
 	/// <param name="createFunc">The create function called for each satellite.</param>
 	/// <returns>An IEnumerable of the Satellites created.</returns>
-	protected override IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, CreateSatelliteBodyDelegate createFunc)
+	protected override IEnumerable<SatelliteBody> GenerateSatellites(IEnumerable<Seed> seeds, Func<Seed, StellarBody, int, string, SatelliteBody> createFunc)
 	{
 		var planets = new List<SatelliteBody>();
 		var i = 0;

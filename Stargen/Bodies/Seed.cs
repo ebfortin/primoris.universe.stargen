@@ -71,12 +71,6 @@ public record Seed
 	/// </value>
 	public bool IsGasGiant { get; set; } = false;
 
-	/// <summary>
-	/// Initialize a new instance of Seed with only default values.
-	/// </summary>
-	public Seed()
-	{
-	}
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Seed"/> class.

@@ -361,12 +361,12 @@ public class BurrowsPhysicsTests
 								Ratio.FromDecimalFractions(GlobalConstants.DUST_DENSITY_COEFF));
 		}
 
-		private IEnumerable<Layer> GetMockBreathableAtmo()
+		private IEnumerable<Layer> GetMockBreathableAtmo(SatelliteBody parent)
 		{
 			var layers = new List<Layer>()
 			{
-				new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()),
-				new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
+				new BasicSolidLayer(parent, Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()),
+				new BasicGaseousLayer(parent, Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
 				{
 					(TestGases["O"], Ratio.FromDecimalFractions(0.21)),
 					(TestGases["N"], Ratio.FromDecimalFractions(0.78))
@@ -381,49 +381,39 @@ public class BurrowsPhysicsTests
 			};*/
 		}
 
-		private IEnumerable<Layer> GetMockPoisonousAtmo()
+		private IEnumerable<Layer> GetMockPoisonousAtmo(SatelliteBody parent)
 		{
 			var layers = new List<Layer>()
 			{
-				new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()),
-				new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
+				new BasicSolidLayer(parent, Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()),
+				new BasicGaseousLayer(parent, Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
 				{
 					(TestGases["CO2"], Ratio.FromDecimalFractions(1.0))
 				}, Pressure.FromBars(1.0))
 			};
 
 			return layers;
-
-			/*return new Gas[]
-                {
-                    new Gas(TestGases["CO2"], Pressure.FromMillibars(GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS) )
-                };*/
 		}
 
-		private IEnumerable<Layer> GetMockUnbreathableAtmo()
+		private IEnumerable<Layer> GetMockUnbreathableAtmo(SatelliteBody parent)
 		{
 			var layers = new List<Layer>()
 			{
-				new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty <(Chemical, Ratio) >()),
-				new BasicGaseousLayer(Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
+				new BasicSolidLayer(parent, Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty <(Chemical, Ratio) >()),
+				new BasicGaseousLayer(parent, Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
 				{
 					(TestGases["N"], Ratio.FromDecimalFractions(1.0))
 				}, Pressure.FromBars(1.0))
 			};
 
 			return layers;
-
-			/*return new Gas[]
-                {
-                    new Gas(TestGases["N"], Pressure.FromMillibars(GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS) )
-                };*/
 		}
 
-		private IEnumerable<Layer> GetMockNoAtmo()
+		private IEnumerable<Layer> GetMockNoAtmo(SatelliteBody parent)
 		{
 			var layers = new List<Layer>()
 			{
-				new BasicSolidLayer(Length.FromKilometers(10000.0), Mass.FromEarthMasses(0.5), Array.Empty<(Chemical, Ratio)>())
+				new BasicSolidLayer(parent, Length.FromKilometers(10000.0), Mass.FromEarthMasses(0.5), Array.Empty<(Chemical, Ratio)>())
 			};
 
 			return layers;
@@ -431,25 +421,17 @@ public class BurrowsPhysicsTests
 			//return new Gas[0];
 		}
 
-		private SatelliteBody GetMockPlanet(Func<IEnumerable<Layer>> mockAtmoGen)
+		private SatelliteBody GetMockPlanet(Func<SatelliteBody, IEnumerable<Layer>> mockAtmoGen)
 		{
 			var star = new Star(new BodyPhysics(), _algo);
 
 			var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(0.000001));
 
-			var planet = new Planet(seed, star, mockAtmoGen());
+			var planet = new Planet(seed, star);
+			planet.Add(mockAtmoGen(planet));
 
-			//planet.RecalculateGases(mockAtmoGen());
 			return planet;
 		}
-
-		/*[TestCategory("Breathability")]
-		[ExpectedException(typeof(ArgumentNullException))]
-		[TestMethod]
-		public void TestNullPlanet()
-		{
-			var breathe = Primoris.Universe.Stargen.Environment.Breathability(null);
-		}*/
 
 		[TestCategory("Defaults")]
 		[TestMethod]

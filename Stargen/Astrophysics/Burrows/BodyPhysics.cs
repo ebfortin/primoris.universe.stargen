@@ -249,6 +249,7 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 		var mass = massSM.SolarMasses * GlobalConstants.SOLAR_MASS_IN_GRAMS;
 		var equatRadius = radius.Kilometers * GlobalConstants.CM_PER_KM;
 		double volume = (4.0 * Math.PI * Extensions.Pow3(equatRadius)) / 3.0;
+
 		return Density.FromGramsPerCubicCentimeter(mass / volume);
 	}
 
@@ -522,7 +523,7 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 		{
 			if (massSM.SolarMasses * GlobalConstants.SUN_MASS_IN_EARTH_MASSES < GlobalConstants.ASTEROID_MASS_LIMIT)
 			{
-				return BodyType.Asteroids;
+				return BodyType.Asteroid;
 			}
 			else
 			{

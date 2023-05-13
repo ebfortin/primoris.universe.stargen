@@ -9,7 +9,7 @@ namespace Primoris.Universe.Stargen.Display
     {
         private static Dictionary<BodyType, int> PlanetMapping = new Dictionary<BodyType, int>()
         {
-            { BodyType.Asteroids,      2 },
+            { BodyType.Asteroid,      2 },
             { BodyType.GasGiant,       6 },
             { BodyType.Ice,            5 },
             { BodyType.Martian,        7 },

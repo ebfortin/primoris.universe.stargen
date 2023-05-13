@@ -9,24 +9,24 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows;
 
 public class BasicSolidLayer : SolidLayer
 {
-	public BasicSolidLayer(Length thickness) : base(thickness)
+	public BasicSolidLayer(SatelliteBody parent, Length thickness) 
+		: base(parent, thickness)
 	{
 	}
 
-	public BasicSolidLayer(Length thickness, Mass mass, IEnumerable<(Chemical, Ratio)> composition) : base(thickness, mass, composition)
+	public BasicSolidLayer(SatelliteBody parent, Length thickness, Mass mass, IEnumerable<(Chemical, Ratio)> composition) 
+		: base(parent, thickness, mass, composition)
 	{
 	}
 
-	public override Layer Generate(SatelliteBody parentBody, Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
+	protected override void OnGenerate(Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
 	{
 		//Thickness = parentBody.CoreRadius;
 		//MeanDensity = parentBody.Density;
-		MeanTemperature = parentBody.Temperature;
+		MeanTemperature = Parent.Temperature;
 		if (Mass > Mass.Zero && !Mass.Equals(availableMass, Extensions.Epsilon, ComparisonType.Relative))
 			throw new ArgumentException("Available Mass must be equal to specified mass.");
 	
 		Mass = availableMass;
-
-		return this;
 	}
 }

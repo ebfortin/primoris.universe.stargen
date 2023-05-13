@@ -9,11 +9,13 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 {
 	public class BasicGaseousLayer : GaseousLayer
 	{
-		public BasicGaseousLayer(Length thickness, Pressure surfPres) : base(thickness, surfPres)
+		public BasicGaseousLayer(SatelliteBody parent, Length thickness, Pressure surfPres) 
+			: base(parent, thickness, surfPres)
 		{
 		}
 
-		public BasicGaseousLayer(Length thickness, IEnumerable<(Chemical, Ratio)> composition, Pressure surfPres) : base(thickness, composition, surfPres)
+		public BasicGaseousLayer(SatelliteBody parent, Length thickness, IEnumerable<(Chemical, Ratio)> composition, Pressure surfPres) 
+			: base(parent, thickness, composition, surfPres)
 		{
 			Breathability = CalculateBreathability();
 		}
@@ -31,7 +33,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 		/// <param name="curLayers">The current layers.</param>
 		/// <returns>This Layer.</returns>
 		/// <exception cref="InvalidBodyLayerSequenceException"></exception>
-		public override Layer Generate(SatelliteBody parentBody, Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
+		protected override void OnGenerate(Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
 		{
 			/*if(curLayers.Count() != 1)
 			{
@@ -40,13 +42,13 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			// We just ignore availableMass. It was determined by Pressure.
 
-			var sun = parentBody.StellarBody;
-			var planet = parentBody;
+			var sun = Parent.StellarBody;
+			var planet = Parent;
 			var gasTable = availableChems.ToArray();
 
 			if (!(LowerBoundaryPressure.Millibars > 0))
 			{
-				return this;
+				return;
 			}
 
 			double[] amount = new double[gasTable.Length];
@@ -96,7 +98,6 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 					if (amount[i] > 0.0)
 					{
 						CompositionInternal.Add(
-								//new ValueTuple<Chemical, Ratio>() { Item1 = gasTable[i], Item2 = Ratio.FromDecimalFractions(amount[i] / totamount) }
 								(gasTable[i], Ratio.FromDecimalFractions(amount[i] / totamount))
 							);
 					}
@@ -105,7 +106,7 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows
 
 			Breathability = CalculateBreathability();
 
-			return this;
+			return;
 		}
 
 		/// <summary>
