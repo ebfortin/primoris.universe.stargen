@@ -3,15 +3,20 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <RootNamespace>Primoris.Universe.Stargen</RootNamespace>
+	<EnablePreviewFeatures>True</EnablePreviewFeatures>
+	<GenerateRequiresPreviewFeaturesAttribute>True</GenerateRequiresPreviewFeaturesAttribute>
+	  <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+
+	  <RootNamespace>Primoris.Universe.Stargen</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Etienne Fortin</Authors>
     <Company>Primoris Sigma</Company>
     <Product>Primoris Stargen</Product>
     <PackageId>Primoris.Universe.Stargen</PackageId>
     <AssemblyName>Primoris.Universe.Stargen</AssemblyName>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<Nullable>enable</Nullable>
+	
+	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

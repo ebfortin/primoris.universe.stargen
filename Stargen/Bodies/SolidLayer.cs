@@ -17,30 +17,12 @@ public abstract class SolidLayer : HomogeneousLayer
 	/// Initializes a new instance of the <see cref="SolidLayer"/> class.
 	/// </summary>
 	/// <param name="thickness">The thickness.</param>
-	public SolidLayer(SatelliteBody parent, Length thickness) 
-		: base(parent, thickness)
-	{
-	}
-
-	/// <summary>
-	/// Initializes a new instance of the <see cref="SolidLayer"/> class.
-	/// </summary>
-	/// <param name="thickness">The thickness.</param>
 	/// <param name="mass">The mass.</param>
 	/// <param name="composition">The composition.</param>
-	public SolidLayer(SatelliteBody parent, Length thickness, Mass mass, IEnumerable<(Chemical, Ratio)> composition) 
-		: base(parent, thickness, composition)
+	public SolidLayer(LayerStack stack, Mass mass, Length thickness, IEnumerable<(Chemical, Ratio)> composition) 
+		: base(stack, mass, thickness, Temperature.Zero, composition)
 	{
 		Mass = mass;
 	}
 
-	/// <summary>
-	/// Called when [added to stack].
-	/// </summary>
-	/// <exception cref="ArgumentException">A SolidLayer added to a Stack without calling Generate() must have a non zero Mass specified in its constructor.</exception>
-	protected internal override void OnAddedToStack()
-	{
-		if (Mass.Equals(Mass.Zero, 0.0, ComparisonType.Absolute))
-			throw new ArgumentException("A SolidLayer added to a Stack without calling Generate() must have a non zero Mass specified in its constructor.");
-	}
 }

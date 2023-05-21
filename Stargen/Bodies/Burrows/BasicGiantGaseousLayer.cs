@@ -10,22 +10,14 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows;
 
 public class BasicGiantGaseousLayer : BasicGaseousLayer
 {
-	public BasicGiantGaseousLayer(SatelliteBody parent, Length thickness) 
-		: base(parent, thickness, Pressure.Zero) 
+	public BasicGiantGaseousLayer(LayerStack stack, Mass mass, Length thickness) 
+		: base(stack, mass, thickness) 
 	{ 
 	}
 
-	public BasicGiantGaseousLayer(SatelliteBody parent, Length thickness, Pressure surfPres) 
-		: base(parent, thickness, surfPres)
-	{
-	}
+    public BasicGiantGaseousLayer(LayerStack stack, Mass mass, Length thickness, IEnumerable<Chemical> availableChems)
+    : base(stack, mass, thickness, availableChems)
+    {
+    }
 
-	protected override void OnGenerate(Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
-	{
-		return;
-	}
-
-	protected internal override void OnAddedToStack()
-	{
-	}
 }

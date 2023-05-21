@@ -13,16 +13,21 @@ public class Planet : SatelliteBody
 	Mass FormationDustMass { get; set; }
 	Mass FormationGasMass { get; set; }
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <remarks>
+	/// TODO: Create layers in Generate.
+	/// </remarks>
+	/// <param name="science"></param>
+	/// <param name="seed"></param>
+	/// <param name="parentBody"></param>
 	public Planet(IScienceAstrophysics science, Seed seed, Body parentBody) : base(science, seed, parentBody)
 	{
 		Generate();
 	}
 
 	public Planet(Seed seed, Body parentBody) : this(parentBody.Science, seed, parentBody) { }
-
-	public Planet(IScienceAstrophysics science, Seed seed, Body parentBody, IEnumerable<Layer> layers) : base(science, seed, parentBody, layers) { }
-
-    public Planet(Seed seed, Body parentBody, IEnumerable<Layer> layers) : base(parentBody.Science, seed, parentBody, layers) { }
 
     public Planet(IScienceAstrophysics science,
 				  Body parentBody,
@@ -76,17 +81,17 @@ public class Planet : SatelliteBody
 
 		if (Science.Planetology.TestIsGasGiant(massSM, gasMassSM, MolecularWeightRetained))
 		{
-			Layers.Add(new BasicGiantGaseousLayer(this, planetRadius).Generate(massSM, Chemical.All.Values, Layers));
+			Layers.CreateLayer(() => new BasicGiantGaseousLayer(Layers, massSM, planetRadius, Chemical.All.Values));
 		}
 		else
 		{
 			var coreRadius = Science.Planetology.GetCoreRadius(massSM, OrbitZone, false);
 
 			// Add basic Burrows layer.
-			Layers.Add(new BasicSolidLayer(this, coreRadius).Generate(massSM - gasMassSM, Enumerable.Empty<Chemical>(), Enumerable.Empty<Layer>()));
+			Layers.CreateLayer(() => new BasicSolidLayer(Layers, massSM - gasMassSM, coreRadius, Array.Empty<(Chemical, Ratio)>()));
 
 			// Generate complete atmosphere.
-			Layers.Add(new BasicGaseousLayer(this, planetRadius - coreRadius, SurfacePressure).Generate(gasMassSM, Chemical.All.Values.ToArray(), Layers));
+			Layers.CreateLayer(() => new BasicGaseousLayer(Layers, gasMassSM, planetRadius - coreRadius, Array.Empty<Chemical>()));
 		}
 
 		IsForming = false;
@@ -200,8 +205,8 @@ public class Planet : SatelliteBody
 
 		//planet.Density = Science.Physics.GetDensityFromStar(mass, SemiMajorAxis, sun.EcosphereRadius, true);
 		var approxDensity = Science.Physics.GetDensityFromStar(mass, SemiMajorAxis, sun.EcosphereRadius, true);
-        Length planetRadius = Mathematics.GetRadiusFromDensity(mass, Density);
-		//Radius = planetRadius;
+        Length planetRadius = Mathematics.GetRadiusFromDensity(mass, approxDensity);
+		Radius = planetRadius;
 
 		planet.SurfaceAcceleration = GetAcceleration(mass, planetRadius);
 		//planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAcceleration);
@@ -216,7 +221,7 @@ public class Planet : SatelliteBody
 			AdjustPropertiesForGasBody();
 			SurfacePressure = Pressure.Zero;
 			Layers.Clear();
-			Layers.Add(new BasicGiantGaseousLayer(this, planetRadius).Generate(GasMass, Array.Empty<Chemical>(), Layers));
+			Layers.CreateLayer(() => new BasicGiantGaseousLayer(Layers, GasMass, planetRadius));
 		}
 		else // If not, it's rocky.
 		{
@@ -270,11 +275,11 @@ public class Planet : SatelliteBody
 
 			// Add basic Burrows layer.
 			var coreRadius = Science.Planetology.GetCoreRadius(Mass, OrbitZone, false);
-			Layers.Add(new BasicSolidLayer(this, coreRadius).Generate(DustMass, new Chemical[0], new Layer[0]));
+			Layers.CreateLayer(() => new BasicSolidLayer(Layers, DustMass, coreRadius, Array.Empty<(Chemical, Ratio)>()));
 
 			// Generate complete atmosphere.
 			if (surfpres.Millibars > 0.0 && GasMass.SolarMasses > 0.0)
-				Layers.Add(new BasicGaseousLayer(this, Radius - coreRadius, surfpres).Generate(GasMass, Chemical.All.Values, Layers));
+				Layers.CreateLayer(() => new BasicGaseousLayer(Layers, GasMass, Radius - coreRadius, Chemical.All.Values));
 			SurfacePressure = surfpres;
 
 			HasGreenhouseEffect = Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & SurfacePressure > Pressure.Zero;

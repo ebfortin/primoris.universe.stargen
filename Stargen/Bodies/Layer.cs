@@ -1,4 +1,5 @@
-﻿using Primoris.Universe.Stargen.Astrophysics;
+﻿using Primoris.Types;
+using Primoris.Universe.Stargen.Astrophysics;
 
 namespace Primoris.Universe.Stargen.Bodies;
 
@@ -17,7 +18,7 @@ public abstract class Layer : IEquatable<Layer>
     /// <value>
     /// The science.
     /// </value>
-    public IScienceAstrophysics Science => Parent.Science;
+    public IScienceAstrophysics Science => Stack.Parent.Science;
 
     /// <summary>
     /// Gets the stellar body.
@@ -36,7 +37,12 @@ public abstract class Layer : IEquatable<Layer>
     /// <value>
     /// The parent.
     /// </value>
-    public SatelliteBody Parent { get; }
+    public SatelliteBody Parent => Stack.Parent;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public LayerStack Stack { get; } 
 
     /// <summary>
     /// Gets or sets the thickness of the layer. 
@@ -44,7 +50,7 @@ public abstract class Layer : IEquatable<Layer>
     /// <value>
     /// The thickness.
     /// </value>
-    public Length Thickness { get; protected set; }
+    public Length Thickness { get; }
 
     /// <summary>
     /// Total mass of the Layer. 
@@ -55,7 +61,7 @@ public abstract class Layer : IEquatable<Layer>
     /// <returns>
     /// Mass of the Layer.
     /// </returns>
-    public Mass Mass { get; protected set; }
+    public Mass Mass { get; protected set; } = Mass.Zero;
 
     /// <summary>
     /// Gets the mean density.
@@ -76,6 +82,8 @@ public abstract class Layer : IEquatable<Layer>
     /// </value>
     public Temperature MeanTemperature { get; protected set; } = Temperature.Zero;
 
+    public bool IsMeanTemperatureKnown => MeanTemperature > Temperature.Zero;
+
     /// <summary>
     /// TODO: Add Unit Test.
     /// </summary>
@@ -83,13 +91,10 @@ public abstract class Layer : IEquatable<Layer>
     {
         get
         {
-            if (Parent is null)
-                return Volume.Zero;
-
             var belowrad = LowerBoundaryRadius.Kilometers;
             var aboverad = UpperBoundaryRadius.Kilometers;
-            var outer = 4.0 / 3.0 * Math.PI * Math.Pow(aboverad, 3.0);
-            var inner = 4.0 / 3.0 * Math.PI * Math.Pow(belowrad, 3.0);
+            var outer = 4.0 / 3.0 * double.Pi * double.Pow(aboverad, 3.0);
+            var inner = 4.0 / 3.0 * double.Pi * double.Pow(belowrad, 3.0);
 
             return Volume.FromCubicKilometers(outer - inner);
         }
@@ -108,10 +113,7 @@ public abstract class Layer : IEquatable<Layer>
     {
         get
         {
-            if (Parent is null)
-                return Area.Zero;
-
-            var aboverad = Parent.ComputeThicknessBelow(this).Kilometers + Thickness.Kilometers;
+            var aboverad = Stack.ComputeThicknessBelow(this).Kilometers + Thickness.Kilometers;
             var outer = 4.0 * Math.PI * Math.Pow(aboverad, 2.0);
 
             return Area.FromSquareKilometers(outer);
@@ -131,17 +133,14 @@ public abstract class Layer : IEquatable<Layer>
     {
         get
         {
-            if (Parent is null)
-                return Area.Zero;
-
             var belowrad = LowerBoundaryRadius.Kilometers;
-            var inner = 4.0 * Math.PI * Math.Pow(belowrad, 2.0);
+            var inner = 4.0 * double.Pi * double.Pow(belowrad, 2.0);
 
             return Area.FromSquareKilometers(inner);
         }
     }
 
-    public Length LowerBoundaryRadius => Parent.ComputeThicknessBelow(this);
+    public Length LowerBoundaryRadius => Stack.ComputeThicknessBelow(this);
 
     public Length UpperBoundaryRadius => LowerBoundaryRadius + Thickness;
 
@@ -151,7 +150,7 @@ public abstract class Layer : IEquatable<Layer>
     /// <value>
     /// The composition internal.
     /// </value>
-    protected IList<(Chemical, Ratio)> CompositionInternal { get; set; } = new List<(Chemical, Ratio)>();
+    protected IList<(Chemical, Ratio)> CompositionInternal { get; set; }
 
     /// <summary>
     /// Gets the composition.
@@ -161,48 +160,67 @@ public abstract class Layer : IEquatable<Layer>
     /// </value>
     public IEnumerable<(Chemical, Ratio)> Composition { get => CompositionInternal; }
 
+    public bool IsCompositionKnown => CompositionInternal.Count > 0;
+
+   
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="Layer"/> class.
+    /// Initializes a new instance of the <see cref="Layer"/> class with Mass and Thickness set but without any composition.
     /// </summary>
+    /// <remarks>
+    /// A Layer without composition is valid and will only returns an empty IEnumerable when checked for its composition. It
+    /// is considered to be composition unknown. This constructor also set the MeanTemperature to Zero. Since even
+    /// cosmic void is not at absolute zero this value means that the temperature of the Layer is unknown.
+    /// </remarks>
+    /// <param name="mass">Mass of the Layer.</param>
     /// <param name="thickness">The thickness.</param>
-    public Layer(SatelliteBody parent, Length thickness)
+    protected Layer(LayerStack stack, Mass mass, Length thickness)
     {
-        Parent = parent;
+        CompositionInternal = new List<(Chemical, Ratio)>();
+
+        Stack = stack;
+        Mass = mass;
         Thickness = thickness;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Layer"/> class.
+    /// Initializes a new instance of the <see cref="Layer"/> class with all its attributes set.
     /// </summary>
+    /// <remarks>
+    /// A Layer without composition is valid and will only returns an empty IEnumerable when checked for its composition. It
+    /// is considered to be composition unknown.
+    /// </remarks>
+    /// <param name="stack">LayerStack this Layer belongs to.</param>
+    /// <param name="mass">Mass of the Layer.</param>
     /// <param name="thickness">The thickness.</param>
-    /// <param name="composition">The composition.</param>
-    public Layer(SatelliteBody parent, Length thickness, IEnumerable<(Chemical, Ratio)> composition)
-        : this(parent, thickness)
+    /// <param name="temperature">Mean temperature of the Layer.</param>
+    protected Layer(LayerStack stack, Mass mass, Length thickness, Temperature temperature)
     {
+        CompositionInternal = new List<(Chemical, Ratio)>();
+
+        Stack = stack;
+        Mass = mass;
+        Thickness = thickness;
+        MeanTemperature = temperature;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Layer"/> class with all its attributes set.
+    /// </summary>
+    /// <param name="stack">LayerStack this Layer belongs to.</param>
+    /// <param name="mass">Mass of the Layer.</param>
+    /// <param name="thickness">The thickness.</param>
+    /// <param name="temperature">Mean temperature of the Layer.</param>
+    /// <param name="composition">The composition.</param>
+    protected Layer(LayerStack stack, Mass mass, Length thickness, Temperature temperature, IEnumerable<(Chemical, Ratio)> composition)
+    {
+        Stack = stack;
+        Mass = mass;
+        Thickness = thickness;
+        MeanTemperature = temperature;
+        
         CompositionInternal = new List<(Chemical, Ratio)>(composition);
     }
-
-    /// <summary>
-    /// Generates the Layer characteristics.
-    /// </summary>
-    /// <param name="parentBody">The parent body.</param>
-    /// <param name="availableMass">The available mass.</param>
-    /// <param name="availableChems">The available chems.</param>
-    /// <param name="curLayers">The current layers.</param>
-    /// <returns></returns>
-    public Layer Generate(Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers)
-    {
-        Mass = availableMass;
-        OnGenerate(availableMass, availableChems, curLayers);
-        return this;
-    }
-
-    protected abstract void OnGenerate(Mass availableMass, IEnumerable<Chemical> availableChems, IEnumerable<Layer> curLayers);
-
-    /// <summary>
-    /// Called when [added to stack].
-    /// </summary>
-    protected internal abstract void OnAddedToStack();
 
     /// <summary>
     /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
@@ -245,8 +263,9 @@ public abstract class Layer : IEquatable<Layer>
     /// </returns>
     public override int GetHashCode()
     {
-        return HashCode.Combine(StellarBody, Parent, Thickness, Mass, MeanTemperature, CompositionInternal, Composition);
+        return HashCode.Combine(Stack, StellarBody, Parent, Thickness, Mass, MeanTemperature, CompositionInternal, Composition);
     }
+
 
     /// <summary>
     /// Implements the operator ==.

@@ -15,6 +15,7 @@ namespace Primoris.Universe.Stargen.Bodies;
 [Serializable]
 public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 {
+    public static readonly new SatelliteBody Null = new EmptySatelliteBody();
 
 
     #region Orbit data
@@ -200,7 +201,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The core layers IEnumerable.
     /// </value>
-    public IEnumerable<Layer> Core { get => from l in Layers where l is SolidLayer select l; }
+    public IEnumerable<Layer> Core => from l in Layers where l is SolidLayer select l;
 
     public Mass CoreMass => Mass.FromEarthMasses((from l in Layers where l is SolidLayer select l.Mass.EarthMasses).Sum());
 
@@ -526,8 +527,8 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         Seed = seed;
 
         Mass = seed.Mass;
-        //GasMass = seed.GasMass;
-        //DustMass = seed.DustMass;
+        GasMass = seed.GasMass;
+        DustMass = seed.DustMass;
         Eccentricity = seed.Eccentricity;
         SemiMajorAxis = seed.SemiMajorAxis;
 
@@ -540,29 +541,6 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <param name="seed"></param>
     /// <param name="parentBody"></param>
     public SatelliteBody(Seed seed, Body parentBody) : this(parentBody.Science, seed, parentBody) { }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="seed">Source Seed to create the Body.</param>
-    /// <param name="star">Parent Star of the Body.</param>
-    /// <param name="parentBody">Parent Body of constructed SatelliteBody. If the constructed Body is a Planet, then this is the same as Star.</param>
-    /// <param name="layers">Layers to construct the Body with.</param>
-    public SatelliteBody(IScienceAstrophysics science, Seed seed, Body parentBody, IEnumerable<Layer> layers) : this(science, seed, parentBody)
-    {
-        Layers.Clear();
-        Layers.AddMany(layers);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="seed"></param>
-    /// <param name="parentBody"></param>
-    /// <param name="layers"></param>
-    public SatelliteBody(Seed seed, Body parentBody, IEnumerable<Layer> layers) : this(parentBody.Science, seed, parentBody, layers) { }
-
-
 
 
     public void Add(Layer layer)

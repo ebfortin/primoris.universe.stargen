@@ -7,6 +7,8 @@ using System.Text;
 using Primoris.Universe.Stargen.Astrophysics;
 using UnitsNet;
 
+using Col = Primoris.Collections;
+using System.Reflection.Emit;
 
 namespace Primoris.Universe.Stargen.Bodies;
 
@@ -15,10 +17,12 @@ namespace Primoris.Universe.Stargen.Bodies;
 /// </summary>
 /// <seealso cref="System.Collections.Generic.IList{Primoris.Universe.Stargen.Bodies.Layer}" />
 /// <seealso cref="System.Collections.Generic.IEnumerable{Primoris.Universe.Stargen.Bodies.Layer}" />
-public class LayerStack : IList<Layer>, IEnumerable<Layer>
+public class LayerStack : IEnumerable<Layer>
 {
 	private List<Layer> _layers = new();
 	private SatelliteBody _parent;
+
+	public SatelliteBody Parent => _parent;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="LayerStack"/> class.
@@ -55,11 +59,6 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	public int Count => _layers.Count;
 
 	/// <summary>
-	/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
-	/// </summary>
-	public bool IsReadOnly => false;
-
-	/// <summary>
 	/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 	/// </summary>
 	/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
@@ -73,19 +72,6 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 			throw new ArgumentException("Added Layer has not the same Parent has this LayerStack.");
 
 		_layers.Add(item);
-		item.OnAddedToStack();
-	}
-
-	/// <summary>
-	/// Adds multiple Layers at once.
-	/// </summary>
-	/// <param name="items">The items.</param>
-	public void AddMany(IEnumerable<Layer> items)
-	{
-		foreach(var item in items)
-		{
-			Add(item);
-		}
 	}
 
 	/// <summary>
@@ -109,16 +95,6 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	}
 
 	/// <summary>
-	/// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.
-	/// </summary>
-	/// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
-	/// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-	public void CopyTo(Layer[] array, int arrayIndex)
-	{
-		_layers.CopyTo(array, arrayIndex);
-	}
-
-	/// <summary>
 	/// Returns an enumerator that iterates through the collection.
 	/// </summary>
 	/// <returns>
@@ -139,45 +115,6 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 	public int IndexOf(Layer item)
 	{
 		return _layers.IndexOf(item);
-	}
-
-	/// <summary>
-	/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
-	/// </summary>
-	/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-	/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-	/// <exception cref="IndexOutOfRangeException"></exception>
-	/// <exception cref="Primoris.Universe.Stargen.Bodies.InvalidBodyLayerSequenceException">Can't put a SolidLayer on top of a GaseousLayer</exception>
-	public void Insert(int index, Layer item)
-	{
-		if (index >= Count)
-			throw new IndexOutOfRangeException();
-
-		if (_layers[index - 1] is GaseousLayer && item is SolidLayer)
-			throw new InvalidBodyLayerSequenceException("Can't put a SolidLayer on top of a GaseousLayer");
-
-		_layers.Insert(index, item);
-	}
-
-	/// <summary>
-	/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
-	/// </summary>
-	/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-	/// <returns>
-	///   <see langword="true" /> if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, <see langword="false" />. This method also returns <see langword="false" /> if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
-	/// </returns>
-	public bool Remove(Layer item)
-	{
-		return _layers.Remove(item);
-	}
-
-	/// <summary>
-	/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
-	/// </summary>
-	/// <param name="index">The zero-based index of the item to remove.</param>
-	public void RemoveAt(int index)
-	{
-		_layers.RemoveAt(index);
 	}
 
 	/// <summary>
@@ -262,5 +199,21 @@ public class LayerStack : IList<Layer>, IEnumerable<Layer>
 		return acc;
 	}
 
+	public IEnumerable<Layer> GetLayersBelow(Layer layer)
+	{
+        if (!Contains(layer))
+            throw new ArgumentException("Layer not in LayerStack.");
 
+        var index = _layers.FindIndex(x => x == layer);
+        if (index == 0)
+            return Array.Empty<Layer>();
+
+        return _layers.GetRange(0, index);
+    }
+
+	public void CreateLayer(Func<Layer> layerCreator)
+	{
+		var layer = layerCreator();
+		Add(layer);
+	}
 }
