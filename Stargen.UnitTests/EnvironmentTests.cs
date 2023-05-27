@@ -361,74 +361,61 @@ public class BurrowsPhysicsTests
 								Ratio.FromDecimalFractions(GlobalConstants.DUST_DENSITY_COEFF));
 		}
 
-		private IEnumerable<Layer> GetMockBreathableAtmo(SatelliteBody parent)
-		{
-			var layers = new List<Layer>()
-			{
-				new BasicSolidLayer(parent, Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()),
-				new BasicGaseousLayer(parent, Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
+		void AddMockBreathableAtmo(SatelliteBody parent)
+		{ 
+			parent.Stack.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
+			parent.Stack.CreateLayer(ls => new BasicGaseousLayer(ls, Length.FromKilometers(100.0), new (Chemical, Ratio)[]
 				{
 					(TestGases["O"], Ratio.FromDecimalFractions(0.21)),
 					(TestGases["N"], Ratio.FromDecimalFractions(0.78))
-				}, Pressure.FromBars(1.0))
-			};
-
-			return layers;
-			/*return new Gas[]
-			{
-				new Gas(TestGases["O"], Pressure.FromMillibars(GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS * 0.21) ),
-				new Gas(TestGases["N"], Pressure.FromMillibars(GlobalConstants.EARTH_SURF_PRES_IN_MILLIBARS * 0.78) )
-			};*/
+				}, Pressure.FromBars(1.0)));
 		}
 
-		private IEnumerable<Layer> GetMockPoisonousAtmo(SatelliteBody parent)
+		void AddMockPoisonousAtmo(SatelliteBody parent)
 		{
-			var layers = new List<Layer>()
+			/*var layers = new List<Layer>()
 			{
 				new BasicSolidLayer(parent, Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()),
 				new BasicGaseousLayer(parent, Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
 				{
 					(TestGases["CO2"], Ratio.FromDecimalFractions(1.0))
 				}, Pressure.FromBars(1.0))
-			};
+			};*/
 
-			return layers;
-		}
+            parent.Stack.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
+            parent.Stack.CreateLayer(ls => new BasicGaseousLayer(ls, Length.FromKilometers(100.0), new (Chemical, Ratio)[]
+                {
+                    (TestGases["CO2"], Ratio.FromDecimalFractions(1.0))
+                }, Pressure.FromBars(1.0)));
+        }
 
-		private IEnumerable<Layer> GetMockUnbreathableAtmo(SatelliteBody parent)
+		private void AddMockUnbreathableAtmo(SatelliteBody parent)
 		{
-			var layers = new List<Layer>()
+			parent.Stack.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
+			parent.Stack.CreateLayer(ls => new BasicGaseousLayer(ls, Length.FromKilometers(100.0), new (Chemical, Ratio)[]
 			{
-				new BasicSolidLayer(parent, Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty <(Chemical, Ratio) >()),
-				new BasicGaseousLayer(parent, Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
-				{
-					(TestGases["N"], Ratio.FromDecimalFractions(1.0))
-				}, Pressure.FromBars(1.0))
-			};
-
-			return layers;
+				(TestGases["N"], Ratio.FromDecimalFractions(1.0))
+			}, Pressure.FromBars(1.0)));
 		}
 
-		private IEnumerable<Layer> GetMockNoAtmo(SatelliteBody parent)
+		private void AddMockNoAtmo(SatelliteBody parent)
 		{
-			var layers = new List<Layer>()
+			/*var layers = new List<Layer>()
 			{
-				new BasicSolidLayer(parent, Length.FromKilometers(10000.0), Mass.FromEarthMasses(0.5), Array.Empty<(Chemical, Ratio)>())
-			};
+				new BasicSolidLayer(parent.Stack, Mass.FromEarthMasses(0.5), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>())
+			};*/
 
-			return layers;
-
-			//return new Gas[0];
+			parent.Stack.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(0.5), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
 		}
 
-		private SatelliteBody GetMockPlanet(Func<SatelliteBody, IEnumerable<Layer>> mockAtmoGen)
+		private SatelliteBody GetMockPlanet(Action<SatelliteBody> mockAtmoGen)
 		{
 			var star = new Star(new BodyPhysics(), _algo);
 
 			var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(0.000001));
 
 			var planet = new Planet(seed, star);
-			planet.Add(mockAtmoGen(planet));
+			mockAtmoGen(planet);
 
 			return planet;
 		}
@@ -447,7 +434,7 @@ public class BurrowsPhysicsTests
 		[TestMethod]
 		public void TestNoAtmoPlanet()
 		{
-			var planet = GetMockPlanet(GetMockNoAtmo);
+			var planet = GetMockPlanet(AddMockNoAtmo);
 			var breathe = planet.Breathability;
 			Assert.AreEqual(Breathability.None, breathe);
 		}
@@ -456,7 +443,7 @@ public class BurrowsPhysicsTests
 		[TestMethod]
 		public void TestBreathablePlanet()
 		{
-			var planet = GetMockPlanet(GetMockBreathableAtmo);
+			var planet = GetMockPlanet(AddMockBreathableAtmo);
 			var breathe = planet.Breathability;
 			Assert.AreEqual(Breathability.Breathable, breathe);
 		}
@@ -465,7 +452,7 @@ public class BurrowsPhysicsTests
 		[TestMethod]
 		public void TestUnbreathablePlanet()
 		{
-			var planet = GetMockPlanet(GetMockUnbreathableAtmo);
+			var planet = GetMockPlanet(AddMockUnbreathableAtmo);
 			var breathe = planet.Breathability;
 			Assert.AreEqual(Breathability.Unbreathable, breathe);
 		}
@@ -474,7 +461,7 @@ public class BurrowsPhysicsTests
 		[TestMethod]
 		public void TestPoisonousPlanet()
 		{
-			var planet = GetMockPlanet(GetMockPoisonousAtmo);
+			var planet = GetMockPlanet(AddMockPoisonousAtmo);
 			var breathe = planet.Breathability;
 			Assert.AreEqual(Breathability.Poisonous, breathe);
 		}

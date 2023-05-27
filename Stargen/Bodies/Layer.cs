@@ -158,11 +158,12 @@ public abstract class Layer : IEquatable<Layer>
     /// <value>
     /// The composition.
     /// </value>
-    public IEnumerable<(Chemical, Ratio)> Composition { get => CompositionInternal; }
+    public IEnumerable<(Chemical, Ratio)> Composition => CompositionInternal;
 
     public bool IsCompositionKnown => CompositionInternal.Count > 0;
 
    
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Layer"/> class with Mass and Thickness set but without any composition.
@@ -181,6 +182,8 @@ public abstract class Layer : IEquatable<Layer>
         Stack = stack;
         Mass = mass;
         Thickness = thickness;
+
+        Stack.Add(this);
     }
 
     /// <summary>
@@ -202,6 +205,8 @@ public abstract class Layer : IEquatable<Layer>
         Mass = mass;
         Thickness = thickness;
         MeanTemperature = temperature;
+
+        stack.Add(this);
     }
 
     /// <summary>
@@ -220,6 +225,8 @@ public abstract class Layer : IEquatable<Layer>
         MeanTemperature = temperature;
         
         CompositionInternal = new List<(Chemical, Ratio)>(composition);
+
+        stack.Add(this);
     }
 
     /// <summary>

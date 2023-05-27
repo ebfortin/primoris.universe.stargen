@@ -59,7 +59,8 @@ namespace Primoris.Universe.Stargen.UnitTests
                             Temperature.FromKelvins(737.0),
                             Temperature.FromKelvins(737.0),
                             Temperature.FromKelvins(737.0),
-                            Acceleration.FromStandardGravity(0.9));
+                            Acceleration.FromStandardGravity(0.9),
+                            Chemical.All.Values);
 
                 return planet;
             }
@@ -298,11 +299,11 @@ namespace Primoris.Universe.Stargen.UnitTests
                 SatelliteBody p1 = GetTestPlanetAtmosphere(_algo);
                 Data.Planet p2 = GetTestPlanetAtmosphereStarform();
 
-                Assert.AreEqual(Env.MoleculeLimit(p2.MassSM, p2.RadiusKM, p2.ExosphereTempKelvin), 
+                 Assert.AreEqual(Env.MoleculeLimit(p2.MassSM, p2.RadiusKM, p2.ExosphereTempKelvin), 
                                _phy.Physics.GetInitialMolecularWeightRetained(p1.Mass,
                                                                         p1.Radius,
                                                                         p1.ExosphereTemperature).Grams,
-                VeryHighDelta);
+                                VeryHighDelta);
             }
 
             [TestCategory("Burrows.ISciencePhysics")]

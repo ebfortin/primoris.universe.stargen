@@ -69,7 +69,8 @@ public class GeneratorTests
 						Temperature.FromKelvins(737.0),
 						Temperature.FromKelvins(737.0),
 						Temperature.FromKelvins(737.0),
-						Acceleration.FromStandardGravity(0.9));
+						Acceleration.FromStandardGravity(0.9),
+						Chemical.All.Values);
 
 			return planet;
 		}
@@ -81,12 +82,7 @@ public class GeneratorTests
 
 			var planet = new Planet(seed, star);
 
-			planet.Add(
-				new List<Layer>()
-				{
-					new BasicSolidLayer(planet, Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>())
-				}
-			);
+			planet.Stack.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
 
             return planet;
 		}
@@ -95,7 +91,6 @@ public class GeneratorTests
 		[TestMethod]
 		public void TestEmptyPlanet()
 		{
-			var star = GetTestStar();
 			var planet = GetTestPlanetNoAtmosphere();
 
 			Assert.AreEqual(0, planet.AtmosphereComposition.Count());

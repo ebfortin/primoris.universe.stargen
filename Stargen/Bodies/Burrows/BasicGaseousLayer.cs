@@ -13,8 +13,8 @@ public class BasicGaseousLayer : GaseousLayer
     public BasicGaseousLayer(LayerStack stack, Mass mass, Length thickness, IEnumerable<Chemical> availableChems)
         : base(stack, thickness)
     {
-        Generate(availableChems, stack.GetLayersBelow(this));
         Mass = mass;
+        Generate(availableChems, stack.GetLayersBelow(this));
     }
 
     public BasicGaseousLayer(LayerStack stack, Length thickness, Pressure surfPres)

@@ -127,7 +127,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The total mass of this SatelliteBody.
     /// </value>
-    public override Mass Mass => Mass.FromEarthMasses((from l in Layers select l.Mass.EarthMasses).Sum());
+    public override Mass Mass => Mass.FromEarthMasses((from l in Stack select l.Mass.EarthMasses).Sum());
 
     /// <summary>
     /// The gravitational acceleration felt at the surface of the planet.
@@ -145,11 +145,11 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     {
         get
         {
-            if (Layers.Count == 0)
+            if (Stack.Count == 0)
                 return _initialRadius;
 
             Length radius = Length.Zero;
-            foreach (var l in Layers)
+            foreach (var l in Stack)
             {
                 radius += l.Thickness;
             }
@@ -158,7 +158,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 
         protected set
         {
-            if (Layers.Count == 0)
+            if (Stack.Count == 0)
                 _initialRadius = value;
         }
     }
@@ -171,7 +171,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         get
         {
             Length radius = Length.Zero;
-            foreach (var l in Layers)
+            foreach (var l in Stack)
             {
                 if (l is SolidLayer)
                     radius += l.Thickness;
@@ -193,7 +193,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The layers.
     /// </value>
-    protected LayerStack Layers { get; set; }
+    public LayerStack Stack { get; protected set; }
 
     /// <summary>
     /// Gets the core layers.
@@ -201,9 +201,9 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The core layers IEnumerable.
     /// </value>
-    public IEnumerable<Layer> Core => from l in Layers where l is SolidLayer select l;
+    public IEnumerable<Layer> Core => from l in Stack where l is SolidLayer select l;
 
-    public Mass CoreMass => Mass.FromEarthMasses((from l in Layers where l is SolidLayer select l.Mass.EarthMasses).Sum());
+    public Mass CoreMass => Mass.FromEarthMasses((from l in Stack where l is SolidLayer select l.Mass.EarthMasses).Sum());
 
     /// <summary>
     /// Gets the core composition.
@@ -253,7 +253,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     ///     <c>true</c> if there's at least one solid layer; otherwise, <c>false</c>.
     /// </value>
-    public bool HasRockyBody => (from l in Layers select l is SolidLayer).Any(x => x == true);
+    public bool HasRockyBody => (from l in Stack select l is SolidLayer).Any(x => x == true);
 
     /// <summary>
     /// Gets or sets a value indicating whether this instance is forming.
@@ -325,9 +325,9 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The atmosphere layers IEnumerable.
     /// </value>
-    public IEnumerable<Layer> Atmosphere { get => from l in Layers where l is GaseousLayer select l; }
+    public IEnumerable<Layer> Atmosphere { get => from l in Stack where l is GaseousLayer select l; }
 
-    public Mass AtmosphereMass => Mass.FromEarthMasses((from l in Layers where l is GaseousLayer select l.Mass.EarthMasses).Sum());
+    public Mass AtmosphereMass => Mass.FromEarthMasses((from l in Stack where l is GaseousLayer select l.Mass.EarthMasses).Sum());
 
 
     // TODO: Create Unit Tests.		
@@ -402,7 +402,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The breathability of the Body.
     /// </value>
-    public Breathability Breathability => (from l in Layers where l is GaseousLayer select ((GaseousLayer)l).Breathability).FirstOrDefault();
+    public Breathability Breathability => (from l in Stack where l is GaseousLayer select ((GaseousLayer)l).Breathability).FirstOrDefault();
 
     #endregion
 
@@ -511,7 +511,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     protected internal SatelliteBody(IScienceAstrophysics science) : base(science)
     {
         Parent = this;
-        Layers = new LayerStack(this);
+        Stack = new LayerStack(this);
     }
 
     /// <summary>
@@ -532,7 +532,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         Eccentricity = seed.Eccentricity;
         SemiMajorAxis = seed.SemiMajorAxis;
 
-        Layers = new LayerStack(this);
+        Stack = new LayerStack(this);
     }
 
     /// <summary>
@@ -542,34 +542,19 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <param name="parentBody"></param>
     public SatelliteBody(Seed seed, Body parentBody) : this(parentBody.Science, seed, parentBody) { }
 
-
-    public void Add(Layer layer)
-    {
-        Layers.Add(layer);
-        ComputeProperties();
-    }
-
-    public void Add(IEnumerable<Layer> layers)
-    {
-        foreach (Layer layer in layers)
-        {
-            Add(layer);
-        }
-    }
-
     public Acceleration ComputeAccelerationAt(Layer layer)
     {
-        return Layers.ComputeAccelerationAt(layer);
+        return Stack.ComputeAccelerationAt(layer);
     }
 
     public Length ComputeThicknessBelow(Layer layer)
     {
-        return Layers.ComputeThicknessBelow(layer);
+        return Stack.ComputeThicknessBelow(layer);
     }
 
     public Mass ComputeMassBelow(Layer layer)
     {
-        return Layers.ComputeMassBelow(layer);
+        return Stack.ComputeMassBelow(layer);
     }
 
     private IEnumerable<(Chemical, Ratio)> ConsolidateComposition(IEnumerable<Layer> layers)

@@ -19,8 +19,8 @@ namespace Primoris.Universe.Stargen.Bodies;
 /// <seealso cref="System.Collections.Generic.IEnumerable{Primoris.Universe.Stargen.Bodies.Layer}" />
 public class LayerStack : IEnumerable<Layer>
 {
-	private List<Layer> _layers = new();
-	private SatelliteBody _parent;
+	List<Layer> _layers = new();
+	SatelliteBody _parent;
 
 	public SatelliteBody Parent => _parent;
 
@@ -63,7 +63,7 @@ public class LayerStack : IEnumerable<Layer>
 	/// </summary>
 	/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 	/// <exception cref="Primoris.Universe.Stargen.Bodies.InvalidBodyLayerSequenceException">Can't put a SolidLayer on top of a GaseousLayer</exception>
-	public void Add(Layer item)
+	internal void Add(Layer item)
 	{
 		if (Count > 0 && _layers[Count - 1] is GaseousLayer && item is SolidLayer)
 			throw new InvalidBodyLayerSequenceException("Can't put a SolidLayer on top of a GaseousLayer");
@@ -77,7 +77,7 @@ public class LayerStack : IEnumerable<Layer>
 	/// <summary>
 	/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 	/// </summary>
-	public void Clear()
+	internal void Clear()
 	{
 		_layers.Clear();
 	}
@@ -211,9 +211,9 @@ public class LayerStack : IEnumerable<Layer>
         return _layers.GetRange(0, index);
     }
 
-	public void CreateLayer(Func<Layer> layerCreator)
+	public void CreateLayer(Func<LayerStack, Layer> layerCreator)
 	{
-		var layer = layerCreator();
-		Add(layer);
+		var layer = layerCreator(this);
+		//Add(layer);
 	}
 }

@@ -19,7 +19,7 @@ public abstract class GaseousLayer : HomogeneousLayer
     /// <value>
     /// The lower boundary pressure.
     /// </value>
-    public Pressure LowerBoundaryPressure { get; protected set; }
+    public Pressure LowerBoundaryPressure => GetPressure();
 
     /// <summary>
     /// Gets or sets the breathability.
@@ -59,7 +59,6 @@ public abstract class GaseousLayer : HomogeneousLayer
     protected GaseousLayer(LayerStack stack, Length thickness, Pressure surfPres)
         : base(stack, Mass.Zero, thickness)
     {
-        LowerBoundaryPressure = surfPres;
         Mass = GetMassFromPressure(surfPres);
     }
 
@@ -77,7 +76,6 @@ public abstract class GaseousLayer : HomogeneousLayer
     protected GaseousLayer(LayerStack stack, Length thickness, IEnumerable<(Chemical, Ratio)> composition, Pressure surfPres)
         : base(stack, Mass.Zero, thickness, Temperature.Zero, composition)
     {
-        LowerBoundaryPressure = surfPres;
         Mass = GetMassFromPressure(surfPres);
     }
 
@@ -93,6 +91,11 @@ public abstract class GaseousLayer : HomogeneousLayer
     protected virtual Mass GetMassFromPressure(Pressure pres)
     {
         return pres * LowerBoundaryArea / Stack.ComputeAccelerationAt(this);
+    }
+
+    protected virtual Pressure GetPressure()
+    {
+        return Mass * Stack.ComputeAccelerationAt(this) / LowerBoundaryArea;
     }
 }
 
