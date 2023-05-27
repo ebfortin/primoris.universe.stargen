@@ -45,7 +45,7 @@ public record Seed
 	/// <value>
 	/// The total mass of the Seed.
 	/// </value>
-	public Mass Mass { get; set; } = Mass.Zero;
+	public Mass Mass => DustMass + GasMass;
 
 	/// <summary>
 	/// Gets or sets the dust mass.
@@ -80,11 +80,11 @@ public record Seed
 	/// <param name="mass">The total mass of the Seed.</param>
 	/// <param name="dMass">The dust mass present in the Seed.</param>
 	/// <param name="gMass">The gas mass present in the Seed.</param>
-	public Seed(Length a, Ratio e, Mass mass, Mass dMass, Mass gMass)
+	public Seed(Length a, Ratio e, Mass dMass, Mass gMass)
 	{
 		SemiMajorAxis = a;
 		Eccentricity = e;
-		Mass = mass;
+		//Mass = mass;
 		DustMass = dMass;
 		GasMass = gMass;
 	}

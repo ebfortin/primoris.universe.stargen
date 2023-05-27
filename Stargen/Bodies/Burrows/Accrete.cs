@@ -14,7 +14,7 @@ public class Accrete : IBodyFormationAlgorithm
 		public InnerSeed? NextBody { get; set; } = null;
 		public InnerSeed? FirstSatellite { get; set; } = null;
 
-		public InnerSeed(Length a, Ratio e, Mass mass, Mass dMass, Mass gMass) : base(a, e, mass, dMass, gMass)
+		public InnerSeed(Length a, Ratio e, Mass dMass, Mass gMass) : base(a, e, dMass, gMass)
 		{
 		}
 	}
@@ -414,7 +414,7 @@ public class Accrete : IBodyFormationAlgorithm
 		UpdateDustLanes(_rInner, _rOuter, seed_mass, crit_mass, body_inner_bound, body_outer_bound);
 	}
 
-	private bool DoMoons(InnerSeed planet, Mass mass, Mass critMass, Mass dustMass, Mass gasMass)
+	bool DoMoons(InnerSeed planet, Mass mass, Mass critMass, Mass dustMass, Mass gasMass)
 	{
 		bool finished = false;
 		Mass existingMass = Mass.FromSolarMasses(0.0);
@@ -431,7 +431,7 @@ public class Accrete : IBodyFormationAlgorithm
 		{
 			if (mass.EarthMasses < 2.5 && mass.EarthMasses > .0001 && existingMass < planet.Mass * .05)
 			{
-				InnerSeed moon = new InnerSeed(Length.FromMeters(0.0), Ratio.FromDecimalFractions(0.0), mass, dustMass, gasMass);
+				var moon = new InnerSeed(Length.FromMeters(0.0), Ratio.FromDecimalFractions(0.0), dustMass, gasMass);
 
 				if (moon.DustMass + moon.GasMass > planet.DustMass + planet.GasMass)
 				{
@@ -441,11 +441,11 @@ public class Accrete : IBodyFormationAlgorithm
 
 					planet.DustMass = moon.DustMass;
 					planet.GasMass = moon.GasMass;
-					planet.Mass = moon.Mass;
+					//planet.Mass = moon.Mass;
 
 					moon.DustMass = tempDust;
 					moon.GasMass = tempGas;
-					moon.Mass = tempMass;
+					//moon.Mass = tempMass;
 				}
 
 				if (planet.FirstSatellite == null)
@@ -563,7 +563,7 @@ public class Accrete : IBodyFormationAlgorithm
 
 					thePlanet.SemiMajorAxis = new_a;
 					thePlanet.Eccentricity = e;
-					thePlanet.Mass = newMass;
+					//thePlanet.Mass = newMass;
 					thePlanet.DustMass += dustMass + new_dust;
 					thePlanet.GasMass += gasMass + new_gas;
 					if (thePlanet.Mass >= critMass)
@@ -602,7 +602,7 @@ public class Accrete : IBodyFormationAlgorithm
 		// Planetesimals didn't collide. Make it a planet.
 		if (!finished)
 		{
-			thePlanet = new InnerSeed(a, e, mass, dustMass, gasMass);
+			thePlanet = new InnerSeed(a, e, dustMass, gasMass);
 
 			if (mass >= critMass)
 			{

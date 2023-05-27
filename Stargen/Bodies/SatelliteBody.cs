@@ -604,8 +604,6 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         return totmass;
     }
 
-    protected abstract void ComputeProperties();
-
     /// <summary>
     /// Generate the Body given known parameters at construction.
     /// </summary>
@@ -698,11 +696,6 @@ class EmptySatelliteBody : SatelliteBody
 {
     public EmptySatelliteBody() : base(new SingularityPhysics())
     {
-    }
-
-    protected override void ComputeProperties()
-    {
-        return;
     }
 
     protected override void Generate()

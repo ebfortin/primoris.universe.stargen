@@ -77,7 +77,7 @@ public class GeneratorTests
 
 		private SatelliteBody GetTestPlanetNoAtmosphere()
 		{
-			var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.FromEarthMasses(1.0), Mass.Zero);
+			var seed = new Seed(Length.FromAstronomicalUnits(1.0), Ratio.FromDecimalFractions(1.0), Mass.FromEarthMasses(1.0), Mass.Zero);
 			var star = GetTestStar();
 
 			var planet = new Planet(seed, star);

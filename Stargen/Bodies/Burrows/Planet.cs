@@ -45,7 +45,7 @@ public class Planet : SatelliteBody
 				  Temperature nightTimeTempK,
 				  Temperature surfTempK,
 				  Acceleration surfGrav,
-				  IEnumerable<Chemical> availableChems) : base(science, new Seed(semiMajorAxisAU, eccentricity, massSM, massSM - gasMassSM, gasMassSM), parentBody)
+				  IEnumerable<Chemical> availableChems) : base(science, new Seed(semiMajorAxisAU, eccentricity, massSM - gasMassSM, gasMassSM), parentBody)
 	{
 		Parent = parentBody;
 		var sun = StellarBody;
@@ -130,11 +130,6 @@ public class Planet : SatelliteBody
 											surfGrav,
 											availableChems)
 	{
-	}
-
-	protected override void ComputeProperties()
-	{
-
 	}
 
     void AdjustPropertiesForRockyBody()
