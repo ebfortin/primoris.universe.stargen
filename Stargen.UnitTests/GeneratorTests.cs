@@ -82,7 +82,7 @@ public class GeneratorTests
 
 			var planet = new Planet(seed, star);
 
-			planet.Stack.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
+			planet.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
 
             return planet;
 		}

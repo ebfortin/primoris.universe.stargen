@@ -214,6 +214,5 @@ public class LayerStack : IEnumerable<Layer>
 	public void CreateLayer(Func<LayerStack, Layer> layerCreator)
 	{
 		var layer = layerCreator(this);
-		//Add(layer);
 	}
 }

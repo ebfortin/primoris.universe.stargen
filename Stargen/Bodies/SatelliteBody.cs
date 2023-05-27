@@ -193,7 +193,9 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The layers.
     /// </value>
-    public LayerStack Stack { get; protected set; }
+    protected LayerStack Stack { get; set; }
+
+    public IEnumerable<Layer> Layers => Stack;
 
     /// <summary>
     /// Gets the core layers.
@@ -557,7 +559,12 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         return Stack.ComputeMassBelow(layer);
     }
 
-    private IEnumerable<(Chemical, Ratio)> ConsolidateComposition(IEnumerable<Layer> layers)
+    public void CreateLayer(Func<LayerStack, Layer> layerCreator)
+    {
+        var layer = layerCreator(Stack);
+    }
+
+    IEnumerable<(Chemical, Ratio)> ConsolidateComposition(IEnumerable<Layer> layers)
     {
         var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
         if (totmass.Equals(Mass.Zero, Extensions.Epsilon, ComparisonType.Relative))
@@ -579,7 +586,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         return grouped;
     }
 
-    private IEnumerable<(Chemical, Ratio)> ConsolidatePoisonousComposition(IEnumerable<Layer> layers)
+    IEnumerable<(Chemical, Ratio)> ConsolidatePoisonousComposition(IEnumerable<Layer> layers)
     {
         var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
         var amounts = (from GaseousLayer l in layers
@@ -598,7 +605,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         return grouped;
     }
 
-    private Mass ConsolidateMass(IEnumerable<Layer> layers)
+    Mass ConsolidateMass(IEnumerable<Layer> layers)
     {
         var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
         return totmass;

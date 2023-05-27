@@ -363,8 +363,8 @@ public class BurrowsPhysicsTests
 
 		void AddMockBreathableAtmo(SatelliteBody parent)
 		{ 
-			parent.Stack.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
-			parent.Stack.CreateLayer(ls => new BasicGaseousLayer(ls, Length.FromKilometers(100.0), new (Chemical, Ratio)[]
+			parent.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
+			parent.CreateLayer(ls => new BasicGaseousLayer(ls, Length.FromKilometers(100.0), new (Chemical, Ratio)[]
 				{
 					(TestGases["O"], Ratio.FromDecimalFractions(0.21)),
 					(TestGases["N"], Ratio.FromDecimalFractions(0.78))
@@ -382,8 +382,8 @@ public class BurrowsPhysicsTests
 				}, Pressure.FromBars(1.0))
 			};*/
 
-            parent.Stack.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
-            parent.Stack.CreateLayer(ls => new BasicGaseousLayer(ls, Length.FromKilometers(100.0), new (Chemical, Ratio)[]
+            parent.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
+            parent.CreateLayer(ls => new BasicGaseousLayer(ls, Length.FromKilometers(100.0), new (Chemical, Ratio)[]
                 {
                     (TestGases["CO2"], Ratio.FromDecimalFractions(1.0))
                 }, Pressure.FromBars(1.0)));
@@ -391,8 +391,8 @@ public class BurrowsPhysicsTests
 
 		private void AddMockUnbreathableAtmo(SatelliteBody parent)
 		{
-			parent.Stack.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
-			parent.Stack.CreateLayer(ls => new BasicGaseousLayer(ls, Length.FromKilometers(100.0), new (Chemical, Ratio)[]
+			parent.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
+			parent.CreateLayer(ls => new BasicGaseousLayer(ls, Length.FromKilometers(100.0), new (Chemical, Ratio)[]
 			{
 				(TestGases["N"], Ratio.FromDecimalFractions(1.0))
 			}, Pressure.FromBars(1.0)));
@@ -400,12 +400,7 @@ public class BurrowsPhysicsTests
 
 		private void AddMockNoAtmo(SatelliteBody parent)
 		{
-			/*var layers = new List<Layer>()
-			{
-				new BasicSolidLayer(parent.Stack, Mass.FromEarthMasses(0.5), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>())
-			};*/
-
-			parent.Stack.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(0.5), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
+			parent.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(0.5), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
 		}
 
 		private SatelliteBody GetMockPlanet(Action<SatelliteBody> mockAtmoGen)
