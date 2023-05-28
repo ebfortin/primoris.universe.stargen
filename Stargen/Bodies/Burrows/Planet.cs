@@ -244,7 +244,7 @@ public class Planet : SatelliteBody
 															  sun.Mass,
 															  sun.Age);
 		//planet.DayLength = Science.Astronomy.GetDayLength(planet.AngularVelocity, planet.OrbitalPeriod, planet.Eccentricity);
-		planet.HasResonantPeriod = Science.Planetology.TestHasResonantPeriod(planet.AngularVelocity, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
+		//planet.HasResonantPeriod = Science.Planetology.TestHasResonantPeriod(planet.AngularVelocity, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
 		//planet.EscapeVelocity = Science.Dynamics.GetEscapeVelocity(mass, planetRadius);
 		planet.VolatileGasInventory = Science.Physics.GetVolatileGasInventory(mass,
 																   EscapeVelocity,

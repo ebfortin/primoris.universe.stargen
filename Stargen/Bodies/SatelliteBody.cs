@@ -304,7 +304,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     ///   <c>true</c> if this instance has resonant period; otherwise, <c>false</c>.
     /// </value>
-    public bool HasResonantPeriod { get; protected set; }
+    public bool HasResonantPeriod => Science.Planetology.TestHasResonantPeriod(AngularVelocity, DayLength, OrbitalPeriod, Eccentricity);
 
     /// <summary>
     /// Gets or sets a value indicating whether this instance has greenhouse effect.
