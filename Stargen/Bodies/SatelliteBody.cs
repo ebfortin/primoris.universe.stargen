@@ -109,7 +109,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// Dust mass.
     /// </value>
-    public Mass DustMass { get; protected set; }
+    public Mass DustMass => Seed.DustMass;
 
     /// <summary>
     /// The mass of gas retained by the planet (ie, the mass of its
@@ -118,7 +118,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// Gas mass.
     /// </value>
-    public Mass GasMass { get; protected set; }
+    public Mass GasMass => Seed.GasMass;
 
 
     /// <summary>
@@ -545,8 +545,8 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         Seed = seed;
 
         //Mass = seed.Mass;
-        GasMass = seed.GasMass;
-        DustMass = seed.DustMass;
+        //GasMass = seed.GasMass;
+        //DustMass = seed.DustMass;
         Eccentricity = seed.Eccentricity;
         SemiMajorAxis = seed.SemiMajorAxis;
 

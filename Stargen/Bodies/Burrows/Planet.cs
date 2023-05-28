@@ -260,11 +260,11 @@ public class Planet : SatelliteBody
 			Pressure surfpres = Science.Physics.GetSurfacePressure(volatileGasInventory, planetRadius, planet.SurfaceAcceleration);
 
 			// Calculate all atmosphere layers total mass.
-			if (GasMass.Equals(Mass.Zero, 1e-9, ComparisonType.Relative))
+			/*if (GasMass.Equals(Mass.Zero, 1e-9, ComparisonType.Relative))
 			{
 				Area surf = Area.FromSquareKilometers(4.0 * Math.PI * Math.Pow(planetRadius.Kilometers, 2.0));
 				GasMass = Mass.FromKilograms(surf.SquareMeters * surfpres.NewtonsPerSquareMeter / surfaceAcceleration.MetersPerSecondSquared);
-			}
+			}*/
 			planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);
 
 			// Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
