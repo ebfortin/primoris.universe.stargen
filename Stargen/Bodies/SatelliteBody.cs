@@ -26,7 +26,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The semi major axis. Default to one AU.
     /// </value>
-    public Length SemiMajorAxis { get; protected set; } = Length.FromAstronomicalUnits(1.0);
+    public Length SemiMajorAxis => Seed.SemiMajorAxis;
 
     /// <summary>
     /// Eccentricity of the body's orbit.
@@ -35,7 +35,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// Body orbit eccentricity. Default to Zero.
     /// </value>
-    public Ratio Eccentricity { get; protected set; } = Ratio.Zero;
+    public Ratio Eccentricity => Seed.Eccentricity;
 
     /// <summary>
     /// Axial tilt of the Body.
@@ -367,6 +367,9 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <summary>
     /// The smallest molecular weight the planet is capable of retaining.
     /// </summary>
+    /// <remarks>
+    /// Fundamental proeprty that needs to be set in a subclass.
+    /// </remarks>
     public Mass MolecularWeightRetained { get; protected set; }
 
 
@@ -391,6 +394,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// </summary>
     /// <remarks>
     /// Body without atmosphere returns 0.
+    /// Fundamental proeprty that needs to be set in a subclass.
     /// </remarks>
     public Temperature BoilingPointWater { get; protected set; }
 
@@ -547,8 +551,8 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         //Mass = seed.Mass;
         //GasMass = seed.GasMass;
         //DustMass = seed.DustMass;
-        Eccentricity = seed.Eccentricity;
-        SemiMajorAxis = seed.SemiMajorAxis;
+        //Eccentricity = seed.Eccentricity;
+        //SemiMajorAxis = seed.SemiMajorAxis;
 
         Stack = new LayerStack(this);
     }

@@ -17,13 +17,14 @@ public class Moon : Planet
 
 		if (roche_limit * 3.0 < hill_sphere)
 		{
-			generatedMoon.SemiMajorAxis = Length.FromKilometers(Extensions.RandomNumber(roche_limit.Kilometers * 1.5, hill_sphere.Kilometers / 2.0));
-			generatedMoon.Eccentricity = Ratio.FromDecimalFractions(Extensions.RandomEccentricity());
+			Seed.SemiMajorAxis = Length.FromKilometers(Extensions.RandomNumber(roche_limit.Kilometers * 1.5, hill_sphere.Kilometers / 2.0));
+			Seed.Eccentricity = Ratio.FromDecimalFractions(Extensions.RandomEccentricity());
 		}
 		else
 		{
-			generatedMoon.SemiMajorAxis = Length.FromAstronomicalUnits(0.0);
-			generatedMoon.Eccentricity = Ratio.FromDecimalFractions(0.0);
+			// TODO: Is this ever used? Does it means that the moon does not exist?
+			Seed.SemiMajorAxis = Length.FromAstronomicalUnits(0.0);
+			Seed.Eccentricity = Ratio.FromDecimalFractions(0.0);
 		}
 	}
 

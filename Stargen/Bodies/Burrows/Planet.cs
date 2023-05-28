@@ -53,8 +53,8 @@ public class Planet : SatelliteBody
 		Parent = parentBody;
 		var sun = StellarBody;
 
-		SemiMajorAxis = semiMajorAxisAU;
-		Eccentricity = eccentricity;
+		//SemiMajorAxis = semiMajorAxisAU;
+		//Eccentricity = eccentricity;
 		AxialTilt = axialTilt;
 		//OrbitZone = Science.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
 		//DayLength = dayLengthHours;
