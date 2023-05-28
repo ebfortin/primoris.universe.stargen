@@ -35,7 +35,7 @@ public class PlanetTests
 
 		private SatelliteBody CreatePlanet(Seed seed, StellarBody star, int pos, string planetID)
 		{
-			return new Planet(seed, star) { Position = pos, Name = planetID };
+			return new Planet(seed, star, true) { Position = pos, Name = planetID };
 		}
 
 		[TestCategory("Planet.Equals")]

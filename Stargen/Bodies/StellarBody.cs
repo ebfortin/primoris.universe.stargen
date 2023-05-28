@@ -166,7 +166,7 @@ public abstract class StellarBody : Body
 		Radius = StellarType.Radius;
 		Luminosity = StellarType.Luminosity;
 		Temperature = StellarType.Temperature;
-		EscapeVelocity = Science!.Dynamics.GetEscapeVelocity(Mass, Radius);
+		//EscapeVelocity = Science!.Dynamics.GetEscapeVelocity(Mass, Radius);
 	}
 
 	/// <summary>
@@ -187,7 +187,7 @@ public abstract class StellarBody : Body
 		Radius = StellarType.Radius;
 		Luminosity = StellarType.Luminosity;
 		Temperature = StellarType.Temperature;
-		EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
+		//EscapeVelocity = Science.Dynamics.GetEscapeVelocity(Mass, Radius);
 	}
 
 	/// <summary>

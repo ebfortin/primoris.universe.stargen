@@ -8,9 +8,6 @@ namespace Primoris.Universe.Stargen.Bodies;
 
 public record Seed
 {
-	//public Seed NextBody { get; set; } = null;
-	//public Seed FirstSatellite { get; set; } = null;
-
 	/// <summary>
 	/// Gets or sets the satellites Seeds.
 	/// </summary>
@@ -71,6 +68,9 @@ public record Seed
 	/// </value>
 	public bool IsGasGiant { get; set; } = false;
 
+	internal Seed() : this(default, default, default, default)
+	{
+	}
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Seed"/> class.
@@ -84,9 +84,9 @@ public record Seed
 	{
 		SemiMajorAxis = a;
 		Eccentricity = e;
-		//Mass = mass;
 		DustMass = dMass;
 		GasMass = gMass;
 	}
+
 }
 

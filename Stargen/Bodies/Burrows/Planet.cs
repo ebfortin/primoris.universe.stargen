@@ -28,7 +28,10 @@ public class Planet : SatelliteBody
 			Generate();
 	}
 
-	public Planet(Seed seed, Body parentBody) : this(parentBody.Science, seed, parentBody) { }
+	public Planet(Seed seed, Body parentBody, bool generateLayers = false) 
+		: this(parentBody.Science, seed, parentBody, generateLayers) 
+	{ 
+	}
 
     public Planet(IScienceAstrophysics science,
 				  Body parentBody,
@@ -66,20 +69,20 @@ public class Planet : SatelliteBody
 		//Density = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
 		var approxDensity = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
         //ExosphereTemperature = Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Extensions.Pow2(SemiMajorAxis / sun.EcosphereRadius));
-        SurfaceAcceleration = surfGrav; 
-		EscapeVelocity = Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, planetRadius);
+        //SurfaceAcceleration = surfGrav; 
+		//EscapeVelocity = Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, planetRadius);
 		DaytimeTemperature = dayTimeTempK;
 		NighttimeTemperature = nightTimeTempK;
 		Temperature = surfTempK;
-		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, massSM, planetRadius, ExosphereTemperature, sun.Age);
+		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfGrav, massSM, planetRadius, ExosphereTemperature, sun.Age);
 		VolatileGasInventory = Science.Physics.GetVolatileGasInventory(GasMass + DustMass,
-															  EscapeVelocity,
+                                                              Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, planetRadius),
 															  RMSVelocity,
 															  sun.Mass,
 															  GasMass,
 															  OrbitZone,
 															  Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis));
-		SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, planetRadius, SurfaceAcceleration);
+		SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, planetRadius, surfGrav);
 
 		if (Science.Planetology.TestIsGasGiant(massSM, gasMassSM, MolecularWeightRetained))
 		{
@@ -95,8 +98,6 @@ public class Planet : SatelliteBody
 			// Generate complete atmosphere.
 			Stack.CreateLayer(ls => new BasicGaseousLayer(ls, gasMassSM, planetRadius - coreRadius, availableChems));
 		}
-
-		IsForming = false;
 	}
 
 	public Planet(Body parentBody,
@@ -151,7 +152,7 @@ public class Planet : SatelliteBody
 				var h2Loss = (1.0 - 1.0 / Math.Exp(age / h2Life)) * h2Mass;
 
 				FormationGasMass -= Mass.FromSolarMasses(h2Loss);
-				SurfaceAcceleration = Science.Physics.GetAcceleration(Mass, Radius);
+				//SurfaceAcceleration = Science.Physics.GetAcceleration(Mass, Radius);
 			}
 
 			if (heLife < age)
@@ -159,7 +160,7 @@ public class Planet : SatelliteBody
 				var heLoss = (1.0 - 1.0 / Math.Exp(age / heLife)) * heMass;
 
 				FormationGasMass -= Mass.FromSolarMasses(heLoss);
-				SurfaceAcceleration = Science.Physics.GetAcceleration(Mass, Radius);
+				//SurfaceAcceleration = Science.Physics.GetAcceleration(Mass, Radius);
 			}
 		}
 	}
@@ -207,10 +208,10 @@ public class Planet : SatelliteBody
         Length planetRadius = Mathematics.GetRadiusFromDensity(mass, approxDensity);
 		Radius = planetRadius;
 
-		planet.SurfaceAcceleration = GetAcceleration(mass, planetRadius);
+		var surfaceAcceleration = GetAcceleration(mass, planetRadius);
 		//planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAcceleration);
 
-		planet.MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, mass, planetRadius, ExosphereTemperature, sun.Age);
+		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, planetRadius, ExosphereTemperature, sun.Age);
 
 		// Is the planet a gas giant?
 		if (Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
@@ -227,12 +228,12 @@ public class Planet : SatelliteBody
 			Density = Science.Physics.GetDensityFromBody(mass, planetRadius);
 
 			// Radius has changed, we need to adjust Surfa
-			SurfaceAcceleration = GetAcceleration(mass, planetRadius);
+			//SurfaceAcceleration = GetAcceleration(mass, planetRadius);
 			//SurfaceGravityG = Environment.Gravity(SurfaceAcceleration);
 
 			AdjustPropertiesForRockyBody();
 
-			MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(SurfaceAcceleration, mass, planetRadius, ExosphereTemperature, sun.Age);
+            MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, planetRadius, ExosphereTemperature, sun.Age);
 		}
 
 		planet.AngularVelocity = Science.Dynamics.GetAngularVelocity(mass,
@@ -244,7 +245,7 @@ public class Planet : SatelliteBody
 															  sun.Age);
 		//planet.DayLength = Science.Astronomy.GetDayLength(planet.AngularVelocity, planet.OrbitalPeriod, planet.Eccentricity);
 		planet.HasResonantPeriod = Science.Planetology.TestHasResonantPeriod(planet.AngularVelocity, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
-		planet.EscapeVelocity = Science.Dynamics.GetEscapeVelocity(mass, planetRadius);
+		//planet.EscapeVelocity = Science.Dynamics.GetEscapeVelocity(mass, planetRadius);
 		planet.VolatileGasInventory = Science.Physics.GetVolatileGasInventory(mass,
 																   EscapeVelocity,
 																   RMSVelocity,
@@ -262,7 +263,7 @@ public class Planet : SatelliteBody
 			if (GasMass.Equals(Mass.Zero, 1e-9, ComparisonType.Relative))
 			{
 				Area surf = Area.FromSquareKilometers(4.0 * Math.PI * Math.Pow(planetRadius.Kilometers, 2.0));
-				GasMass = Mass.FromKilograms(surf.SquareMeters * surfpres.NewtonsPerSquareMeter / planet.SurfaceAcceleration.MetersPerSecondSquared);
+				GasMass = Mass.FromKilograms(surf.SquareMeters * surfpres.NewtonsPerSquareMeter / surfaceAcceleration.MetersPerSecondSquared);
 			}
 			planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);
 
@@ -293,8 +294,6 @@ public class Planet : SatelliteBody
 									 MaxTemperature,
 									 BoilingPointWater,
 									 Temperature);
-
-		IsForming = false;
 	}
 
 	/// <summary>

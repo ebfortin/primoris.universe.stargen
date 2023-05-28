@@ -36,7 +36,7 @@ public abstract class GaseousLayer : HomogeneousLayer
     /// <value>
     /// The poisonous composition internal IList.
     /// </value>
-    protected IList<(Chemical, Ratio)> PoisonousCompositionInternal { get; } = new List<(Chemical, Ratio)>();
+    protected IList<(Chemical, Ratio)> PoisonousCompositionInternal => new List<(Chemical, Ratio)>();
 
     /// <summary>
     /// Gets or sets the poisonous composition.

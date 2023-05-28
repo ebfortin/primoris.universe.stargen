@@ -127,7 +127,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The total mass of this SatelliteBody.
     /// </value>
-    public override Mass Mass => Mass.FromEarthMasses((from l in Stack select l.Mass.EarthMasses).Sum());
+    public override Mass Mass => Stack.Count > 0 ? Mass.FromEarthMasses((from l in Stack select l.Mass.EarthMasses).Sum()) : DustMass + GasMass;
 
     /// <summary>
     /// The gravitational acceleration felt at the surface of the planet.
@@ -138,7 +138,8 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// Acceleration felt at the Body surface.
     /// </value>
-    public Acceleration SurfaceAcceleration { get; protected set; }
+    public Acceleration SurfaceAcceleration => Science.Physics.GetAcceleration(CoreMass, CoreRadius);
+
 
     Length _initialRadius = default;
     public override Length Radius
@@ -170,7 +171,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     {
         get
         {
-            Length radius = Length.Zero;
+            Length radius = default;
             foreach (var l in Stack)
             {
                 if (l is SolidLayer)
@@ -186,7 +187,6 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// </summary>
     public Density Density { get; protected set; }
 
-
     /// <summary>
     /// Gets or sets the layers.
     /// </summary>
@@ -195,6 +195,9 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// </value>
     protected LayerStack Stack { get; set; }
 
+    /// <summary>
+    /// Get all the layers of this SatelliteBody.
+    /// </summary>
     public IEnumerable<Layer> Layers => Stack;
 
     /// <summary>
@@ -205,6 +208,9 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// </value>
     public IEnumerable<Layer> Core => from l in Stack where l is SolidLayer select l;
 
+    /// <summary>
+    /// Get the mass of the SatelliteBody core.
+    /// </summary>
     public Mass CoreMass => Mass.FromEarthMasses((from l in Stack where l is SolidLayer select l.Mass.EarthMasses).Sum());
 
     /// <summary>
@@ -256,14 +262,6 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     ///     <c>true</c> if there's at least one solid layer; otherwise, <c>false</c>.
     /// </value>
     public bool HasRockyBody => (from l in Stack select l is SolidLayer).Any(x => x == true);
-
-    /// <summary>
-    /// Gets or sets a value indicating whether this instance is forming.
-    /// </summary>
-    /// <value>
-    ///   <c>true</c> if this instance is forming; otherwise, <c>false</c>.
-    /// </value>
-    public bool IsForming { get; protected set; } = true;
 
     /// <summary>
     /// Gets a value indicating whether this instance is gas giant.
@@ -361,6 +359,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// The smallest molecular weight the planet is capable of retaining.
     /// </summary>
     public Mass MolecularWeightRetained { get; protected set; }
+
 
     /// <summary>
     /// Unitless value for the inventory of volatile gases that result from
@@ -512,6 +511,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 
     protected internal SatelliteBody(IScienceAstrophysics science) : base(science)
     {
+        Seed = new Seed();
         Parent = this;
         Stack = new LayerStack(this);
     }
@@ -528,7 +528,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 
         Seed = seed;
 
-        Mass = seed.Mass;
+        //Mass = seed.Mass;
         GasMass = seed.GasMass;
         DustMass = seed.DustMass;
         Eccentricity = seed.Eccentricity;
@@ -622,18 +622,6 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <param name="seed">Starting Seed of the satellites of the current Body.</param>
     /// <returns></returns>
     protected abstract IEnumerable<SatelliteBody> GenerateSatellites(Seed seed);
-
-    /// <summary>
-    /// Change characteristics of the current Body given time elapsed.
-    /// </summary>
-    /// <param name="time"></param>
-    protected void Evolve(Duration time)
-    {
-        if (IsForming)
-            throw new InvalidBodyOperationException("Body is still in formation stage.");
-
-        OnEvolve(time);
-    }
 
     /// <summary>
     /// Executed in a derived class when <see cref="Evolve(Duration)"/> is called.

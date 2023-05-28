@@ -70,15 +70,15 @@ public abstract class Body
 	/// <summary>
 	/// Velocity at which an object can escape the Body gravitational pull.
 	/// </summary>
-    public Speed EscapeVelocity { get; protected set; }
+    public Speed EscapeVelocity => Science.Dynamics.GetEscapeVelocity(Mass, Radius);
 
-	/// <summary>
-	/// Gets or sets the temperature.
-	/// </summary>
-	/// <value>
-	/// The temperature.
-	/// </value>
-	public Temperature Temperature { get; protected set; }
+    /// <summary>
+    /// Gets or sets the temperature.
+    /// </summary>
+    /// <value>
+    /// The temperature.
+    /// </value>
+    public Temperature Temperature { get; protected set; }
 
 	/// <summary>
 	/// Gets or sets the satellites.

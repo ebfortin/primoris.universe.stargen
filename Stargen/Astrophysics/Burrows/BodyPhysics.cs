@@ -231,8 +231,9 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 	public virtual Speed GetEscapeVelocity(Mass massSM,
 									  Length radius)
 	{
-		//var massInGrams = massSM * GlobalConstants.SOLAR_MASS_IN_GRAMS;
-		//var radiusinCM = radius * GlobalConstants.CM_PER_KM;
+		if (radius.Value == default)
+			return default;
+
 		return Speed.FromCentimetersPerSecond(Math.Sqrt(2.0 * GlobalConstants.GRAV_CONSTANT * massSM.Grams / radius.Centimeters));
 	}
 
@@ -469,6 +470,9 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 	/// <returns>Acceleration returned in units of cm/sec2</returns>
 	public virtual Acceleration GetAcceleration(Mass mass, Length radius)
 	{
+		if (radius.Value == default)
+			return default;
+
 		return Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * (mass.Grams / Extensions.Pow2(radius.Centimeters)));
 	}
 
