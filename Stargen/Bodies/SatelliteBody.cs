@@ -542,7 +542,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     {
         Parent = parentBody;
 
-        Seed = seed;
+        Seed = seed with { };
 
         //Mass = seed.Mass;
         //GasMass = seed.GasMass;
