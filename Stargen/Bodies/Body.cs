@@ -73,6 +73,7 @@ public abstract class Body
     public Speed EscapeVelocity => Science.Dynamics.GetEscapeVelocity(Mass, Radius);
 
     /// <summary>
+	/// TODO: Set also for GasGiant. Right now it is at 1e308.
     /// Gets or sets the temperature.
     /// </summary>
     /// <value>

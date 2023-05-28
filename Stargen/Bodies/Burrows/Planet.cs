@@ -75,14 +75,14 @@ public class Planet : SatelliteBody
 		NighttimeTemperature = nightTimeTempK;
 		Temperature = surfTempK;
 		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfGrav, massSM, planetRadius, ExosphereTemperature, sun.Age);
-		VolatileGasInventory = Science.Physics.GetVolatileGasInventory(GasMass + DustMass,
+		var volatileGasInventory = Science.Physics.GetVolatileGasInventory(GasMass + DustMass,
                                                               Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, planetRadius),
 															  RMSVelocity,
 															  sun.Mass,
 															  GasMass,
 															  OrbitZone,
 															  Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis));
-		SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, planetRadius, surfGrav);
+		SurfacePressure = Science.Physics.GetSurfacePressure(volatileGasInventory, planetRadius, surfGrav);
 
 		if (Science.Planetology.TestIsGasGiant(massSM, gasMassSM, MolecularWeightRetained))
 		{
@@ -168,7 +168,7 @@ public class Planet : SatelliteBody
 	void AdjustPropertiesForGasBody()
 	{
 		//HasGreenhouseEffect = false;
-		VolatileGasInventory = Ratio.FromDecimalFractions(GlobalConstants.NOT_APPLICABLE);
+		//VolatileGasInventory = Ratio.FromDecimalFractions(GlobalConstants.NOT_APPLICABLE);
 		BoilingPointWater = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
 
 		Temperature = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
@@ -246,7 +246,7 @@ public class Planet : SatelliteBody
 		//planet.DayLength = Science.Astronomy.GetDayLength(planet.AngularVelocity, planet.OrbitalPeriod, planet.Eccentricity);
 		//planet.HasResonantPeriod = Science.Planetology.TestHasResonantPeriod(planet.AngularVelocity, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
 		//planet.EscapeVelocity = Science.Dynamics.GetEscapeVelocity(mass, planetRadius);
-		planet.VolatileGasInventory = Science.Physics.GetVolatileGasInventory(mass,
+		var volatileGasInventory = Science.Physics.GetVolatileGasInventory(mass,
 																   EscapeVelocity,
 																   RMSVelocity,
 																   sun.Mass,
@@ -257,7 +257,7 @@ public class Planet : SatelliteBody
 
 		if (!Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
 		{
-			Pressure surfpres = Science.Physics.GetSurfacePressure(planet.VolatileGasInventory, planetRadius, planet.SurfaceAcceleration);
+			Pressure surfpres = Science.Physics.GetSurfacePressure(volatileGasInventory, planetRadius, planet.SurfaceAcceleration);
 
 			// Calculate all atmosphere layers total mass.
 			if (GasMass.Equals(Mass.Zero, 1e-9, ComparisonType.Relative))
@@ -433,9 +433,9 @@ public class Planet : SatelliteBody
 		{
 			//planet.HasGreenhouseEffect = false;
 
-			planet.VolatileGasInventory = Science!.Physics.GetVolatileGasInventory(planet.Mass,
+			/*VolatileGasInventory = Science!.Physics.GetVolatileGasInventory(planet.Mass,
 				planet.EscapeVelocity, planet.RMSVelocity, planet.Parent.Mass, planet.GasMass,
-				planet.OrbitZone, planet.HasGreenhouseEffect);
+				planet.OrbitZone, planet.HasGreenhouseEffect);*/
 			//planet.Atmosphere.SurfacePressure = Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
 
 			planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);

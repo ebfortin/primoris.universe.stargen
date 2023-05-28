@@ -307,6 +307,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     public bool HasResonantPeriod => Science.Planetology.TestHasResonantPeriod(AngularVelocity, DayLength, OrbitalPeriod, Eccentricity);
 
     /// <summary>
+    /// TODO: Broken. For Barren, for example, it gives a greenhouse effect.
     /// Gets or sets a value indicating whether this instance has greenhouse effect.
     /// </summary>
     /// <value>
@@ -369,7 +370,13 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// Used in the calculation of surface pressure. See Fogg
     /// eq. 16. 
     /// </remarks>
-    public Ratio VolatileGasInventory { get; protected set; }
+    public Ratio VolatileGasInventory => Science.Physics.GetVolatileGasInventory(GasMass + DustMass,
+                                                              EscapeVelocity,
+                                                              RMSVelocity,
+                                                              StellarBody.Mass,
+                                                              GasMass,
+                                                              OrbitZone,
+                                                              HasGreenhouseEffect);
 
     /// <summary>
     /// Boiling point of water on the Body.
@@ -390,6 +397,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// Gets or sets the surface pressure.
     /// </summary>
     /// <remarks>
+    /// TODO: GasGiant should return the pressure at the center of the body.
     /// Body without Atmosphere returns Zero.
     /// </remarks>
     /// <value>
@@ -659,7 +667,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
             Satellites.Count() == other.Satellites.Count() &&
             Extensions.AlmostEqual(RMSVelocity.CentimetersPerSecond, other.RMSVelocity.CentimetersPerSecond) &&
             Extensions.AlmostEqual(MolecularWeightRetained.Kilograms, other.MolecularWeightRetained.Kilograms) &&
-            Extensions.AlmostEqual(VolatileGasInventory.Value, other.VolatileGasInventory.Value) &&
+            /*Extensions.AlmostEqual(VolatileGasInventory.Value, other.VolatileGasInventory.Value) &&*/
             Extensions.AlmostEqual(BoilingPointWater.Kelvins, other.BoilingPointWater.Kelvins) &&
             Extensions.AlmostEqual(Albedo.Value, other.Albedo.Value) &&
             Extensions.AlmostEqual(Illumination.Value, other.Illumination.Value) &&

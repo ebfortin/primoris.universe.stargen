@@ -253,13 +253,7 @@ public abstract class Layer : IEquatable<Layer>
         if (other is null)
             return false;
 
-        return EqualityComparer<StellarBody>.Default.Equals(StellarBody, other.StellarBody) &&
-               EqualityComparer<SatelliteBody>.Default.Equals(Parent, other.Parent) &&
-               Thickness.Equals(other.Thickness, Extensions.Epsilon, ComparisonType.Relative) &&
-               Mass.Equals(other.Mass, Extensions.Epsilon, ComparisonType.Relative) &&
-               MeanTemperature.Equals(other.MeanTemperature, Extensions.Epsilon, ComparisonType.Relative) &&
-               EqualityComparer<IList<(Chemical, Ratio)>>.Default.Equals(CompositionInternal, other.CompositionInternal) &&
-               EqualityComparer<IEnumerable<(Chemical, Ratio)>>.Default.Equals(Composition, other.Composition);
+        return ReferenceEquals(this, other);
     }
 
     /// <summary>
@@ -284,7 +278,7 @@ public abstract class Layer : IEquatable<Layer>
     /// </returns>
     public static bool operator ==(Layer left, Layer right)
     {
-        return EqualityComparer<Layer>.Default.Equals(left, right);
+        return left.Equals(right);
     }
 
     /// <summary>
