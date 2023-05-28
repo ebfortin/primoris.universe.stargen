@@ -225,7 +225,7 @@ public class Planet : SatelliteBody
 		}
 		else // If not, it's rocky.
 		{
-			Density = Science.Physics.GetDensityFromBody(mass, planetRadius);
+			//Density = Science.Physics.GetDensityFromBody(mass, planetRadius);
 
 			// Radius has changed, we need to adjust Surfa
 			//SurfaceAcceleration = GetAcceleration(mass, planetRadius);
@@ -285,7 +285,7 @@ public class Planet : SatelliteBody
 			//HasGreenhouseEffect = Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & SurfacePressure > Pressure.Zero;
 		}
 
-		Type = Science.Planetology.GetBodyType(Mass,
+		/*Type = Science.Planetology.GetBodyType(Mass,
 									 GasMass,
 									 MolecularWeightRetained,
 									 SurfacePressure,
@@ -293,7 +293,7 @@ public class Planet : SatelliteBody
 									 IceCoverFraction,
 									 MaxTemperature,
 									 BoilingPointWater,
-									 Temperature);
+									 Temperature);*/
 	}
 
 	/// <summary>

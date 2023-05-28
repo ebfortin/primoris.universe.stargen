@@ -185,7 +185,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <summary>
     /// Mean overall Density for all of the SatelliteBody solid layers.
     /// </summary>
-    public Density Density { get; protected set; }
+    public Density Density => Science.Physics.GetDensityFromBody(Mass, Radius);
 
     /// <summary>
     /// Gets or sets the layers.
@@ -253,7 +253,15 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The type.
     /// </value>
-    public BodyType Type { get; protected set; }
+    public BodyType Type => Science.Planetology.GetBodyType(Mass,
+                                     GasMass,
+                                     MolecularWeightRetained,
+                                     SurfacePressure,
+                                     WaterCoverFraction,
+                                     IceCoverFraction,
+                                     MaxTemperature,
+                                     BoilingPointWater,
+                                     Temperature);
 
     /// <summary>
     /// Returns true if there is at least one SolidLayer in this SatelliteBody.
