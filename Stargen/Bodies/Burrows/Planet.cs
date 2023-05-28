@@ -167,7 +167,7 @@ public class Planet : SatelliteBody
 
 	void AdjustPropertiesForGasBody()
 	{
-		HasGreenhouseEffect = false;
+		//HasGreenhouseEffect = false;
 		VolatileGasInventory = Ratio.FromDecimalFractions(GlobalConstants.NOT_APPLICABLE);
 		BoilingPointWater = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
 
@@ -282,7 +282,7 @@ public class Planet : SatelliteBody
 				Stack.CreateLayer(ls => new BasicGaseousLayer(ls, GasMass, Radius - coreRadius, Chemical.All.Values));
 			SurfacePressure = surfpres;
 
-			HasGreenhouseEffect = Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & SurfacePressure > Pressure.Zero;
+			//HasGreenhouseEffect = Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & SurfacePressure > Pressure.Zero;
 		}
 
 		Type = Science.Planetology.GetBodyType(Mass,
@@ -431,7 +431,7 @@ public class Planet : SatelliteBody
 
 		if (planet.HasGreenhouseEffect && planet.MaxTemperature < planet.BoilingPointWater)
 		{
-			planet.HasGreenhouseEffect = false;
+			//planet.HasGreenhouseEffect = false;
 
 			planet.VolatileGasInventory = Science!.Physics.GetVolatileGasInventory(planet.Mass,
 				planet.EscapeVelocity, planet.RMSVelocity, planet.Parent.Mass, planet.GasMass,

@@ -312,7 +312,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     ///   <c>true</c> if this instance has greenhouse effect; otherwise, <c>false</c>.
     /// </value>
-    public bool HasGreenhouseEffect { get; protected set; }
+    public bool HasGreenhouseEffect => Science.Planetology.TestHasGreenhouseEffect(StellarBody.EcosphereRadius, SemiMajorAxis);
 
     #endregion
 
