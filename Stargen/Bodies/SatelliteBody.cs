@@ -279,7 +279,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     ///   <c>true</c> if this instance is tidally locked; otherwise, <c>false</c>.
     /// </value>
-    public bool IsTidallyLocked { get; protected set; }
+    public bool IsTidallyLocked => Science.Planetology.TestIsTidallyLocked(DayLength, OrbitalPeriod);
 
     public bool IsEarthlike => Science.Planetology.TestIsEarthLike(Temperature,
                                                              WaterCoverFraction,

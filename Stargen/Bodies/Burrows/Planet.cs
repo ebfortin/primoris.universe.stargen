@@ -271,7 +271,7 @@ public class Planet : SatelliteBody
 			// planet.cloud_cover, planet.ice_cover
 			AdjustSurfaceTemperatures(surfpres);
 
-			planet.IsTidallyLocked = Science.Planetology.TestIsTidallyLocked(DayLength, OrbitalPeriod);
+			//planet.IsTidallyLocked = Science.Planetology.TestIsTidallyLocked(DayLength, OrbitalPeriod);
 
 			// Add basic Burrows layer.
 			var coreRadius = Science.Planetology.GetCoreRadius(mass, OrbitZone, false);
@@ -408,7 +408,7 @@ public class Planet : SatelliteBody
 	/// <param name="last_ice"></param>
 	/// <param name="last_temp"></param>
 	/// <param name="last_albedo"></param>
-	private void CalculateSurfaceTemperature(bool first, Ratio last_water, Ratio last_clouds, Ratio last_ice, Temperature last_temp, Ratio last_albedo, Pressure surfpres)
+	void CalculateSurfaceTemperature(bool first, Ratio last_water, Ratio last_clouds, Ratio last_ice, Temperature last_temp, Ratio last_albedo, Pressure surfpres)
 	{
 		Temperature effectiveTemp;
 		Ratio waterRaw;
