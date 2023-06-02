@@ -173,7 +173,7 @@ public class Planet : SatelliteBody
 
 		Temperature = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
 		GreenhouseRiseTemperature = TemperatureDelta.Zero;
-		Albedo = Ratio.FromDecimalFractions(Extensions.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1));
+		Albedo = Ratio.FromDecimalFractions(Science.Random.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1));
 		WaterCoverFraction = Ratio.Zero;
 		CloudCoverFraction = Ratio.Zero;
 		IceCoverFraction = Ratio.Zero;
@@ -181,7 +181,7 @@ public class Planet : SatelliteBody
 
 	private Angle GetRandomInclination(Length semiMajorAxis)
 	{
-		var inclination = ((int)(Math.Pow(semiMajorAxis.Kilometers / GlobalConstants.ASTRONOMICAL_UNIT_KM, 0.2) * Extensions.About(GlobalConstants.EARTH_AXIAL_TILT, 0.4)) % 360);
+		var inclination = ((int)(Math.Pow(semiMajorAxis.Kilometers / GlobalConstants.ASTRONOMICAL_UNIT_KM, 0.2) * Science.Random.About(GlobalConstants.EARTH_AXIAL_TILT, 0.4)) % 360);
 		return Angle.FromDegrees(inclination);
 	}
 

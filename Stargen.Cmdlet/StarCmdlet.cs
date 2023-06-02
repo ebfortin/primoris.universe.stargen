@@ -10,7 +10,6 @@ using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
-using Primoris.Universe.Stargen.Services;
 
 using Units = UnitsNet;
 using Primoris.Universe.Stargen.Bodies;
@@ -119,7 +118,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
 				Name = ng.NextName();
 			}
 
-			Provider.Use().WithAstrophysics(new BodyPhysics());
+			//Provider.Use().WithAstrophysics(new BodyPhysics());
 			return new Star(new BodyPhysics(), accrete, st, Name);
 		}
 
@@ -138,7 +137,7 @@ namespace Primoris.Universe.Stargen.Cmdlets
                 Name = ng.NextName();
             }
 
-			Provider.Use().WithAstrophysics(new BodyPhysics());
+			//Provider.Use().WithAstrophysics(new BodyPhysics());
             return new Star(new BodyPhysics(), new NullBodyFormationAlgorithm(), st, Name);
         }
 	}

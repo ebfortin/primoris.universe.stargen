@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Astrophysics.Singularity;
-using Primoris.Universe.Stargen.Services;
 using UnitsNet;
 
 

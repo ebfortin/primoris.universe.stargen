@@ -1,5 +1,6 @@
 ﻿using CsvHelper.Configuration.Attributes;
 
+using Primoris.Numerics;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using Primoris.Universe.Stargen.Bodies;
 
@@ -11,6 +12,8 @@ namespace Primoris.Universe.Stargen.Astrophysics;
 public interface IScienceAstrophysics
 {
 	static IScienceAstrophysics Default { get; } = new BodyPhysics();
+
+	IRandom Random { get; }
 
 	IScienceAstronomy Astronomy { get; }
 

@@ -17,8 +17,8 @@ public class Moon : Planet
 
 		if (roche_limit * 3.0 < hill_sphere)
 		{
-			Seed.SemiMajorAxis = Length.FromKilometers(Extensions.RandomNumber(roche_limit.Kilometers * 1.5, hill_sphere.Kilometers / 2.0));
-			Seed.Eccentricity = Ratio.FromDecimalFractions(Extensions.RandomEccentricity());
+			Seed.SemiMajorAxis = Length.FromKilometers(Science.Random.NextFloat(roche_limit.Kilometers * 1.5, hill_sphere.Kilometers / 2.0));
+			Seed.Eccentricity = Ratio.FromDecimalFractions(Science.Random.Eccentricity());
 		}
 		else
 		{

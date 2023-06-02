@@ -6,7 +6,6 @@ using System;
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Bodies.Burrows;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
-using Primoris.Universe.Stargen.Services;
 using UnitsNet;
 
 using Data = DLS.StarformNET.Data;

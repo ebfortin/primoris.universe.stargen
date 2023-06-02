@@ -1,4 +1,5 @@
-﻿using Primoris.Universe.Stargen.Bodies;
+﻿using Primoris.Numerics;
+using Primoris.Universe.Stargen.Bodies;
 
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,7 @@ public class SingularityPhysics : IScienceAstrophysics, IScienceAstronomy, IScie
 
     public IScienceThermodynamics Thermodynamics => this;
 
-
-
+    public IRandom Random { get; } = new BasicRandom();
 
     public Ratio GetAlbedo(Ratio waterFraction, Ratio cloudFraction, Ratio iceFraction, Pressure surfPressure)
     {

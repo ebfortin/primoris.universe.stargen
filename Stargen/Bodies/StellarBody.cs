@@ -1,5 +1,4 @@
 ﻿using Primoris.Universe.Stargen.Astrophysics;
-using Primoris.Universe.Stargen.Services;
 
 using System.Drawing;
 
@@ -118,7 +117,7 @@ public abstract class StellarBody : Body
 	/// </summary>
 	/// <param name="phy">The Science interface to use.</param>
 	public StellarBody(IScienceAstrophysics phy, IBodyFormationAlgorithm algo) 
-		: this(phy, algo, Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4)))
+		: this(phy, algo, Mass.FromSolarMasses(phy.Random.NextFloat(0.7, 1.4)))
 	{
 	}
 
@@ -144,7 +143,7 @@ public abstract class StellarBody : Body
 
 		if (mass.SolarMasses < 0.2 || mass.SolarMasses > 1.5)
 		{
-			mass = Mass.FromSolarMasses(Extensions.RandomNumber(0.7, 1.4));
+			mass = Mass.FromSolarMasses(Science.Random.NextFloat(0.7, 1.4));
 		}
 
 		if (lum.SolarLuminosities == 0.0)
@@ -158,7 +157,7 @@ public abstract class StellarBody : Body
 		Life = Duration.FromYears365(1.0E10 * (mass.SolarMasses / lum.SolarLuminosities));
 
 		if (age.Years365 == double.MaxValue)
-			Age = Duration.FromYears365(Extensions.RandomNumber(MinSunAge.Years365, Life < MaxSunAge ? Life.Years365 : MaxSunAge.Years365));
+			Age = Duration.FromYears365(Science.Random.NextFloat(MinSunAge.Years365, Life < MaxSunAge ? Life.Years365 : MaxSunAge.Years365));
 		else
 			Age = age;
 
@@ -181,7 +180,7 @@ public abstract class StellarBody : Body
 
 		StellarType = st;
 		Life = Duration.FromYears365(1.0E10 * (st.Mass.SolarMasses / st.Luminosity.SolarLuminosities));
-		Age = Duration.FromYears365(Extensions.RandomNumber(MinSunAge.Years365, Life < MaxSunAge ? Life.Years365 : MaxSunAge.Years365));
+		Age = Duration.FromYears365(Science.Random.NextFloat(MinSunAge.Years365, Life < MaxSunAge ? Life.Years365 : MaxSunAge.Years365));
 
 		Mass = StellarType.Mass;
 		Radius = StellarType.Radius;

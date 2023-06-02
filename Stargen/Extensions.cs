@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.CompilerServices;
 
+using Primoris.Numerics;
 using Primoris.Universe.Stargen.Astrophysics;
-using Primoris.Universe.Stargen.Services;
 
 
 
@@ -40,10 +40,10 @@ namespace Primoris.Universe.Stargen
 		/// Initializes the random seed.
 		/// </summary>
 		/// <param name="seed">The seed.</param>
-		public static void InitRandomSeed(int seed)
+		/*public static void InitRandomSeed(int seed)
         {
             Provider.Use().WithRandom(new Random(seed));
-        }
+        }*/
 
 		/// <summary>
 		/// Gets the semi minor axis.
@@ -110,10 +110,10 @@ namespace Primoris.Universe.Stargen
 		/// Returns a Random double number.
 		/// </summary>
 		/// <returns>Random number.</returns>
-		public static double RandomNumber()
+		/*public static double RandomNumber()
         {
             return Provider.Use().GetService<Random>().NextDouble();
-        }
+        }*/
 
 		/// <summary>
 		/// Returns a random integer number.
@@ -121,10 +121,10 @@ namespace Primoris.Universe.Stargen
 		/// <param name="lowerBound">The lower bound.</param>
 		/// <param name="upperBound">The upper bound.</param>
 		/// <returns>Random number.</returns>
-		public static int RandomInt(int lowerBound, int upperBound)
+		/*public static int RandomInt(int lowerBound, int upperBound)
         {
             return Provider.Use().GetService<Random>().Next(lowerBound, upperBound);
-        }
+        }*/
 
 		/// <summary>
 		/// Returns a random double number between two bound.
@@ -132,11 +132,11 @@ namespace Primoris.Universe.Stargen
 		/// <param name="inner">The inner bound.</param>
 		/// <param name="outer">The outer bound.</param>
 		/// <returns>Random number.</returns>
-		public static double RandomNumber(double inner, double outer)
+		/*public static double RandomNumber(this IRandom rnd, double inner, double outer)
         {
             var range = outer - inner;
-            return Provider.Use().GetService<Random>().NextDouble() * range + inner;
-        }
+            return rnd.NextFloat<double>() * range + inner;
+        }*/
 
 		/// <summary>
 		/// Returns a new number around a value given a variation around it.
@@ -144,18 +144,18 @@ namespace Primoris.Universe.Stargen
 		/// <param name="value">The value.</param>
 		/// <param name="variation">The variation.</param>
 		/// <returns>A new number around the given value.</returns>
-		public static double About(this double value, double variation)
+		public static double About(this IRandom random, double value, double variation)
         {
-            return (value + (value * RandomNumber(-variation, variation)));
+            return value + (value * random.NextFloat(-variation, variation));
         }
 
 		/// <summary>
 		/// Returns a random eccentricity.
 		/// </summary>
 		/// <returns>Randomized orbital eccenricity.</returns>
-		public static double RandomEccentricity()
+		public static double Eccentricity(this IRandom random)
         {
-            return 1.0 - Math.Pow(RandomNumber(), GlobalConstants.ECCENTRICITY_COEFF);
+            return 1.0 - Math.Pow(random.NextFloat<double>(), GlobalConstants.ECCENTRICITY_COEFF);
         }
     }
 }

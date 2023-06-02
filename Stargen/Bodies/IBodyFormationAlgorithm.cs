@@ -1,4 +1,5 @@
-﻿using Primoris.Universe.Stargen.Astrophysics.Burrows;
+﻿using Primoris.Numerics;
+using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using Primoris.Universe.Stargen.Bodies.Burrows;
 
 using System.Collections.Generic;

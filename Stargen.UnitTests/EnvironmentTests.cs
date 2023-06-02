@@ -4,7 +4,6 @@ using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Bodies.Burrows;
-using Primoris.Universe.Stargen.Services;
 
 using System;
 using System.Collections.Generic;
@@ -81,16 +80,20 @@ public class BurrowsPhysicsTests
 
 		private void ActionReturnNanZeroTemp()
 		{
-			Provider.Use().GetService<IScienceAstrophysics>().Physics.GetGasLife(Mass.FromGrams(GlobalConstants.ATOMIC_NITROGEN),
-																													 Temperature.FromKelvins(0.0),
-																													 Acceleration.FromStandardGravity(0.5),
-																													 Length.FromKilometers(2440));
+			var phy = new BodyPhysics();
+			phy.Physics.GetGasLife(Mass.FromGrams(GlobalConstants.ATOMIC_NITROGEN),
+								   Temperature.FromKelvins(0.0),
+								   Acceleration.FromStandardGravity(0.5),
+								   Length.FromKilometers(2440));
 		}
 
 		private void ActionReturnNanNegativeTemp()
 		{
-			Provider.Use().GetService<IScienceAstrophysics>().Physics.GetGasLife(
-				Mass.FromGrams(GlobalConstants.ATOMIC_NITROGEN), Temperature.FromKelvins(-100), Acceleration.FromStandardGravity(0.5), Length.FromKilometers(2440));
+            var phy = new BodyPhysics();
+            phy.Physics.GetGasLife(Mass.FromGrams(GlobalConstants.ATOMIC_NITROGEN), 
+								   Temperature.FromKelvins(-100), 
+								   Acceleration.FromStandardGravity(0.5), 
+								   Length.FromKilometers(2440));
 		}
 
 		[TestCategory("GasLife")]
@@ -115,8 +118,12 @@ public class BurrowsPhysicsTests
 			{
 				var e = expected[i];
 				var w = weights[i];
-				Assert.AreEqual(e, Provider.Use().GetService<IScienceAstrophysics>().Physics.GetGasLife(
-					Mass.FromGrams(w), Temperature.FromKelvins(exo), Acceleration.FromStandardGravity(surfG), Length.FromKilometers(radius)).Years365, 0.000001);
+				var phy = new BodyPhysics();
+				Assert.AreEqual(e, phy.Physics.GetGasLife(Mass.FromGrams(w),
+													      Temperature.FromKelvins(exo), 
+														  Acceleration.FromStandardGravity(surfG), 
+														  Length.FromKilometers(radius)).Years365, 
+														  0.000001);
 			}
 		}
 	}
@@ -132,7 +139,6 @@ public class BurrowsPhysicsTests
 			const double sunLuminosity = 1.0;
 
 			var phy = new BodyPhysics();
-
 			Assert.AreEqual(expectedValue, phy.Astronomy.GetEcosphereRadius(Mass.FromSolarMasses(1.0),
 																		   Luminosity.FromSolarLuminosities(sunLuminosity)).AstronomicalUnits, 0.0001);
 		}

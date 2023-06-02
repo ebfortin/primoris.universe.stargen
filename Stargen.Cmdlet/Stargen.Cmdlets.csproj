@@ -4,6 +4,8 @@
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Primoris.Universe.Stargen.Cmdlets</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+	  <EnablePreviewFeatures>True</EnablePreviewFeatures>
   </PropertyGroup>
 
   <ItemGroup>

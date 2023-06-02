@@ -1,4 +1,5 @@
-﻿using Primoris.Universe.Stargen.Bodies;
+﻿using Primoris.Numerics;
+using Primoris.Universe.Stargen.Bodies;
 using UnitsNet;
 
 
@@ -10,7 +11,9 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 
 	#region IScienceAstrophysics interface
 
-	public IScienceAstronomy Astronomy => this;
+	public IRandom Random { get; }
+
+    public IScienceAstronomy Astronomy => this;
 
 	public IScienceDynamics Dynamics => this;
 
@@ -20,23 +23,34 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 
 	public IScienceThermodynamics Thermodynamics => this;
 
-	#endregion
 
 
-	#region IScienceAstronomy interface
+    #endregion
 
-	/// <remakrs>
-	/// Fogg's information for this routine came from Dole "Habitable Planets
-	/// for Man", Blaisdell Publishing Company, NY, 1964.  From this, he came
-	/// up with his eq.12, which is the equation for the 'base_angular_velocity'
-	/// below.  He then used an equation for the change in angular velocity per
-	/// time (dw/dt) from P. Goldreich and S. Soter's paper "Q in the Solar
-	/// System" in Icarus, vol 5, pp.375-389 (1966).	 Using as a comparison the
-	/// change in angular velocity for the Earth, Fogg has come up with an
-	/// approximation for our new planet (his eq.13) and take that into account.
-	/// This is used to find 'change_in_angular_velocity' below.
-	/// </remarks>
-	public virtual Duration GetDayLength(RotationalSpeed angularVelocityRadSec,
+	public BodyPhysics()
+	{
+		Random = new BasicRandom();
+	}
+
+	public BodyPhysics(IRandom random)
+	{
+		Random = random;
+	}
+
+    #region IScienceAstronomy interface
+
+    /// <remakrs>
+    /// Fogg's information for this routine came from Dole "Habitable Planets
+    /// for Man", Blaisdell Publishing Company, NY, 1964.  From this, he came
+    /// up with his eq.12, which is the equation for the 'base_angular_velocity'
+    /// below.  He then used an equation for the change in angular velocity per
+    /// time (dw/dt) from P. Goldreich and S. Soter's paper "Q in the Solar
+    /// System" in Icarus, vol 5, pp.375-389 (1966).	 Using as a comparison the
+    /// change in angular velocity for the Earth, Fogg has come up with an
+    /// approximation for our new planet (his eq.13) and take that into account.
+    /// This is used to find 'change_in_angular_velocity' below.
+    /// </remarks>
+    public virtual Duration GetDayLength(RotationalSpeed angularVelocityRadSec,
 								 Duration orbitalPeriod,
 								 Ratio eccentricity)
 	{
@@ -451,7 +465,7 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 					break;
 			}
 			var earthUnits = massSM * GlobalConstants.SUN_MASS_IN_EARTH_MASSES;
-			var volInv = Extensions.About((proportionConst * earthUnits) / sunMass, 0.2);
+			var volInv = Random.About((proportionConst * earthUnits) / sunMass, 0.2);
 			if (hasGreenhouse || hasAccretedGas)
 			{
 				return Ratio.FromDecimalFractions(volInv);

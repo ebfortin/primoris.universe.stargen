@@ -8,6 +8,7 @@ using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Systems;
 using Primoris.Universe.Stargen.Systems.Burrows;
 using Primoris.Universe.Stargen.Astrophysics;
+using Primoris.Numerics;
 
 namespace Primoris.Universe.Stargen
 {
@@ -20,6 +21,9 @@ namespace Primoris.Universe.Stargen
         private PlanetSpriteSheet _planetSprites;
         private StellarSystem _system;
         private StellarGroup _group;
+
+        private IRandom _rnd = new BasicRandom();
+
 
         public MainGenerator()
         {
@@ -110,7 +114,10 @@ namespace Primoris.Universe.Stargen
 
         private void GenerateSystem()
         {
-            Extensions.InitRandomSeed((int)_seedSelector.Value);
+            //Extensions.InitRandomSeed((int)_seedSelector.Value);
+
+            _rnd.Initialize((int)_seedSelector.Value);
+            
             var curIdx = _systemListBox.SelectedIndex;
             var newSystem = SystemGenerator.GenerateStellarSystem(_system.Name, GetSelectedOptions());
             _group.Systems[curIdx] = newSystem;

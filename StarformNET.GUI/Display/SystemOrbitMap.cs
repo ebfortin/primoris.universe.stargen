@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Primoris.Numerics;
 
 namespace Primoris.Universe.Stargen.Display
 {
@@ -67,6 +68,8 @@ namespace Primoris.Universe.Stargen.Display
         private int _scaleFactor = 1;
         private int _maxScale = 8;
 
+        private IRandom _rnd = new BasicRandom();
+
         public void SelectPlanet(int index)
         {
             _selectedIndex = index;
@@ -96,7 +99,7 @@ namespace Primoris.Universe.Stargen.Display
             _orbits.Clear();
             foreach (var planet in system)
             {
-                _orbits.Add(new OrbitParameters(planet, (float)(Extensions.RandomNumber() * 2 * Math.PI)));
+                _orbits.Add(new OrbitParameters(planet, (float)(_rnd.NextFloat<double>() * 2 * Math.PI)));
             }
             Refresh();
 

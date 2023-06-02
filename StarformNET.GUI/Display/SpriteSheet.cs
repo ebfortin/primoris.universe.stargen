@@ -4,6 +4,7 @@ namespace Primoris.Universe.Stargen.Display
     using System;
     using System.Collections.Generic;
     using Bodies;
+    using Primoris.Numerics;
 
     public class PlanetSpriteSheet
     {
@@ -30,6 +31,8 @@ namespace Primoris.Universe.Stargen.Display
         private Image _image;
         private Point _upperLeft;
 
+        private IRandom _rnd = new BasicRandom();
+
         public PlanetSpriteSheet(Image image, Point upperLeft, Size spriteSize,
             int hPadding, int vPadding, int planetTypes)
         {
@@ -43,7 +46,8 @@ namespace Primoris.Universe.Stargen.Display
 
         public Sprite GetSprite(BodyType type)
         {
-            var planetNum = Extensions.RandomInt(0, _planetTypes - 1);
+            //var planetNum = Extensions.RandomInt(0, _planetTypes - 1);
+            var planetNum = _rnd.NextInteger(0, _planetTypes - 1);
             var planetRow = PlanetMapping[type];
             var x = _upperLeft.X + (planetNum * SpriteSize.Width) + (planetNum * _hPadding);
             var y = _upperLeft.Y + (planetRow * SpriteSize.Height) + (planetRow * _vPadding);

@@ -3,12 +3,9 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-	<EnablePreviewFeatures>True</EnablePreviewFeatures>
 	<GenerateRequiresPreviewFeaturesAttribute>True</GenerateRequiresPreviewFeaturesAttribute>
-	  <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
-
-	  <RootNamespace>Primoris.Universe.Stargen</RootNamespace>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+	<RootNamespace>Primoris.Universe.Stargen</RootNamespace>
     <Authors>Etienne Fortin</Authors>
     <Company>Primoris Sigma</Company>
     <Product>Primoris Stargen</Product>
@@ -17,15 +14,17 @@
 	
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	<Nullable>enable</Nullable>
+
+	<EnablePreviewFeatures>True</EnablePreviewFeatures>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+ <!-- <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-  </PropertyGroup>
+  </PropertyGroup> -->
 
   <ItemGroup>
     <None Remove="greekletters.csv" />
@@ -56,8 +55,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Primoris.Core" Version="0.4.0-unstable.175" />
+    <PackageReference Include="Primoris.Core" Version="0.5.0-unstable.180" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
     <PackageReference Include="UnitsNet" Version="5.12.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
 </Project>

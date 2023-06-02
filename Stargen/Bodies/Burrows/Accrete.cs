@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+
+using Primoris.Numerics;
 using Primoris.Universe.Stargen.Astrophysics;
 using UnitsNet;
 
@@ -19,20 +21,24 @@ public class Accrete : IBodyFormationAlgorithm
 		}
 	}
 
-	public Ratio DustDensityCoefficient { get; }
-	public Ratio CloudEccentricity { get; }
-	public Ratio GasDustRatio { get; }
-	
+	protected IRandom Random { get; }
 
-	private bool _dustLeft;
-	private double _rInner;
-	private double _rOuter;
-	private double _reducedMass;
-	private double _dustDensity;
-	private Ratio _cloudEccentricity;
-	private DustRecord? _dustHead = null;
-	private InnerSeed? _planetHead;
-	private Generation? _histHead;
+	public Ratio DustDensityCoefficient { get; }
+
+	public Ratio CloudEccentricity { get; }
+	
+	public Ratio GasDustRatio { get; }
+
+
+    bool _dustLeft;
+	double _rInner;
+	double _rOuter;
+	double _reducedMass;
+	double _dustDensity;
+	Ratio _cloudEccentricity;
+	DustRecord? _dustHead = null;
+	InnerSeed? _planetHead;
+	Generation? _histHead;
 
 
 	public Accrete(Ratio e, Ratio gdr, Ratio dust)
@@ -40,7 +46,18 @@ public class Accrete : IBodyFormationAlgorithm
 		CloudEccentricity = e;
 		GasDustRatio = gdr;
 		DustDensityCoefficient = dust;
+
+		Random = new BasicRandom();
 	}
+
+	public Accrete(Ratio e, Ratio gdr, Ratio dust, IRandom rnd)
+	{
+        CloudEccentricity = e;
+        GasDustRatio = gdr;
+        DustDensityCoefficient = dust;
+
+		Random = rnd;
+    }
 
 	// TODO documentation
 	/// <summary>
@@ -70,8 +87,8 @@ public class Accrete : IBodyFormationAlgorithm
 		{
 			Length a;
 			Ratio e;
-			a = semiMajorAxisAU.Equals(Length.Zero, Extensions.Epsilon, ComparisonType.Relative) ? Length.FromAstronomicalUnits(Extensions.RandomNumber(planet_inner_bound.AstronomicalUnits, planet_outer_bound.AstronomicalUnits)) : semiMajorAxisAU;
-			e = CloudEccentricity.Equals(Ratio.Zero, Extensions.Epsilon, ComparisonType.Relative) ? Ratio.FromDecimalFractions(Extensions.RandomEccentricity()) : CloudEccentricity;
+			a = semiMajorAxisAU.Equals(Length.Zero, Extensions.Epsilon, ComparisonType.Relative) ? Length.FromAstronomicalUnits(Random.NextFloat(planet_inner_bound.AstronomicalUnits, planet_outer_bound.AstronomicalUnits)) : semiMajorAxisAU;
+			e = CloudEccentricity.Equals(Ratio.Zero, Extensions.Epsilon, ComparisonType.Relative) ? Ratio.FromDecimalFractions(Random.Eccentricity()) : CloudEccentricity;
 
 			Mass mass = GlobalConstants.PROTOPLANET_MASS;
 			Mass dust_mass = Mass.FromSolarMasses(0.0);

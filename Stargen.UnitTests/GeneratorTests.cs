@@ -4,7 +4,6 @@ using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Astrophysics.Burrows;
 using Primoris.Universe.Stargen.Bodies;
 using Primoris.Universe.Stargen.Bodies.Burrows;
-using Primoris.Universe.Stargen.Services;
 
 using System;
 using System.Collections.Generic;
@@ -26,7 +25,7 @@ public class GeneratorTests
 		[TestInitialize]
 		public void InitializeTests()
 		{
-			Provider.Use().WithAstrophysics(new BodyPhysics());
+			//Provider.Use().WithAstrophysics(new BodyPhysics());
 		}
 	}
 
