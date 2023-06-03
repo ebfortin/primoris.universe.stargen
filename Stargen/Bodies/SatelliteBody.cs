@@ -131,7 +131,6 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// </summary>
     /// <remarks>
     /// For an all gas planet the gravitational acceleration felt at the surface, the center of the Body, is Zero.
-    /// TODO: How about the pull outward from the atmosphere mass?
     /// </remarks>
     /// <value>
     /// Acceleration felt at the Body surface.

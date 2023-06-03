@@ -60,12 +60,12 @@ public class Planet : SatelliteBody
 
 		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfGrav, massSM, planetRadius, ExosphereTemperature, sun.Age);
 		var volatileGasInventory = Science.Physics.GetVolatileGasInventory(GasMass + DustMass,
-                                                              Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, planetRadius),
-															  RMSVelocity,
-															  sun.Mass,
-															  GasMass,
-															  OrbitZone,
-															  Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis));
+																		   Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, planetRadius),
+																		   RMSVelocity,
+																		   sun.Mass,
+																		   GasMass,
+																		   OrbitZone,
+																		   Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis));
 
 		SurfacePressure = Science.Physics.GetSurfacePressure(volatileGasInventory, planetRadius, surfGrav);
 
@@ -153,10 +153,7 @@ public class Planet : SatelliteBody
 
 	void AdjustPropertiesForGasBody()
 	{
-		//HasGreenhouseEffect = false;
-		//VolatileGasInventory = Ratio.FromDecimalFractions(GlobalConstants.NOT_APPLICABLE);
 		BoilingPointWater = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
-
 		Temperature = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
 		GreenhouseRiseTemperature = TemperatureDelta.Zero;
 		Albedo = Ratio.FromDecimalFractions(Science.Random.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1));

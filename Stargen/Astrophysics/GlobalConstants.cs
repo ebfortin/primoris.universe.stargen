@@ -64,11 +64,11 @@ public static class GlobalConstants
 	public static readonly double MAX_HABITABLE_PRESSURE = Pressure.FromMillimetersOfMercury(118).Millibars; 
 
 	// The next gases are listed as poisonous in parts per million by volume at 1 atm:
-	public static readonly double MAX_F_IPP = UnitConversions.PPMToMillibars(0.1);
-	public static readonly double MAX_CL_IPP = UnitConversions.PPMToMillibars(1.0);
-	public static readonly double MAX_NH3_IPP = UnitConversions.PPMToMillibars(100.0);
-	public static readonly double MAX_O3_IPP = UnitConversions.PPMToMillibars(0.1);
-	public static readonly double MAX_CH4_IPP = UnitConversions.PPMToMillibars(50000.0);
+	public static readonly double MAX_F_IPP = PPMToMillibars(0.1);
+	public static readonly double MAX_CL_IPP = PPMToMillibars(1.0);
+	public static readonly double MAX_NH3_IPP = PPMToMillibars(100.0);
+	public static readonly double MAX_O3_IPP = PPMToMillibars(0.1);
+	public static readonly double MAX_CH4_IPP = PPMToMillibars(50000.0);
 
 	public static readonly double EARTH_CONVECTION_FACTOR = 0.43;                        // from Hart, eq.20			
 	public static readonly double FREEZING_POINT_OF_WATER = 273.15;                      // Units of degrees Kelvin (was 273.0)
@@ -169,4 +169,17 @@ public static class GlobalConstants
 
 	public static readonly double NOT_APPLICABLE = double.MaxValue; //(9.9999E37);
 	public static readonly double OUT_OF_RANGE = 0.0;
+
+    /// <summary>
+    /// Calculates the partial pressure of an atmospheric gas in millibars
+    /// from the concentration given in parts-per-million.
+    /// </summary>
+    /// <param name="ppm">Concentration in parts-per-million.</param>
+    /// <param name="atm">Total pressure of the gas in atm (default=1)</param>
+    /// <returns>Partial pressure in millibars</returns>
+    public static double PPMToMillibars(double ppm, double atm = 1.0)
+    {
+        var pct = ppm / 1000000.0;
+        return pct * EARTH_SURF_PRES_IN_MILLIBARS * atm;
+    }
 }
