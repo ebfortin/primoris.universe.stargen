@@ -606,8 +606,8 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 	/// <param name="giant"></param>
 	/// <returns></returns>
 	public virtual Length GetCoreRadius(Mass massSM,
-					  int orbitZone,
-					  bool giant)
+										int orbitZone,
+										bool giant)
 	{
 		// This formula is listed as eq.9 in Fogg's article, although some typos
 		// crop up in that eq.  See "The Internal Constitution of Planets", by
@@ -918,7 +918,7 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 	/// <param name="semiAxisMajorAU"></param>
 	/// <returns></returns>
 	public virtual bool TestHasGreenhouseEffect(Length ecosphereRadius,
-								  Length semiAxisMajorAU)
+												Length semiAxisMajorAU)
 	{
 		var temp = GetEstimatedEffectiveTemperature(ecosphereRadius, semiAxisMajorAU, Ratio.FromDecimalFractions(GlobalConstants.GREENHOUSE_TRIGGER_ALBEDO));
 		return temp.Kelvins > GlobalConstants.FREEZING_POINT_OF_WATER;
@@ -1053,8 +1053,8 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 	{
 		// This is Fogg's eq.19.
 		return Temperature.FromKelvins(Math.Sqrt(ecosphereRadius / orbitalRadius)
-			  * Extensions.Pow1_4((1.0 - albedo.Value) / (1.0 - GlobalConstants.EARTH_ALBEDO))
-			  * GlobalConstants.EARTH_EFFECTIVE_TEMP);
+									   * Extensions.Pow1_4((1.0 - albedo.Value) / (1.0 - GlobalConstants.EARTH_ALBEDO))
+									   * GlobalConstants.EARTH_EFFECTIVE_TEMP);
 	}
 
 	/// <summary>

@@ -10,9 +10,6 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows;
 [Serializable]
 public class Planet : SatelliteBody
 {
-	Mass FormationDustMass { get; set; }
-	Mass FormationGasMass { get; set; }
-
 	/// <summary>
 	/// 
 	/// </summary>
@@ -43,7 +40,6 @@ public class Planet : SatelliteBody
 				  Mass massSM,
 				  Mass gasMassSM,
 				  Length radius,
-				  Pressure surfPressure,
 				  Temperature dayTimeTempK,
 				  Temperature nightTimeTempK,
 				  Temperature surfTempK,
@@ -53,27 +49,15 @@ public class Planet : SatelliteBody
 		Parent = parentBody;
 		var sun = StellarBody;
 
-		//SemiMajorAxis = semiMajorAxisAU;
-		//Eccentricity = eccentricity;
 		AxialTilt = axialTilt;
-		//OrbitZone = Science.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
-		//DayLength = dayLengthHours;
-		//OrbitalPeriod = orbitalPeriodDays;
-
-		//Mass = massSM;
-		//GasMass = gasMassSM;
-		//DustMass = massSM - GasMass;
 		var planetRadius = radius;
-		//Radius = radius;
 
-		//Density = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
 		var approxDensity = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
-        //ExosphereTemperature = Temperature.FromKelvins(GlobalConstants.EARTH_EXOSPHERE_TEMP / Extensions.Pow2(SemiMajorAxis / sun.EcosphereRadius));
-        //SurfaceAcceleration = surfGrav; 
-		//EscapeVelocity = Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, planetRadius);
+
 		DaytimeTemperature = dayTimeTempK;
 		NighttimeTemperature = nightTimeTempK;
 		Temperature = surfTempK;
+
 		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfGrav, massSM, planetRadius, ExosphereTemperature, sun.Age);
 		var volatileGasInventory = Science.Physics.GetVolatileGasInventory(GasMass + DustMass,
                                                               Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, planetRadius),
@@ -82,6 +66,7 @@ public class Planet : SatelliteBody
 															  GasMass,
 															  OrbitZone,
 															  Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis));
+
 		SurfacePressure = Science.Physics.GetSurfacePressure(volatileGasInventory, planetRadius, surfGrav);
 
 		if (Science.Planetology.TestIsGasGiant(massSM, gasMassSM, MolecularWeightRetained))
@@ -109,7 +94,6 @@ public class Planet : SatelliteBody
 			  Mass massSM,
 			  Mass gasMassSM,
 			  Length radius,
-			  Pressure surfPressure,
 			  Temperature dayTimeTempK,
 			  Temperature nightTimeTempK,
 			  Temperature surfTempK,
@@ -124,7 +108,6 @@ public class Planet : SatelliteBody
 											massSM,
 											gasMassSM,
 											radius,
-											surfPressure,
 											dayTimeTempK,
 											nightTimeTempK,
 											surfTempK,
@@ -133,11 +116,14 @@ public class Planet : SatelliteBody
 	{
 	}
 
+	/// <summary>
+	/// TODO: Add unit test.
+	/// </summary>
     void AdjustPropertiesForRockyBody()
 	{
 		double age = Parent.Age.Years365;
 		double massSM = Mass.SolarMasses;
-		double gasMassSM = FormationGasMass.SolarMasses;
+		double gasMassSM = Seed.GasMass.SolarMasses;
 
 		if (gasMassSM / massSM > 0.000001)
 		{
@@ -151,7 +137,7 @@ public class Planet : SatelliteBody
 			{
 				var h2Loss = (1.0 - 1.0 / Math.Exp(age / h2Life)) * h2Mass;
 
-				FormationGasMass -= Mass.FromSolarMasses(h2Loss);
+				Seed.GasMass -= Mass.FromSolarMasses(h2Loss);
 				//SurfaceAcceleration = Science.Physics.GetAcceleration(Mass, Radius);
 			}
 
@@ -159,7 +145,7 @@ public class Planet : SatelliteBody
 			{
 				var heLoss = (1.0 - 1.0 / Math.Exp(age / heLife)) * heMass;
 
-				FormationGasMass -= Mass.FromSolarMasses(heLoss);
+				Seed.GasMass -= Mass.FromSolarMasses(heLoss);
 				//SurfaceAcceleration = Science.Physics.GetAcceleration(Mass, Radius);
 			}
 		}
@@ -225,14 +211,7 @@ public class Planet : SatelliteBody
 		}
 		else // If not, it's rocky.
 		{
-			//Density = Science.Physics.GetDensityFromBody(mass, planetRadius);
-
-			// Radius has changed, we need to adjust Surfa
-			//SurfaceAcceleration = GetAcceleration(mass, planetRadius);
-			//SurfaceGravityG = Environment.Gravity(SurfaceAcceleration);
-
 			AdjustPropertiesForRockyBody();
-
             MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, planetRadius, ExosphereTemperature, sun.Age);
 		}
 
@@ -363,9 +342,9 @@ public class Planet : SatelliteBody
 	/// 
 	/// </summary>
 	/// <param name="planet"></param>
-	private void AdjustSurfaceTemperatures(Pressure surfpres)
+	void AdjustSurfaceTemperatures(Pressure surfpres)
 	{
-		var initTemp = Science!.Thermodynamics.GetEstimatedAverageTemperature(StellarBody.EcosphereRadius, SemiMajorAxis, Albedo);
+		var initTemp = Science.Thermodynamics.GetEstimatedAverageTemperature(StellarBody.EcosphereRadius, SemiMajorAxis, Albedo);
 
 		//var h2Life = GasLife(GlobalConstants.MOL_HYDROGEN, planet);
 		//var h2oLife = GasLife(GlobalConstants.WATER_VAPOR, planet);
@@ -400,6 +379,7 @@ public class Planet : SatelliteBody
 	/// <summary>
 	/// The temperature of the planet calculated in degrees Kelvin
 	/// TODO: Eliminate calls to Environment and replace with calls to Physics.
+	/// TODO: Create unit test.
 	/// </summary>
 	/// <param name="planet"></param>
 	/// <param name="first"></param>

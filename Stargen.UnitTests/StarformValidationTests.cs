@@ -54,7 +54,6 @@ namespace Primoris.Universe.Stargen.UnitTests
                             Mass.FromSolarMasses(0.000002447),
                             Mass.FromSolarMasses(2.41E-10),
                             Length.FromKilometers(6051.8),
-                            Pressure.FromMillibars(92000.0),
                             Temperature.FromKelvins(737.0),
                             Temperature.FromKelvins(737.0),
                             Temperature.FromKelvins(737.0),

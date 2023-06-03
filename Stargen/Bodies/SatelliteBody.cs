@@ -1,8 +1,5 @@
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Astrophysics.Singularity;
-using Primoris.Universe.Stargen.Bodies.Burrows;
-
-using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Bodies;
 
@@ -134,6 +131,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// </summary>
     /// <remarks>
     /// For an all gas planet the gravitational acceleration felt at the surface, the center of the Body, is Zero.
+    /// TODO: How about the pull outward from the atmosphere mass?
     /// </remarks>
     /// <value>
     /// Acceleration felt at the Body surface.
@@ -449,11 +447,6 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// Exosphere Temperature.
     /// </value>
     public virtual Temperature ExosphereTemperature => Science.Thermodynamics.GetEstimatedExosphereTemperature(SemiMajorAxis, StellarBody.EcosphereRadius, StellarBody.Temperature);
-
-    /// <summary>
-    /// Temperature at the body's surface given in Kelvin.
-    /// </summary>
-    //public override Temperature Temperature { get; protected set; }
 
     /// <summary>
     /// Amount that the planet's surface temperature is being increased by a runaway greenhouse effect.
