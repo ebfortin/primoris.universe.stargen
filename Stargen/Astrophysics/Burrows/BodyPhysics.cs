@@ -1007,6 +1007,9 @@ public class BodyPhysics : IScienceAstrophysics, IScienceAstronomy, IScienceDyna
 	/// <returns>Boiling point of water in Kelvin.</returns>
 	public virtual Temperature GetBoilingPointWater(Pressure surfpres)
 	{
+		if (surfpres.Equals(Pressure.Zero, 0.001, ComparisonType.Relative))
+			return Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
+
 		var surfacePressureInBars = surfpres.Bars; // / GlobalConstants.MILLIBARS_PER_BAR;
 
 		return Temperature.FromKelvins(Math.Abs(surfpres.Millibars) < 0.001

@@ -396,7 +396,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// Body without atmosphere returns 0.
     /// Fundamental proeprty that needs to be set in a subclass.
     /// </remarks>
-    public Temperature BoilingPointWater { get; protected set; }
+    public Temperature BoilingPointWater => Science.Thermodynamics.GetBoilingPointWater(SurfacePressure);
 
     /// <summary>
     /// Planetary albedo. Unitless value between 0 (no reflection) and 1 

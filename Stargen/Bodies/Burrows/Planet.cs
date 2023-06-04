@@ -151,7 +151,7 @@ public class Planet : SatelliteBody
 
 	void AdjustPropertiesForGasBody()
 	{
-		BoilingPointWater = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
+		//BoilingPointWater = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
 		Temperature = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
 		GreenhouseRiseTemperature = TemperatureDelta.Zero;
 		Albedo = Ratio.FromDecimalFractions(Science.Random.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1));
@@ -219,13 +219,11 @@ public class Planet : SatelliteBody
 
 		if (!Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
 		{
-			Pressure surfpres = Science.Physics.GetSurfacePressure(volatileGasInventory, planetRadius, planet.SurfaceAcceleration);
-
-			planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);
+            SurfacePressure = Science.Physics.GetSurfacePressure(volatileGasInventory, planetRadius, planet.SurfaceAcceleration);
 
 			// Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
 			// planet.cloud_cover, planet.ice_cover
-			AdjustSurfaceTemperatures(surfpres);
+			AdjustSurfaceTemperatures(SurfacePressure);
 
 			//planet.IsTidallyLocked = Science.Planetology.TestIsTidallyLocked(DayLength, OrbitalPeriod);
 
@@ -234,9 +232,8 @@ public class Planet : SatelliteBody
 			Stack.CreateLayer(ls => new BasicSolidLayer(ls, DustMass, coreRadius, Array.Empty<(Chemical, Ratio)>()));
 
 			// Generate complete atmosphere.
-			if (surfpres.Millibars > 0.0 && GasMass.SolarMasses > 0.0)
+			if (SurfacePressure.Millibars > 0.0 && GasMass.SolarMasses > 0.0)
 				Stack.CreateLayer(ls => new BasicGaseousLayer(ls, GasMass, Radius - coreRadius, Chemical.All.Values));
-			SurfacePressure = surfpres;
 		}
 
 	}
@@ -368,18 +365,6 @@ public class Planet : SatelliteBody
 			planet.Temperature = effectiveTemp + greenhouseTemp;
 
 			SetTempRange(surfpres.Millibars);
-		}
-
-		if (planet.HasGreenhouseEffect && planet.MaxTemperature < planet.BoilingPointWater)
-		{
-			//planet.HasGreenhouseEffect = false;
-
-			/*VolatileGasInventory = Science!.Physics.GetVolatileGasInventory(planet.Mass,
-				planet.EscapeVelocity, planet.RMSVelocity, planet.Parent.Mass, planet.GasMass,
-				planet.OrbitZone, planet.HasGreenhouseEffect);*/
-			//planet.Atmosphere.SurfacePressure = Pressure(planet.VolatileGasInventory, planet.RadiusKM, planet.SurfaceGravityG);
-
-			planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);
 		}
 
 		waterRaw = planet.WaterCoverFraction = Science!.Planetology.GetWaterFraction(planet.VolatileGasInventory, planet.Radius);
