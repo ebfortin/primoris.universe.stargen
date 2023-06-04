@@ -331,7 +331,8 @@ public class Planet : SatelliteBody
 				break;
 		}
 
-		GreenhouseRiseTemperature = Temperature - initTemp;
+		if(initTemp < Temperature)
+			GreenhouseRiseTemperature = Temperature - initTemp;
 	}
 
 	/// <summary>
@@ -364,10 +365,10 @@ public class Planet : SatelliteBody
 			greenhouseTemp = Science.Thermodynamics.GetGreenhouseTemperatureRise(Science.Planetology.GetOpacity(planet.MolecularWeightRetained, surfpres), effectiveTemp, surfpres);
 			planet.Temperature = effectiveTemp + greenhouseTemp;
 
-			SetTempRange(surfpres.Millibars);
+			SetTempRange(surfpres, Temperature);
 		}
 
-		waterRaw = planet.WaterCoverFraction = Science!.Planetology.GetWaterFraction(planet.VolatileGasInventory, planet.Radius);
+		waterRaw = planet.WaterCoverFraction = Science.Planetology.GetWaterFraction(planet.VolatileGasInventory, planet.Radius);
 		cloudsRaw = planet.CloudCoverFraction = Science.Planetology.GetCloudFraction(planet.Temperature,
 												 planet.MolecularWeightRetained,
 												 planet.Radius,
@@ -419,23 +420,26 @@ public class Planet : SatelliteBody
 			planet.Temperature = Temperature.FromKelvins((planet.Temperature.Kelvins + last_temp.Kelvins * 2.0) / 3.0);
 		}
 
-		SetTempRange(surfpres.Millibars);
+		SetTempRange(surfpres, Temperature);
 	}
 
-	private double Lim(double x)
+	static double Lim(double x)
 	{
 		return x / Math.Sqrt(Math.Sqrt(1 + x * x * x * x));
 	}
 
-	private double Soft(double v, double max, double min)
+	static double Soft(double v, double max, double min)
 	{
 		double dv = v - min;
 		double dm = max - min;
 		return (Lim(2 * dv / dm - 1) + 1) / 2 * dm + min;
 	}
 
-	private void SetTempRange(double surfpres)
+	void SetTempRange(Pressure surfacePressure, Temperature temperature)
 	{
+		double surfpres = surfacePressure.Millibars;
+		double temp = temperature.Kelvins; 
+
 		var planet = this;
 
 		var pressmod = 1 / Math.Sqrt(1 + 20 * surfpres / 1000.0);
@@ -444,12 +448,12 @@ public class Planet : SatelliteBody
 		var daymod = 1 / (200 / planet.DayLength.Hours + 1);
 		var mh = Math.Pow(1 + daymod, pressmod);
 		var ml = Math.Pow(1 - daymod, pressmod);
-		var hi = mh * planet.Temperature.Kelvins;
-		var lo = ml * planet.Temperature.Kelvins;
+		var hi = mh * temp;
+		var lo = ml * temp;
 		var sh = hi + Math.Pow((100 + hi) * tiltmod, Math.Sqrt(ppmod));
 		var wl = lo - Math.Pow((150 + lo) * tiltmod, Math.Sqrt(ppmod));
-		var max = planet.Temperature.Kelvins + Math.Sqrt(planet.Temperature.Kelvins) * 10;
-		var min = planet.Temperature.Kelvins / Math.Sqrt(planet.DayLength.Hours + 24);
+		var max = temp + Math.Sqrt(temp) * 10;
+		var min = temp / Math.Sqrt(planet.DayLength.Hours + 24);
 
 		if (lo < min) lo = min;
 		if (wl < 0) wl = 0;
