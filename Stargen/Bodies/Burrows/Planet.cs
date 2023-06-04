@@ -1,6 +1,8 @@
 
 using Primoris.Universe.Stargen.Astrophysics;
 
+using UnitsNet;
+
 namespace Primoris.Universe.Stargen.Bodies.Burrows;
 
 
@@ -11,24 +13,37 @@ namespace Primoris.Universe.Stargen.Bodies.Burrows;
 public class Planet : SatelliteBody
 {
 	/// <summary>
-	/// 
+	/// Create a Planet given a Seed and a parent Body. Can generate planet layers or it can be left to
+	/// the caller to create layers.
 	/// </summary>
 	/// <remarks>
-	/// TODO: Create layers in Generate.
+	/// At the exit of this constructor Radius has a valid value, although approximative. It can be used
+	/// afterward for calculation to create layers. 
 	/// </remarks>
-	/// <param name="science"></param>
-	/// <param name="seed"></param>
-	/// <param name="parentBody"></param>
+	/// <param name="science">Astrophysics model to use.</param>
+	/// <param name="seed">Dust and gas seed used to generate this Planet.</param>
+	/// <param name="parentBody">PArent Body of this Planet.</param>
+	/// <param name="generateLayers">True if the constructor should create layers, false otherwise.</param>
 	public Planet(IScienceAstrophysics science, Seed seed, Body parentBody, bool generateLayers = false) : base(science, seed, parentBody)
 	{
-		if(generateLayers)
+        var approxDensity = Science.Physics.GetDensityFromStar(seed.Mass, SemiMajorAxis, StellarBody.EcosphereRadius, true);
+        Radius = Mathematics.GetRadiusFromDensity(seed.Mass, approxDensity);
+        
+        if (generateLayers)
 			Generate();
 	}
 
-	public Planet(Seed seed, Body parentBody, bool generateLayers = false) 
+    /// <summary>
+    /// Generate a Planet using the Astrophysics model of the Parent.
+    /// </summary>
+    /// <param name="seed">Dust and gas seed used to generate this Planet.</param>
+    /// <param name="parentBody">Parent Body if this Planet.</param>
+    /// <param name="generateLayers">True if the constructor should create layers, false otherwise.</param>
+    public Planet(Seed seed, Body parentBody, bool generateLayers = false) 
 		: this(parentBody.Science, seed, parentBody, generateLayers) 
 	{ 
 	}
+
 
     public Planet(IScienceAstrophysics science,
 				  Body parentBody,
@@ -119,7 +134,7 @@ public class Planet : SatelliteBody
 	/// <summary>
 	/// TODO: Add unit test.
 	/// </summary>
-    void AdjustPropertiesForRockyBody()
+    void AdjustPropertiesForRockyBody(Length radius)
 	{
 		double age = Parent.Age.Years365;
 		double massSM = Mass.SolarMasses;
@@ -130,8 +145,8 @@ public class Planet : SatelliteBody
 			var h2Mass = gasMassSM * 0.85;
 			var heMass = (gasMassSM - h2Mass) * 0.999;
 
-			var h2Life = Science.Physics.GetGasLife(Mass.FromGrams(GlobalConstants.MOL_HYDROGEN), ExosphereTemperature, SurfaceAcceleration, Radius).Years365;
-			var heLife = Science.Physics.GetGasLife(Mass.FromGrams(GlobalConstants.HELIUM), ExosphereTemperature, SurfaceAcceleration, Radius).Years365;
+			var h2Life = Science.Physics.GetGasLife(Mass.FromGrams(GlobalConstants.MOL_HYDROGEN), ExosphereTemperature, SurfaceAcceleration, radius).Years365;
+			var heLife = Science.Physics.GetGasLife(Mass.FromGrams(GlobalConstants.HELIUM), ExosphereTemperature, SurfaceAcceleration, radius).Years365;
 
 			if (h2Life < age)
 			{
@@ -174,16 +189,9 @@ public class Planet : SatelliteBody
 
 		planet.AxialTilt = GetRandomInclination(SemiMajorAxis);
 
-		// Calculate the radius as a gas giant, to verify it will retain gas.
-		// Then if mass > Earth, it's at least 5% gas and retains He, it's
-		// some flavor of gas giant.
-		var approxDensity = Science.Physics.GetDensityFromStar(mass, SemiMajorAxis, sun.EcosphereRadius, true);
-        Length planetRadius = Mathematics.GetRadiusFromDensity(mass, approxDensity);
-		Radius = planetRadius;
+		var surfaceAcceleration = GetAcceleration(mass, Radius);
 
-		var surfaceAcceleration = GetAcceleration(mass, planetRadius);
-
-		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, planetRadius, ExosphereTemperature, sun.Age);
+		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, Radius, ExosphereTemperature, sun.Age);
 
 		// Is the planet a gas giant?
 		if (Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
@@ -193,16 +201,16 @@ public class Planet : SatelliteBody
 			AdjustPropertiesForGasBody();
 			SurfacePressure = Pressure.Zero;
 			Stack.Clear();
-			Stack.CreateLayer(ls => new BasicGiantGaseousLayer(ls, GasMass, planetRadius));
+			Stack.CreateLayer(ls => new BasicGiantGaseousLayer(ls, GasMass, Radius));
 		}
 		else // If not, it's rocky.
 		{
-			AdjustPropertiesForRockyBody();
-            MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, planetRadius, ExosphereTemperature, sun.Age);
+			AdjustPropertiesForRockyBody(Radius);
+            MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, Radius, ExosphereTemperature, sun.Age);
 		}
 
 		planet.AngularVelocity = Science.Dynamics.GetAngularVelocity(mass,
-															  planetRadius,
+                                                              Radius,
 															  Density,
 															  SemiMajorAxis,
 															  Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained),
@@ -219,11 +227,11 @@ public class Planet : SatelliteBody
 
 		if (!Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
 		{
-            SurfacePressure = Science.Physics.GetSurfacePressure(volatileGasInventory, planetRadius, planet.SurfaceAcceleration);
+            SurfacePressure = Science.Physics.GetSurfacePressure(volatileGasInventory, Radius, planet.SurfaceAcceleration);
 
 			// Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
 			// planet.cloud_cover, planet.ice_cover
-			AdjustSurfaceTemperatures(SurfacePressure);
+			AdjustSurfaceTemperatures(SurfacePressure, Radius);
 
 			//planet.IsTidallyLocked = Science.Planetology.TestIsTidallyLocked(DayLength, OrbitalPeriod);
 
@@ -305,7 +313,7 @@ public class Planet : SatelliteBody
 	/// 
 	/// </summary>
 	/// <param name="planet"></param>
-	void AdjustSurfaceTemperatures(Pressure surfpres)
+	void AdjustSurfaceTemperatures(Pressure surfpres, Length radius)
 	{
 		var initTemp = Science.Thermodynamics.GetEstimatedAverageTemperature(StellarBody.EcosphereRadius, SemiMajorAxis, Albedo);
 
@@ -315,7 +323,8 @@ public class Planet : SatelliteBody
 						   Ratio.Zero,
 						   Temperature.Zero,
 						   Ratio.Zero,
-						   surfpres);
+						   surfpres,
+						   radius);
 
         for (var count = 0; count <= 25; count++)
 		{
@@ -325,7 +334,7 @@ public class Planet : SatelliteBody
             var lastTemp = Temperature;
             var lastAlbedo = Albedo;
 
-            CalculateSurfaceTemperature(false, lastWater, lastClouds, lastIce, lastTemp, lastAlbedo, surfpres);
+            CalculateSurfaceTemperature(false, lastWater, lastClouds, lastIce, lastTemp, lastAlbedo, surfpres, radius);
 
 			if (Math.Abs((Temperature - lastTemp).Kelvins) < 0.25)
 				break;
@@ -347,7 +356,14 @@ public class Planet : SatelliteBody
 	/// <param name="last_ice"></param>
 	/// <param name="last_temp"></param>
 	/// <param name="last_albedo"></param>
-	void CalculateSurfaceTemperature(bool first, Ratio last_water, Ratio last_clouds, Ratio last_ice, Temperature last_temp, Ratio last_albedo, Pressure surfpres)
+	void CalculateSurfaceTemperature(bool first, 
+									 Ratio last_water, 
+									 Ratio last_clouds, 
+									 Ratio last_ice, 
+									 Temperature last_temp, 
+									 Ratio last_albedo, 
+									 Pressure surfpres,
+									 Length radius)
 	{
 		Temperature effectiveTemp;
 		Ratio waterRaw;
@@ -368,10 +384,10 @@ public class Planet : SatelliteBody
 			SetTempRange(surfpres, Temperature);
 		}
 
-		waterRaw = planet.WaterCoverFraction = Science.Planetology.GetWaterFraction(planet.VolatileGasInventory, planet.Radius);
+		waterRaw = planet.WaterCoverFraction = Science.Planetology.GetWaterFraction(planet.VolatileGasInventory, radius);
 		cloudsRaw = planet.CloudCoverFraction = Science.Planetology.GetCloudFraction(planet.Temperature,
 												 planet.MolecularWeightRetained,
-												 planet.Radius,
+												 radius,
 												 planet.WaterCoverFraction);
 		planet.IceCoverFraction = Science.Planetology.GetIceFraction(planet.WaterCoverFraction, planet.Temperature);
 

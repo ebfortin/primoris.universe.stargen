@@ -141,13 +141,12 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     public Acceleration SurfaceAcceleration => Science.Physics.GetAcceleration(CoreMass, CoreRadius);
 
 
-    Length _initialRadius = default;
     public override Length Radius
     {
         get
         {
             if (Stack.Count == 0)
-                return _initialRadius;
+                return base.Radius;
 
             Length radius = Length.Zero;
             foreach (var l in Stack)
@@ -160,7 +159,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         protected set
         {
             if (Stack.Count == 0)
-                _initialRadius = value;
+                base.Radius = value;
         }
     }
 
