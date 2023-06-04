@@ -145,7 +145,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     {
         get
         {
-            if (Stack.Count == 0)
+            if (Stack.Count == 0 || IsForming)
                 return base.Radius;
 
             Length radius = Length.Zero;
@@ -158,7 +158,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 
         protected set
         {
-            if (Stack.Count == 0)
+            if (Stack.Count == 0 || IsForming)
                 base.Radius = value;
         }
     }
@@ -223,6 +223,10 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     #endregion
 
     #region Planet properties
+
+
+
+    public bool IsForming { get; private set; } = true;
 
     /// <summary>
     /// Gets or sets the stellar body.
@@ -539,15 +543,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     public SatelliteBody(IScienceAstrophysics science, Seed seed, Body parentBody) : base(science)
     {
         Parent = parentBody;
-
         Seed = seed with { };
-
-        //Mass = seed.Mass;
-        //GasMass = seed.GasMass;
-        //DustMass = seed.DustMass;
-        //Eccentricity = seed.Eccentricity;
-        //SemiMajorAxis = seed.SemiMajorAxis;
-
         Stack = new LayerStack(this);
     }
 
@@ -557,6 +553,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <param name="seed"></param>
     /// <param name="parentBody"></param>
     public SatelliteBody(Seed seed, Body parentBody) : this(parentBody.Science, seed, parentBody) { }
+
 
     public Acceleration ComputeAccelerationAt(Layer layer)
     {
@@ -575,8 +572,22 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 
     public void CreateLayer(Func<LayerStack, Layer> layerCreator)
     {
+        if (!IsForming)
+            throw new InvalidBodyException("SatelliteBody is not in forming stage and so can't add layers.");
+
         var layer = layerCreator(Stack);
     }
+
+    public void EndForming()
+    {
+        if(OnEndForming())
+            IsForming = false;
+    }
+
+    protected virtual bool OnEndForming()
+    {
+        return true;
+    } 
 
     IEnumerable<(Chemical, Ratio)> ConsolidateComposition(IEnumerable<Layer> layers)
     {
@@ -619,12 +630,6 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         return grouped;
     }
 
-    Mass ConsolidateMass(IEnumerable<Layer> layers)
-    {
-        var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
-        return totmass;
-    }
-
     /// <summary>
     /// Generate the Body given known parameters at construction.
     /// </summary>
@@ -636,12 +641,6 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <param name="seed">Starting Seed of the satellites of the current Body.</param>
     /// <returns></returns>
     protected abstract IEnumerable<SatelliteBody> GenerateSatellites(Seed seed);
-
-    /// <summary>
-    /// Executed in a derived class when <see cref="Evolve(Duration)"/> is called.
-    /// </summary>
-    /// <param name="time"></param>
-    protected virtual void OnEvolve(Duration time) { }
 
     /// <summary>
     /// Check to see if a SatelliteBody is equals to the current one.

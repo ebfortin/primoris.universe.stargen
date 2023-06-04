@@ -64,29 +64,31 @@ public class Planet : SatelliteBody
 		Parent = parentBody;
 		var sun = StellarBody;
 
-		AxialTilt = axialTilt;
-		var planetRadius = radius;
+		Radius = radius;
 
+		AxialTilt = axialTilt;
+	
 		var approxDensity = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
 
 		DaytimeTemperature = dayTimeTempK;
 		NighttimeTemperature = nightTimeTempK;
 		Temperature = surfTempK;
 
-		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfGrav, massSM, planetRadius, ExosphereTemperature, sun.Age);
+		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfGrav, massSM, Radius, ExosphereTemperature, sun.Age);
 		var volatileGasInventory = Science.Physics.GetVolatileGasInventory(GasMass + DustMass,
-																		   Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, planetRadius),
+																		   Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, Radius),
 																		   RMSVelocity,
 																		   sun.Mass,
 																		   GasMass,
 																		   OrbitZone,
 																		   Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis));
+		//var volatileGasInventory = VolatileGasInventory;
 
-		SurfacePressure = Science.Physics.GetSurfacePressure(volatileGasInventory, planetRadius, surfGrav);
+		SurfacePressure = Science.Physics.GetSurfacePressure(volatileGasInventory, Radius, surfGrav);
 
 		if (Science.Planetology.TestIsGasGiant(massSM, gasMassSM, MolecularWeightRetained))
 		{
-			Stack.CreateLayer(ls => new BasicGiantGaseousLayer(ls, massSM, planetRadius, Chemical.All.Values));
+			Stack.CreateLayer(ls => new BasicGiantGaseousLayer(ls, massSM, Radius, Chemical.All.Values));
 		}
 		else
 		{
@@ -96,8 +98,10 @@ public class Planet : SatelliteBody
 			Stack.CreateLayer(ls => new BasicSolidLayer(ls, massSM - gasMassSM, coreRadius, Array.Empty<(Chemical, Ratio)>()));
 
 			// Generate complete atmosphere.
-			Stack.CreateLayer(ls => new BasicGaseousLayer(ls, gasMassSM, planetRadius - coreRadius, availableChems));
+			Stack.CreateLayer(ls => new BasicGaseousLayer(ls, gasMassSM, Radius - coreRadius, availableChems));
 		}
+
+		EndForming();
 	}
 
 	public Planet(Body parentBody,
@@ -196,8 +200,6 @@ public class Planet : SatelliteBody
 		// Is the planet a gas giant?
 		if (Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
 		{
-			//Type = GetGasGiantType(MassSM, GasMassSM);
-
 			AdjustPropertiesForGasBody();
 			SurfacePressure = Pressure.Zero;
 			Stack.Clear();
@@ -233,8 +235,6 @@ public class Planet : SatelliteBody
 			// planet.cloud_cover, planet.ice_cover
 			AdjustSurfaceTemperatures(SurfacePressure, Radius);
 
-			//planet.IsTidallyLocked = Science.Planetology.TestIsTidallyLocked(DayLength, OrbitalPeriod);
-
 			// Add basic Burrows layer.
 			var coreRadius = Science.Planetology.GetCoreRadius(mass, OrbitZone, false);
 			Stack.CreateLayer(ls => new BasicSolidLayer(ls, DustMass, coreRadius, Array.Empty<(Chemical, Ratio)>()));
@@ -244,6 +244,8 @@ public class Planet : SatelliteBody
 				Stack.CreateLayer(ls => new BasicGaseousLayer(ls, GasMass, Radius - coreRadius, Chemical.All.Values));
 		}
 
+
+		EndForming();
 	}
 
 	/// <summary>
