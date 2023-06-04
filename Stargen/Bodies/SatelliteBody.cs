@@ -70,9 +70,30 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// Angular velocity about the planet's axis.
     /// </summary>
     /// <value>
-    /// 
-    /// Angular speed at which the Body rotate.</value>
-    public RotationalSpeed AngularVelocity { get; protected set; }
+    /// Angular speed at which the Body rotate.
+    /// </value>
+    public override RotationalSpeed AngularVelocity
+    {
+        get
+        {
+            if (!base.AngularVelocity.Equals(RotationalSpeed.Zero, 1e-6, ComparisonType.Relative))
+                return base.AngularVelocity;
+
+            return Science.Dynamics.GetAngularVelocity(Mass,
+                                            Radius,
+                                            Density,
+                                            SemiMajorAxis,
+                                            Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained),
+                                            StellarBody.Mass,
+                                            StellarBody.Age);
+        }
+
+        protected set
+        {
+            base.AngularVelocity = value;
+        }
+    }
+
 
     /// <summary>
     /// The length of the Body's day.

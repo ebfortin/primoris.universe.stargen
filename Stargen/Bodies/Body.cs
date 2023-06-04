@@ -72,6 +72,14 @@ public abstract class Body
     public Speed EscapeVelocity => Science.Dynamics.GetEscapeVelocity(Mass, Radius);
 
     /// <summary>
+    /// Angular velocity about the planet's axis.
+    /// </summary>
+    /// <value>
+    /// Angular speed at which the Body rotate.
+    /// </value>
+    public virtual RotationalSpeed AngularVelocity { get; protected set; }
+
+    /// <summary>
 	/// TODO: Set also for GasGiant. Right now it is at 1e308.
     /// Gets or sets the temperature.
     /// </summary>

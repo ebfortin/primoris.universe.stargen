@@ -60,7 +60,6 @@ public class GeneratorTests
 						Ratio.FromDecimalFractions(0.0067),
 						Angle.FromDegrees(2.8),
 						Duration.FromHours(2802.0),
-						Duration.FromDays(225.0),
 						Mass.FromSolarMasses(0.000002447),
 						Mass.FromSolarMasses(2.41E-10),
 						Length.FromKilometers(6051.8),
@@ -69,6 +68,8 @@ public class GeneratorTests
 						Temperature.FromKelvins(737.0),
 						Acceleration.FromStandardGravity(0.9),
 						Chemical.All.Values);
+
+			Console.WriteLine($"OrbitalPeriod = {planet.OrbitalPeriod}");
 
 			return planet;
 		}

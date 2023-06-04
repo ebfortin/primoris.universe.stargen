@@ -50,8 +50,7 @@ public class Planet : SatelliteBody
 				  Length semiMajorAxisAU,
 				  Ratio eccentricity,
 				  Angle axialTilt,
-				  Duration dayLengthHours,
-				  Duration orbitalPeriodDays,
+				  Duration dayLength,
 				  Mass massSM,
 				  Mass gasMassSM,
 				  Length radius,
@@ -67,7 +66,9 @@ public class Planet : SatelliteBody
 		Radius = radius;
 
 		AxialTilt = axialTilt;
-	
+
+		AngularVelocity = RotationalSpeed.FromRadiansPerSecond(2.0 * double.Pi / dayLength.Seconds);
+
 		var approxDensity = Science.Physics.GetDensityFromStar(Mass, SemiMajorAxis, sun.EcosphereRadius, true);
 
 		DaytimeTemperature = dayTimeTempK;
@@ -109,7 +110,6 @@ public class Planet : SatelliteBody
 			  Ratio eccentricity,
 			  Angle axialTilt,
 			  Duration dayLengthHours,
-			  Duration orbitalPeriodDays,
 			  Mass massSM,
 			  Mass gasMassSM,
 			  Length radius,
@@ -123,7 +123,6 @@ public class Planet : SatelliteBody
 											eccentricity,
 											axialTilt,
 											dayLengthHours,
-											orbitalPeriodDays,
 											massSM,
 											gasMassSM,
 											radius,
@@ -138,8 +137,10 @@ public class Planet : SatelliteBody
 	/// <summary>
 	/// TODO: Add unit test.
 	/// </summary>
-    void AdjustPropertiesForRockyBody(Length radius)
+    void AdjustPropertiesForRockyBody()
 	{
+		var radius = Radius;
+
 		double age = Parent.Age.Years365;
 		double massSM = Mass.SolarMasses;
 		double gasMassSM = Seed.GasMass.SolarMasses;
@@ -202,22 +203,13 @@ public class Planet : SatelliteBody
 		{
 			AdjustPropertiesForGasBody();
 			SurfacePressure = Pressure.Zero;
-			Stack.Clear();
 			Stack.CreateLayer(ls => new BasicGiantGaseousLayer(ls, GasMass, Radius));
 		}
 		else // If not, it's rocky.
 		{
-			AdjustPropertiesForRockyBody(Radius);
+			AdjustPropertiesForRockyBody();
             MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, Radius, ExosphereTemperature, sun.Age);
 		}
-
-		planet.AngularVelocity = Science.Dynamics.GetAngularVelocity(mass,
-                                                              Radius,
-															  Density,
-															  SemiMajorAxis,
-															  Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained),
-															  sun.Mass,
-															  sun.Age);
 
 		var volatileGasInventory = Science.Physics.GetVolatileGasInventory(mass,
 																   EscapeVelocity,
@@ -266,28 +258,7 @@ public class Planet : SatelliteBody
 
 		// Generate moons
 		var sat = new List<SatelliteBody>();
-		//var curMoon = seed;
 		var n = 0;
-		/*if (curMoon != null)
-		{
-			while (curMoon != null)
-			{
-				if (curMoon.Mass * GlobalConstants.SUN_MASS_IN_EARTH_MASSES > .000001)
-				{
-					curMoon.SemiMajorAxisAU = planet.SemiMajorAxisAU;
-					curMoon.Eccentricity = planet.Eccentricity;
-
-					n++;
-
-					string moon_id = string.Format("{0}.{1}", parentBody.Position, n);
-
-					var generatedMoon = new Moon(curMoon, star, planet, n, useRandomTilt, moon_id, genOptions);
-
-					sat.Add(generatedMoon);
-				}
-				curMoon = curMoon.NextBody;
-			}
-		}*/
 
 		foreach (var curMoon in seed.Satellites)
 		{
