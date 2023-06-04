@@ -1,5 +1,8 @@
 using Primoris.Universe.Stargen.Astrophysics;
 using Primoris.Universe.Stargen.Astrophysics.Singularity;
+using Primoris.Universe.Stargen.Bodies.Burrows;
+
+using UnitsNet;
 
 namespace Primoris.Universe.Stargen.Bodies;
 
@@ -85,7 +88,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// Hill sphere length.
     /// </value>
-    public Length HillSphere { get; protected set; }
+    public Length HillSphere => Science.Astronomy.GetHillSphere(StellarBody.Mass, Mass, SemiMajorAxis);
 
     #endregion
 

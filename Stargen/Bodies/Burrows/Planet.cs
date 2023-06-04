@@ -138,7 +138,6 @@ public class Planet : SatelliteBody
 				var h2Loss = (1.0 - 1.0 / Math.Exp(age / h2Life)) * h2Mass;
 
 				Seed.GasMass -= Mass.FromSolarMasses(h2Loss);
-				//SurfaceAcceleration = Science.Physics.GetAcceleration(Mass, Radius);
 			}
 
 			if (heLife < age)
@@ -146,7 +145,6 @@ public class Planet : SatelliteBody
 				var heLoss = (1.0 - 1.0 / Math.Exp(age / heLife)) * heMass;
 
 				Seed.GasMass -= Mass.FromSolarMasses(heLoss);
-				//SurfaceAcceleration = Science.Physics.GetAcceleration(Mass, Radius);
 			}
 		}
 	}
@@ -174,25 +172,16 @@ public class Planet : SatelliteBody
 		var sun = StellarBody;
 		var mass = GasMass + DustMass;
 
-		//planet.OrbitZone = Science.Astronomy.GetOrbitalZone(sun.Luminosity, SemiMajorAxis);
-		//planet.OrbitalPeriod = Science.Astronomy.GetPeriod(SemiMajorAxis, mass, sun.Mass);
-
 		planet.AxialTilt = GetRandomInclination(SemiMajorAxis);
-
-		//planet.ExosphereTemperature = Science.Thermodynamics.GetEstimatedExosphereTemperature(SemiMajorAxis, sun.EcosphereRadius, sun.Temperature);
-		//planet.RMSVelocity = Science.Physics.GetRMSVelocity(Mass.FromGrams(GlobalConstants.MOL_NITROGEN), ExosphereTemperature);
 
 		// Calculate the radius as a gas giant, to verify it will retain gas.
 		// Then if mass > Earth, it's at least 5% gas and retains He, it's
 		// some flavor of gas giant.
-
-		//planet.Density = Science.Physics.GetDensityFromStar(mass, SemiMajorAxis, sun.EcosphereRadius, true);
 		var approxDensity = Science.Physics.GetDensityFromStar(mass, SemiMajorAxis, sun.EcosphereRadius, true);
         Length planetRadius = Mathematics.GetRadiusFromDensity(mass, approxDensity);
 		Radius = planetRadius;
 
 		var surfaceAcceleration = GetAcceleration(mass, planetRadius);
-		//planet.SurfaceGravityG = Environment.Gravity(planet.SurfaceAcceleration);
 
 		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, planetRadius, ExosphereTemperature, sun.Age);
 
@@ -219,9 +208,7 @@ public class Planet : SatelliteBody
 															  Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained),
 															  sun.Mass,
 															  sun.Age);
-		//planet.DayLength = Science.Astronomy.GetDayLength(planet.AngularVelocity, planet.OrbitalPeriod, planet.Eccentricity);
-		//planet.HasResonantPeriod = Science.Planetology.TestHasResonantPeriod(planet.AngularVelocity, planet.DayLength, planet.OrbitalPeriod, planet.Eccentricity);
-		//planet.EscapeVelocity = Science.Dynamics.GetEscapeVelocity(mass, planetRadius);
+
 		var volatileGasInventory = Science.Physics.GetVolatileGasInventory(mass,
 																   EscapeVelocity,
 																   RMSVelocity,
@@ -229,18 +216,11 @@ public class Planet : SatelliteBody
 																   GasMass,
 																   OrbitZone,
 																   HasGreenhouseEffect);
-		planet.HillSphere = Science.Astronomy.GetHillSphere(sun.Mass, mass, planet.SemiMajorAxis);
 
 		if (!Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
 		{
 			Pressure surfpres = Science.Physics.GetSurfacePressure(volatileGasInventory, planetRadius, planet.SurfaceAcceleration);
 
-			// Calculate all atmosphere layers total mass.
-			/*if (GasMass.Equals(Mass.Zero, 1e-9, ComparisonType.Relative))
-			{
-				Area surf = Area.FromSquareKilometers(4.0 * Math.PI * Math.Pow(planetRadius.Kilometers, 2.0));
-				GasMass = Mass.FromKilograms(surf.SquareMeters * surfpres.NewtonsPerSquareMeter / surfaceAcceleration.MetersPerSecondSquared);
-			}*/
 			planet.BoilingPointWater = Science.Thermodynamics.GetBoilingPointWater(surfpres);
 
 			// Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
@@ -257,19 +237,8 @@ public class Planet : SatelliteBody
 			if (surfpres.Millibars > 0.0 && GasMass.SolarMasses > 0.0)
 				Stack.CreateLayer(ls => new BasicGaseousLayer(ls, GasMass, Radius - coreRadius, Chemical.All.Values));
 			SurfacePressure = surfpres;
-
-			//HasGreenhouseEffect = Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis) & SurfacePressure > Pressure.Zero;
 		}
 
-		/*Type = Science.Planetology.GetBodyType(Mass,
-									 GasMass,
-									 MolecularWeightRetained,
-									 SurfacePressure,
-									 WaterCoverFraction,
-									 IceCoverFraction,
-									 MaxTemperature,
-									 BoilingPointWater,
-									 Temperature);*/
 	}
 
 	/// <summary>
@@ -343,11 +312,6 @@ public class Planet : SatelliteBody
 	{
 		var initTemp = Science.Thermodynamics.GetEstimatedAverageTemperature(StellarBody.EcosphereRadius, SemiMajorAxis, Albedo);
 
-		//var h2Life = GasLife(GlobalConstants.MOL_HYDROGEN, planet);
-		//var h2oLife = GasLife(GlobalConstants.WATER_VAPOR, planet);
-		//var n2Life = GasLife(GlobalConstants.MOL_NITROGEN, planet);
-		//var nLife = GasLife(GlobalConstants.ATOMIC_NITROGEN, planet);
-
 		CalculateSurfaceTemperature(true,
 						   Ratio.Zero,
 						   Ratio.Zero,
@@ -356,15 +320,15 @@ public class Planet : SatelliteBody
 						   Ratio.Zero,
 						   surfpres);
 
-		for (var count = 0; count <= 25; count++)
+        for (var count = 0; count <= 25; count++)
 		{
-			var lastWater = WaterCoverFraction;
-			var lastClouds = CloudCoverFraction;
-			var lastIce = IceCoverFraction;
-			var lastTemp = Temperature;
-			var lastAlbedo = Albedo;
+            var lastWater = WaterCoverFraction;
+            var lastClouds = CloudCoverFraction;
+            var lastIce = IceCoverFraction;
+            var lastTemp = Temperature;
+            var lastAlbedo = Albedo;
 
-			CalculateSurfaceTemperature(false, lastWater, lastClouds, lastIce, lastTemp, lastAlbedo, surfpres);
+            CalculateSurfaceTemperature(false, lastWater, lastClouds, lastIce, lastTemp, lastAlbedo, surfpres);
 
 			if (Math.Abs((Temperature - lastTemp).Kelvins) < 0.25)
 				break;
