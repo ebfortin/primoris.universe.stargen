@@ -76,16 +76,7 @@ public class Planet : SatelliteBody
 		Temperature = surfTempK;
 
 		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfGrav, massSM, Radius, ExosphereTemperature, sun.Age);
-		var volatileGasInventory = Science.Physics.GetVolatileGasInventory(GasMass + DustMass,
-																		   Science.Dynamics.GetEscapeVelocity(GasMass + DustMass, Radius),
-																		   RMSVelocity,
-																		   sun.Mass,
-																		   GasMass,
-																		   OrbitZone,
-																		   Science.Planetology.TestHasGreenhouseEffect(sun.EcosphereRadius, SemiMajorAxis));
-		//var volatileGasInventory = VolatileGasInventory;
-
-		SurfacePressure = Science.Physics.GetSurfacePressure(volatileGasInventory, Radius, surfGrav);
+		SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, Radius, surfGrav);
 
 		if (Science.Planetology.TestIsGasGiant(massSM, gasMassSM, MolecularWeightRetained))
 		{
@@ -171,9 +162,7 @@ public class Planet : SatelliteBody
 
 	void AdjustPropertiesForGasBody()
 	{
-		//BoilingPointWater = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
 		Temperature = Temperature.FromKelvins(GlobalConstants.NOT_APPLICABLE);
-		GreenhouseRiseTemperature = TemperatureDelta.Zero;
 		Albedo = Ratio.FromDecimalFractions(Science.Random.About(GlobalConstants.GAS_GIANT_ALBEDO, 0.1));
 		WaterCoverFraction = Ratio.Zero;
 		CloudCoverFraction = Ratio.Zero;
@@ -211,17 +200,9 @@ public class Planet : SatelliteBody
             MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, Radius, ExosphereTemperature, sun.Age);
 		}
 
-		var volatileGasInventory = Science.Physics.GetVolatileGasInventory(mass,
-																   EscapeVelocity,
-																   RMSVelocity,
-																   sun.Mass,
-																   GasMass,
-																   OrbitZone,
-																   HasGreenhouseEffect);
-
 		if (!Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
 		{
-            SurfacePressure = Science.Physics.GetSurfacePressure(volatileGasInventory, Radius, planet.SurfaceAcceleration);
+            SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, Radius, planet.SurfaceAcceleration);
 
 			// Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
 			// planet.cloud_cover, planet.ice_cover
@@ -313,8 +294,8 @@ public class Planet : SatelliteBody
 				break;
 		}
 
-		if(initTemp < Temperature)
-			GreenhouseRiseTemperature = Temperature - initTemp;
+		/*if(initTemp < Temperature)
+			GreenhouseRiseTemperature = Temperature - initTemp;*/
 	}
 
 	/// <summary>

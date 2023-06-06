@@ -148,7 +148,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// The total mass of this SatelliteBody.
     /// </value>
-    public override Mass Mass => Stack.Count > 0 ? Mass.FromEarthMasses((from l in Stack select l.Mass.EarthMasses).Sum()) : DustMass + GasMass;
+    public override Mass Mass => Stack.Count > 0 && !IsForming ? Mass.FromEarthMasses((from l in Stack select l.Mass.EarthMasses).Sum()) : DustMass + GasMass;
 
     /// <summary>
     /// The gravitational acceleration felt at the surface of the planet.
@@ -480,7 +480,19 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <value>
     /// TemperatureDelta caused by Greenhouse Effect.
     /// </value>
-    public TemperatureDelta GreenhouseRiseTemperature { get; protected set; }
+    public TemperatureDelta GreenhouseRiseTemperature 
+    { 
+        get
+        {
+            var initTemp = Science.Thermodynamics.GetEstimatedAverageTemperature(StellarBody.EcosphereRadius, SemiMajorAxis, Albedo);
+            var delta = Temperature - initTemp;
+
+            if (delta.Kelvins > 0)
+                return delta;
+            else
+                return TemperatureDelta.Zero;
+        } 
+    }
 
     /// <summary>
     /// Average daytime temperature.
