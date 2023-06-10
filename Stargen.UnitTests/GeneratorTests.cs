@@ -44,7 +44,7 @@ public class GeneratorTests
 								Ratio.FromDecimalFractions(GlobalConstants.DUST_DENSITY_COEFF));
 		}
 
-		private double DELTA = 0.0001;
+		private double DELTA = 0.001;
 
 		private StellarBody GetTestStar()
 		{

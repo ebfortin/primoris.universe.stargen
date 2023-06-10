@@ -75,8 +75,8 @@ public class Planet : SatelliteBody
 		NighttimeTemperature = nightTimeTempK;
 		Temperature = surfTempK;
 
-		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfGrav, massSM, Radius, ExosphereTemperature, sun.Age);
-		SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, Radius, surfGrav);
+        MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfGrav, DustMass, Radius, ExosphereTemperature, sun.Age);
+        SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, Radius, surfGrav);
 
 		if (Science.Planetology.TestIsGasGiant(massSM, gasMassSM, MolecularWeightRetained))
 		{
@@ -147,14 +147,12 @@ public class Planet : SatelliteBody
 			if (h2Life < age)
 			{
 				var h2Loss = (1.0 - 1.0 / Math.Exp(age / h2Life)) * h2Mass;
-
 				Seed.GasMass -= Mass.FromSolarMasses(h2Loss);
 			}
 
 			if (heLife < age)
 			{
 				var heLoss = (1.0 - 1.0 / Math.Exp(age / heLife)) * heMass;
-
 				Seed.GasMass -= Mass.FromSolarMasses(heLoss);
 			}
 		}
@@ -169,7 +167,7 @@ public class Planet : SatelliteBody
 		IceCoverFraction = Ratio.Zero;
 	}
 
-	private Angle GetRandomInclination(Length semiMajorAxis)
+	Angle GetRandomInclination(Length semiMajorAxis)
 	{
 		var inclination = ((int)(Math.Pow(semiMajorAxis.Kilometers / GlobalConstants.ASTRONOMICAL_UNIT_KM, 0.2) * Science.Random.About(GlobalConstants.EARTH_AXIAL_TILT, 0.4)) % 360);
 		return Angle.FromDegrees(inclination);
@@ -177,32 +175,31 @@ public class Planet : SatelliteBody
 
 	protected override void Generate()
 	{
-		var planet = this;
 		var sun = StellarBody;
 		var mass = GasMass + DustMass;
 
-		planet.AxialTilt = GetRandomInclination(SemiMajorAxis);
+		AxialTilt = GetRandomInclination(SemiMajorAxis);
 
 		var surfaceAcceleration = GetAcceleration(mass, Radius);
 
-		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, Radius, ExosphereTemperature, sun.Age);
+		MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, DustMass, Radius, ExosphereTemperature, sun.Age);
 
 		// Is the planet a gas giant?
 		if (Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
 		{
 			AdjustPropertiesForGasBody();
-			SurfacePressure = Pressure.Zero;
+			SurfacePressure = Pressure.Zero; // TODO: Should be infinite.
 			Stack.CreateLayer(ls => new BasicGiantGaseousLayer(ls, GasMass, Radius));
 		}
 		else // If not, it's rocky.
 		{
 			AdjustPropertiesForRockyBody();
-            MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, mass, Radius, ExosphereTemperature, sun.Age);
-		}
+            MolecularWeightRetained = Science.Physics.GetMolecularWeightRetained(surfaceAcceleration, DustMass, Radius, ExosphereTemperature, sun.Age);
+        }
 
 		if (!Science.Planetology.TestIsGasGiant(mass, GasMass, MolecularWeightRetained))
 		{
-            SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, Radius, planet.SurfaceAcceleration);
+            SurfacePressure = Science.Physics.GetSurfacePressure(VolatileGasInventory, Radius, SurfaceAcceleration);
 
 			// Sets: planet.surf_temp, planet.greenhs_rise, planet.albedo, planet.hydrosphere,
 			// planet.cloud_cover, planet.ice_cover
@@ -227,7 +224,7 @@ public class Planet : SatelliteBody
 	/// <param name="mass">Mass of the planet in solar masses</param>
 	/// <param name="radius">Radius of the planet in km</param>
 	/// <returns>Acceleration returned in units of cm/sec2</returns>
-	private Acceleration GetAcceleration(Mass mass, Length radius)
+	Acceleration GetAcceleration(Mass mass, Length radius)
 	{
 		return Acceleration.FromCentimetersPerSecondSquared(GlobalConstants.GRAV_CONSTANT * (mass.Grams) / Extensions.Pow2(radius.Centimeters));
 	}
@@ -243,7 +240,7 @@ public class Planet : SatelliteBody
 
 		foreach (var curMoon in seed.Satellites)
 		{
-			if (curMoon.Mass.EarthMasses > .000001)
+			if (curMoon.Mass.EarthMasses > 0.000001)
 			{
 				curMoon.SemiMajorAxis = planet.SemiMajorAxis;
 				curMoon.Eccentricity = planet.Eccentricity;
@@ -269,8 +266,6 @@ public class Planet : SatelliteBody
 	/// <param name="planet"></param>
 	void AdjustSurfaceTemperatures(Pressure surfpres, Length radius)
 	{
-		var initTemp = Science.Thermodynamics.GetEstimatedAverageTemperature(StellarBody.EcosphereRadius, SemiMajorAxis, Albedo);
-
 		CalculateSurfaceTemperature(true,
 						   Ratio.Zero,
 						   Ratio.Zero,
@@ -293,9 +288,6 @@ public class Planet : SatelliteBody
 			if (Math.Abs((Temperature - lastTemp).Kelvins) < 0.25)
 				break;
 		}
-
-		/*if(initTemp < Temperature)
-			GreenhouseRiseTemperature = Temperature - initTemp;*/
 	}
 
 	/// <summary>

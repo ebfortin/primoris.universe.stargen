@@ -10,6 +10,25 @@ namespace Primoris.Universe.Stargen.Bodies;
 /// <summary>
 /// A Body orbiting another Body. 
 /// </summary>
+/// <remarks>
+/// Properties that need to be sety in a subclass:
+/// * Albedo
+/// * WaterCoverFraction
+/// * IceCoverFraction
+/// * CloudCoverFraction
+/// * MolecularWeightRetained
+/// * Temperature
+/// * AxialTilt
+/// 
+/// Properties to be set at the begining of formation.
+/// * Radius (Total SatelliteBody radius to be used while IsForming == true).
+/// * AngularVelocity (value to be used while IsForming == true).
+/// 
+/// Properties that can't be get during Formation. These properties will throw.
+/// * Core
+/// * 
+/// 
+/// </remarks>
 /// <seealso cref="Primoris.Universe.Stargen.Bodies.Body" />
 /// <seealso cref="System.IEquatable{Primoris.Universe.Stargen.Bodies.SatelliteBody}" />
 [Serializable]
@@ -145,6 +164,9 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <summary>
     /// Gets or sets the total mass.
     /// </summary>
+    /// <remarks>
+    /// This property returns DustMass + GasMass when IsForming == true;
+    /// </remarks>
     /// <value>
     /// The total mass of this SatelliteBody.
     /// </value>
@@ -161,7 +183,13 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// </value>
     public Acceleration SurfaceAcceleration => Science.Physics.GetAcceleration(CoreMass, CoreRadius);
 
-
+    /// <summary>
+    /// Total radius of the SatelliteBody.
+    /// </summary>
+    /// <remarks>
+    /// This property returns hte value given at the begining of formation is IsForming == true. Otherwise
+    /// returns the compute thinkness of all Layers.
+    /// </remarks>
     public override Length Radius
     {
         get
@@ -191,6 +219,9 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     {
         get
         {
+            if (IsForming)
+                return Science.Planetology.GetCoreRadius(Mass, OrbitZone, Science.Planetology.TestIsGasGiant(Mass, GasMass, MolecularWeightRetained));
+
             Length radius = default;
             foreach (var l in Stack)
             {
@@ -201,7 +232,6 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         }
     }
 
-    // TODO Integrates it into layers.
     /// <summary>
     /// Mean overall Density for all of the SatelliteBody solid layers.
     /// </summary>
@@ -231,7 +261,16 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <summary>
     /// Get the mass of the SatelliteBody core.
     /// </summary>
-    public Mass CoreMass => Mass.FromEarthMasses((from l in Stack where l is SolidLayer select l.Mass.EarthMasses).Sum());
+    public Mass CoreMass
+    {
+        get
+        {
+            if (IsForming)
+                return Seed.DustMass;
+
+            return Mass.FromEarthMasses((from l in Stack where l is SolidLayer select l.Mass.EarthMasses).Sum());
+        }
+    }
 
     /// <summary>
     /// Gets the core composition.
@@ -388,13 +427,28 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// </remarks>
     public Speed RMSVelocity => Science.Physics.GetRMSVelocity(Mass.FromGrams(GlobalConstants.MOL_NITROGEN), ExosphereTemperature);
 
+    Mass _molecularWeightRetained = Mass.Zero;
     /// <summary>
     /// The smallest molecular weight the planet is capable of retaining.
     /// </summary>
     /// <remarks>
-    /// Fundamental proeprty that needs to be set in a subclass.
+    /// Fundamental property that needs to be set in a subclass.
     /// </remarks>
-    public Mass MolecularWeightRetained { get; protected set; }
+    public Mass MolecularWeightRetained 
+    { 
+        get
+        {
+            if (_molecularWeightRetained <= Mass.Zero)
+                throw new InvalidBodyOperationException("MolecularWeightRetained is used before being set.");
+
+            return _molecularWeightRetained;
+        }
+        
+        protected set
+        {
+            _molecularWeightRetained = value;
+        }
+    }
 
 
     /// <summary>
@@ -560,7 +614,11 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
 
     #endregion
 
-    protected internal SatelliteBody(IScienceAstrophysics science) : base(science)
+    /// <summary>
+    /// Constructor used for creating special cases subclassed like an empty SatelliteBody.
+    /// </summary>
+    /// <param name="science">Astrophysics model to use.</param>
+    internal SatelliteBody(IScienceAstrophysics science) : base(science)
     {
         Seed = new Seed();
         Parent = this;
@@ -568,7 +626,7 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     }
 
     /// <summary>
-    /// Construct a new SatelliteBody.
+    /// Construct a new SatelliteBody given an Astrophysics model, a Seed and a parent Body.
     /// </summary>
     /// <param name="seed">Source Seed to create the Body.</param>
     /// <param name="star">Parent Star of the Body.</param>
@@ -581,47 +639,89 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     }
 
     /// <summary>
-    /// 
+    /// Construct a new SatelliteBody given a Seed and a parent Body.
     /// </summary>
     /// <param name="seed"></param>
     /// <param name="parentBody"></param>
     public SatelliteBody(Seed seed, Body parentBody) : this(parentBody.Science, seed, parentBody) { }
 
-
+    /// <summary>
+    /// Get the surface acceleration at the specified layer.
+    /// </summary>
+    /// <param name="layer">Layer to get acceleration at.</param>
+    /// <returns>Acceleration at the inner area of the Layer.</returns>
     public Acceleration ComputeAccelerationAt(Layer layer)
     {
         return Stack.ComputeAccelerationAt(layer);
     }
 
+    /// <summary>
+    /// Compute the thickness below the specified Layer.
+    /// </summary>
+    /// <param name="layer">Layer to get thickness below.</param>
+    /// <returns>Thickness below the specified Layer.</returns>
     public Length ComputeThicknessBelow(Layer layer)
     {
         return Stack.ComputeThicknessBelow(layer);
     }
 
+    /// <summary>
+    /// Compute the Mass below the specified Layer.
+    /// </summary>
+    /// <param name="layer">Layer to get Mass below.</param>
+    /// <returns>Mass below the specified Layer.</returns>
     public Mass ComputeMassBelow(Layer layer)
     {
         return Stack.ComputeMassBelow(layer);
     }
 
-    public void CreateLayer(Func<LayerStack, Layer> layerCreator)
+    /// <summary>
+    /// Create a new Layer.
+    /// </summary>
+    /// <remarks>
+    /// The Layer class add the created Layer to the passed LayerStack automatically. So at the end of this method
+    /// the Laye ris at the top of the stack.
+    /// </remarks>
+    /// <param name="layerCreator">Func that creates the Layer.</param>
+    /// <exception cref="InvalidBodyException"></exception>
+    public void CreateLayer(Action<LayerStack> layerCreator)
     {
         if (!IsForming)
             throw new InvalidBodyException("SatelliteBody is not in forming stage and so can't add layers.");
 
-        var layer = layerCreator(Stack);
+        layerCreator(Stack);
     }
 
+    /// <summary>
+    /// End the SatelliteBody formation period. 
+    /// </summary>
+    /// <remarks>
+    /// This is an irreversible action.
+    /// </remarks>
     public void EndForming()
     {
         if(OnEndForming())
             IsForming = false;
     }
 
+    /// <summary>
+    /// Called when EndForming() is called. 
+    /// </summary>
+    /// <remarks>
+    /// The implementation in SatelliteBody always returns true. Can be overriden in
+    /// a subclass.
+    /// </remarks>
+    /// <returns>True is forming can be ended. False otherwise.</returns>
     protected virtual bool OnEndForming()
     {
         return true;
-    } 
+    }
 
+    /// <summary>
+    /// Returns the Chemical ratios of an enumration of Layers.
+    /// </summary>
+    /// <param name="layers">Layer to get the composition.</param>
+    /// <returns>An IEnumerable of a (Chemical, Ratio) Tuple.</returns>
     IEnumerable<(Chemical, Ratio)> ConsolidateComposition(IEnumerable<Layer> layers)
     {
         var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
@@ -644,6 +744,11 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
         return grouped;
     }
 
+    /// <summary>
+    /// Returns the Chemical ratios of the poisonous gas of an enumeration of GaseousLayer.
+    /// </summary>
+    /// <param name="layers">Layers to consolidate the composition.</param>
+    /// <returns>An IEnumerable of a (Chemical, Ratio) Tuple.</returns>
     IEnumerable<(Chemical, Ratio)> ConsolidatePoisonousComposition(IEnumerable<Layer> layers)
     {
         var totmass = Mass.FromSolarMasses((from l in layers select l.Mass.SolarMasses).Sum(x => x));
@@ -678,6 +783,11 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
     /// <summary>
     /// Check to see if a SatelliteBody is equals to the current one.
     /// </summary>
+    /// <remarks>
+    /// This is not a ReferenceEquals equivalent. It will check all the properties and returns
+    /// true if and only if both have the same values given a certain tolerance.
+    /// <seealso cref="Extensions.AlmostEqual(double, double, double)"/>
+    /// </remarks>
     /// <param name="other">Other Body to compare this with.</param>
     /// <returns>True if both Bodies are equals, false otherwise.</returns>
     public bool Equals(SatelliteBody? other)
@@ -721,11 +831,13 @@ public abstract class SatelliteBody : Body, IEquatable<SatelliteBody>
             Extensions.AlmostEqual(IceCoverFraction.Value, other.IceCoverFraction.Value);
     }
 
+    /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
         return Equals(obj as SatelliteBody);
     }
 
+    /// <inheritdoc/>
     public override int GetHashCode()
     {
         return base.GetHashCode();

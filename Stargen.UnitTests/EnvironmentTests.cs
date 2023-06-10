@@ -379,15 +379,6 @@ public class BurrowsPhysicsTests
 
 		void AddMockPoisonousAtmo(SatelliteBody parent)
 		{
-			/*var layers = new List<Layer>()
-			{
-				new BasicSolidLayer(parent, Length.FromKilometers(10000.0), Mass.FromEarthMasses(1.0), Array.Empty<(Chemical, Ratio)>()),
-				new BasicGaseousLayer(parent, Length.FromKilometers(100.0), new List<(Chemical, Ratio)>()
-				{
-					(TestGases["CO2"], Ratio.FromDecimalFractions(1.0))
-				}, Pressure.FromBars(1.0))
-			};*/
-
             parent.CreateLayer(ls => new BasicSolidLayer(ls, Mass.FromEarthMasses(1.0), Length.FromKilometers(10000.0), Array.Empty<(Chemical, Ratio)>()));
             parent.CreateLayer(ls => new BasicGaseousLayer(ls, Length.FromKilometers(100.0), new (Chemical, Ratio)[]
                 {
